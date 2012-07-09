@@ -13,7 +13,6 @@ class TSSceneManager {
   //----------------------------------
   public void addScene(TSScene s, TSTrigger t) {
     scenes.add(s);
-    
     triggers.add(t);
   }
   
