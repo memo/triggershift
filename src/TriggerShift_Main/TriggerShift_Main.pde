@@ -13,7 +13,6 @@ void setupScenes() {
   TSIScene s;
   TSITrigger t;
   skeleton= new TSSkeleton();
-  skeleton.setupSkeleton();
   // s = new scene;
   // t = new trigger;
   //  sceneManager.addScene(s, t);
@@ -56,7 +55,6 @@ void draw() {
   skeleton.updateSkeleton();
   // mask it with userMask (update userImage)
   // skeleton.drawAllSkeletons();
-  //
   image(context.depthImage(), 0, 0); 
 
   PVector rHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_RIGHT_HAND) ;
@@ -71,7 +69,7 @@ void draw() {
   fill(255, 0, 0);
   ellipse(rHand.x, rHand.y, 20, 20);
   ellipse(lHand.x, lHand.y, 20, 20);
- skeleton.drawDebugInfo();
+  skeleton.drawDebugInfo();
   // get skeleton from openNI
 
   // scale to an arbitrary size and position (e.g. scale down 75%, and align to bottom / center)

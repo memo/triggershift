@@ -1,41 +1,39 @@
 
-// a skeleton
-// store positions and velocities, scaled and mapped to screen space (in case we have scaled down the kinect input)
-//openni kinect capture / scale / skeleton 
-int userCount;
-PFont debugFont;
-//first dimension is users, second dimension is all joint pos for each user
-PVector[][] pJoints;
-//first dimension is users, second dimension is all velocity for each joint since last frame
-PVector[][] velocities;
-
-//24 joints are tracked according to documentation, can't find a constant that represents this.
-int numJoints = 24;
-int max_users=17;
 class TSSkeleton {
+
+  // a skeleton
+  // store positions and velocities, scaled and mapped to screen space (in case we have scaled down the kinect input)
+  //openni kinect capture / scale / skeleton 
+  int userCount;
+  PFont debugFont;
+  //first dimension is users, second dimension is all velocity and positions for each joint
+  TSJoint[][] tsjoints;
+  //24 joints are tracked according to documentation, can't find a constant that represents this.
+  int numJoints = 24;
+  int max_users=17;
+
+  PVector test=new PVector(0, 0, 0);
   //----------------------------------
 
   TSSkeleton() {
+    
     userCount=0;
     debugFont=loadFont("AlBayan-48.vlw");
-    pJoints= new PVector[max_users][numJoints];
-    velocities= new PVector[max_users][numJoints];
+
+    tsjoints= new TSJoint[max_users][numJoints];
     //set all initial previous joint positions and velocities to 0
     for (int i=0;i<max_users;i++) {
-      for (int j=0;j<pJoints.length;j++) {
-        pJoints[i][j]=new PVector(0, 0, 0);
-        velocities[i][j]=new PVector(0, 0, 0);
+      for (int j=0;j<tsjoints.length;j++) {
+        tsjoints[i][j]=new TSJoint(20);
       }
     }
   }
 
   void updateSkeleton() {
     userCount = context.getNumberOfUsers();
-    
-    //velocities are not smoothed yet
     updateVelocities();
   }
-//for debugging purposes
+  //for debugging purposes
   void drawAllSkeletons() {
     pushMatrix();
     translate(width/2, height/2, 0);
@@ -128,9 +126,10 @@ class TSSkeleton {
     //JOINT POS IN WORLD SIZE IE MM
     PVector jointPos = new PVector();
     context.getJointPositionSkeleton(userId, jointType, jointPos);
-    
+
     return(jointPos);
   }
+  //am example to test velocity data
   void drawDebugInfo() {
     fill(255);
     textFont(debugFont, 48);
@@ -146,16 +145,15 @@ class TSSkeleton {
         if (context.isTrackingSkeleton(userList[i])) {
           PVector jointPos_Proj = new PVector(); 
           context.convertRealWorldToProjective(jointPos1, jointPos_Proj);
-          //text("right handX "+jointPos_Proj.x, 100, 100);
           try {
-            //text("right hand_VEL_X "+velocities[userList[i]][SimpleOpenNI.SKEL_RIGHT_HAND].x, 100, height- 50);
-            if (velocities[userList[i]][SimpleOpenNI.SKEL_RIGHT_HAND].x>0) {
+            text("right hand_VEL_X "+tsjoints[userList[i]][SimpleOpenNI.SKEL_RIGHT_HAND].smoothedVelocity.x, 100, height- 150);
+            if (tsjoints[userList[i]][SimpleOpenNI.SKEL_RIGHT_HAND].smoothedVelocity.x>0) {
               text("right hand going LEFT ", 100, height- 50);
             }
             else {
               text("right hand going RIGHT ", 100, height- 50);
             }
-            if (velocities[userList[i]][SimpleOpenNI.SKEL_RIGHT_HAND].y<0) {
+            if (  tsjoints[userList[i]][SimpleOpenNI.SKEL_RIGHT_HAND].smoothedVelocity.y<0) {
               text("right hand going UP ", 100, height- 100);
             }
             else {
@@ -169,33 +167,29 @@ class TSSkeleton {
       }
     }
   }
-  private void updateVelocities() {
+  void updateVelocities() {
     int[] userList = context.getUsers();
-    
+
     //for each user
     for (int i=0;i<userList.length;i++) {
       //if there is a valid skeleton
       if (context.isTrackingSkeleton(userList[i])) {
         //for each joint on that skeleton
-        for (int j=0;j<pJoints.length;j++) {
+        for (int j=0;j<tsjoints.length;j++) {
           PVector jointPos = new PVector();
           //get real world coords
           context.getJointPositionSkeleton(userList[i], j, jointPos);
           PVector jointPos_Proj = new PVector(); 
           //convert to screen coords
           context.convertRealWorldToProjective(jointPos, jointPos_Proj);
-          
-          //scale velocity from -1 to 1 Z axis is unscaled
-          velocities[userList[i]][j].x=map(jointPos_Proj.x-pJoints[userList[i]][j].x, -context.depthWidth(), context.depthWidth(), -1, 1);
-          velocities[userList[i]][j].y=map(jointPos_Proj.y-pJoints[userList[i]][j].y, -context.depthHeight(), context.depthHeight(), -1, 1);
-          velocities[userList[i]][j].z=jointPos_Proj.z-pJoints[userList[i]][j].z;
-         //update previous point positions
-          pJoints[userList[i]][j]=jointPos_Proj;
+
+          tsjoints[userList[i]][j].updateAll(jointPos_Proj);
         }
       }
     }
   }
 };
+
 /*static int	SKEL_HEAD 
  static int	SKEL_LEFT_ANKLE 
  static int	SKEL_LEFT_COLLAR 
