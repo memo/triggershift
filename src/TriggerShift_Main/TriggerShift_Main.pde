@@ -4,6 +4,7 @@ SimpleOpenNI  context;
 
 TSSceneManager sceneManager;
 TSSkeleton skeleton;
+TSTransform2D transform2D;
 
 PImage userImage;  // contains kinect color image, masked with usermask
 
@@ -12,16 +13,16 @@ PImage userImage;  // contains kinect color image, masked with usermask
 void setupScenes() {
   TSIScene s;
   TSITrigger t;
-  skeleton= new TSSkeleton();
   // s = new scene;
   // t = new trigger;
   //  sceneManager.addScene(s, t);
 
   // repeat above
 }
+
 //----------------------------------
 void setupContext() {
-  //setup onenNI context
+  //setup openNI context
   context = new SimpleOpenNI(this);
   // enable depthMap generation 
   context.enableDepth();
@@ -31,17 +32,29 @@ void setupContext() {
 
   // enable skeleton generation for all joints
   context.enableUser(SimpleOpenNI.SKEL_PROFILE_ALL);
-  stroke(255, 255, 255);
-  smooth();
 }
 
 //----------------------------------
 void setup() {
-  size(1280, 768, P3D);
+  size(1280, 800, P3D);
+
+  // setup kinect context
+  setupContext();
+
   // setup our scenes
   setupScenes();
-  setupContext();
-  println("SimpleOpenNI.SKEL_RIGHT_HAND "+SimpleOpenNI.SKEL_RIGHT_HAND);
+  
+  // create skeleton
+  skeleton = new TSSkeleton();
+  
+  // create 2D Transformer to map kinect onto a smaller part of the screen
+  transform2D = new TSTransform2D(new PVector(width, height), new PVector(context.depthWidth(), context.depthHeight()), new PVector(1, 1), new PVector(0.5, 0.5));
+  
+  
+  stroke(255, 255, 255);
+  smooth();
+ 
+  //println("SimpleOpenNI.SKEL_RIGHT_HAND "+SimpleOpenNI.SKEL_RIGHT_HAND);
   // setup userImage
 }
 
@@ -81,6 +94,8 @@ void draw() {
   //sceneManager.draw(userImage, skeleton);
 }
 
+
+// ARE THESE NEEDED HERE?
 //OPENNI CALLBACKS
 void onNewUser(int userId)
 {
