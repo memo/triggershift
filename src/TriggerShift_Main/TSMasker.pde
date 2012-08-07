@@ -6,7 +6,7 @@ class TSMasker {
   
   //----------------------------------
   // update images form openni context
-  void update(SimpleOpenNI context) {
+  void update(SimpleOpenNI context, int maskBlurAmount) {
     int w = context.rgbImage().width;
     int h = context.rgbImage().height;
 
@@ -31,8 +31,8 @@ class TSMasker {
     }
     maskImage.updatePixels();
     
-    // blur mask (too slow)
-    //    maskImage.filter(BLUR, mouseX *10.0/width); // too slow
+    // blur mask (quite slow)
+    if(maskBlurAmount>0) maskImage.filter(BLUR, maskBlurAmount);
 
     // apply mask
     rgbImage.mask(maskImage);

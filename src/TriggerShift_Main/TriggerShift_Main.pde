@@ -6,6 +6,7 @@ import controlP5.*;
 boolean doDrawKinectRGB = false;
 boolean doDrawKinectDepth = true;
 boolean doDrawKinectMasked = true;
+int maskBlurAmount = 0;
 float videoSizeX = 0.5;
 float videoSizeY = 0.5;
 float videoPosX = 0.5;
@@ -30,6 +31,7 @@ void setupUI() {
   cp5.addToggle("doDrawKinectRGB").linebreak().moveTo("Display");
   cp5.addToggle("doDrawKinectDepth").linebreak().moveTo("Display");
   cp5.addToggle("doDrawKinectMasked").linebreak().moveTo("Display");
+  cp5.addSlider("maskBlurAmount", 0, 10).linebreak().moveTo("Display");
   cp5.addSlider("videoSizeX", 0, 1).linebreak().moveTo("Display");
   cp5.addSlider("videoSizeY", 0, 1).linebreak().moveTo("Display");
   cp5.addSlider("videoPosX", 0, 1).linebreak().moveTo("Display");
@@ -89,7 +91,7 @@ void draw() {
   openNIContext.update();
   
   // apply mask
-  if(doDrawKinectMasked) masker.update(openNIContext);
+  if(doDrawKinectMasked) masker.update(openNIContext, maskBlurAmount);
   
   // update transform2d
   transform2D.outputSizePixels = new PVector(width, height);
