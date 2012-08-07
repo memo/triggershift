@@ -28,7 +28,7 @@ class TestStory extends TSStoryBase {
     // this is the scenes draw function
     // use getElapsedSeconds() to see how long the scene has been running (useful for transitions)
     void onDraw(PImage userImage, TSSkeleton skeleton) {
-      println("TestStory::Scene1::onDraw");
+      //      println("TestStory::Scene1::onDraw");
       fill(255, 0, 0);
       ellipse(50, 200, 300, 200);
     }
@@ -51,7 +51,7 @@ class TestStory extends TSStoryBase {
     // this is the scenes draw function
     // use getElapsedSeconds() to see how long the scene has been running (useful for transitions)
     void onDraw(PImage userImage, TSSkeleton skeleton) {
-      println("TestStory::Scene2::onDraw");
+      //      println("TestStory::Scene2::onDraw");
       fill(0, 255, 0);
       ellipse(250, 200, 300, 200);
     }
