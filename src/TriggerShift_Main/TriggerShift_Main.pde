@@ -1,6 +1,6 @@
 import SimpleOpenNI.*;
 
-SimpleOpenNI  context;
+SimpleOpenNI  openNIContext;
 
 TSSceneManager sceneManager;
 TSSkeleton skeleton;
@@ -22,27 +22,28 @@ void setupScenes() {
 }
 
 //----------------------------------
-void setupContext() {
+void setupOpenNI() {
   //setup openNI context
-  context = new SimpleOpenNI(this);
+  openNIContext = new SimpleOpenNI(this);
   // enable depthMap generation 
-  context.enableDepth();
+  openNIContext.enableDepth();
   // enable camera image generation
-  context.enableRGB();
-    context.enableScene();
+  openNIContext.enableRGB();
+  openNIContext.enableScene();
 
-  context.setMirror(false);
-  context.alternativeViewPointDepthToImage();
+  openNIContext.setMirror(false);
+  openNIContext.alternativeViewPointDepthToImage();
+
   // enable skeleton generation for all joints
-  context.enableUser(SimpleOpenNI.SKEL_PROFILE_ALL);
+  openNIContext.enableUser(SimpleOpenNI.SKEL_PROFILE_ALL);
 }
 
 //----------------------------------
 void setup() {
   size(1280, 800, P3D);
 
-  // setup kinect context
-  setupContext();
+  // setup openni context
+  setupOpenNI();
 
   // setup our scenes
   setupScenes();
@@ -66,13 +67,18 @@ void setup() {
 void draw() {
   background(0);
   // get kinect color image
-  context.update();
-  // scale to an arbitrary size and position (e.g. scale down 75%, and align to bottom / center)
-  skeleton.updateSkeleton();
-  // mask it with userMask (update userImage)
+  openNIContext.update();
+  
+  // apply mask
+  masker.update(openNIContext);
+  
+  // update skeleton
+  skeleton.update(openNIContext);
+  
+  
   // skeleton.drawAllSkeletons();
-  /* image(context.depthImage(), 0, 0); 
-   
+  image(openNIContext.depthImage(), 0, 0, 320, 240); 
+  /* 
    PVector rHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_RIGHT_HAND) ;
    PVector lHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_LEFT_HAND) ;
    fill(255, 0, 0);
@@ -94,7 +100,7 @@ void draw() {
 
   // fill our TSSkeleton class
   
-  image(masker.getMask(), 0, 0);
+  image(masker.getImage(), 320, 0, 320, 240);
   // draw current scene (pass the userImage and skeleton so we can draw the relevant graphics and track interaction)
   //sceneManager.draw(userImage, skeleton);
 }
@@ -108,7 +114,7 @@ void onNewUser(int userId)
   println("  start pose detection");
 
 
-  context.requestCalibrationSkeleton(userId, true);
+  openNIContext.requestCalibrationSkeleton(userId, true);
 }
 
 void onLostUser(int userId)
@@ -139,13 +145,13 @@ void onEndCalibration(int userId, boolean successfull)
   if (successfull) 
   { 
     println("  User calibrated !!!");
-    context.startTrackingSkeleton(userId);
+    openNIContext.startTrackingSkeleton(userId);
   } 
   else 
   { 
     println("  Failed to calibrate user !!!");
     println("  Start pose detection");
-    context.startPoseDetection("Psi", userId);
+    openNIContext.startPoseDetection("Psi", userId);
   }
 }
 
@@ -154,8 +160,8 @@ void onStartPose(String pose, int userId)
   println("onStartdPose - userId: " + userId + ", pose: " + pose);
   println(" stop pose detection");
 
-  context.stopPoseDetection(userId); 
-  context.requestCalibrationSkeleton(userId, true);
+  openNIContext.stopPoseDetection(userId); 
+  openNIContext.requestCalibrationSkeleton(userId, true);
 }
 
 void onEndPose(String pose, int userId)

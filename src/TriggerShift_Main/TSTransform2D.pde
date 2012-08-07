@@ -25,6 +25,7 @@ class TSTransform2D {
   protected PVector targetTopLeftPixels;   // top left coordinates of target area (in pixels)
 
 
+  //----------------------------------
   TSTransform2D() {
     outputSizePixels.set(width, height, 0);
     inputSizePixels.set(640, 480, 0);
@@ -35,11 +36,13 @@ class TSTransform2D {
     update();
   }
 
+  //----------------------------------
   TSTransform2D(PVector _outputSizePixels, PVector _inputSizePixels, PVector _targetSize, PVector _targetCenter) {
     set(_outputSizePixels, _inputSizePixels, _targetSize, _targetCenter);
   }
 
 
+  //----------------------------------
   void set(PVector _outputSizePixels, PVector _inputSizePixels, PVector _targetSize, PVector _targetCenter) {
     outputSizePixels = _outputSizePixels;
     inputSizePixels = _inputSizePixels;
@@ -50,6 +53,7 @@ class TSTransform2D {
     update();
   }
 
+  //----------------------------------
   // calculates, updates and caches various helper variables
   void update() {
     targetSizePixels.x = targetSize.x * outputSizePixels.x;
@@ -63,6 +67,7 @@ class TSTransform2D {
   }
 
 
+  //----------------------------------
   // takes normalized input coordinates (0...1, 0...1) maps them to the target area, and returns world coordinates
   public PVector getWorldCoordsForInputNorm(PVector p) {
     return new PVector(
@@ -70,6 +75,7 @@ class TSTransform2D {
     targetTopLeftPixels.y + p.y * targetSizePixels.y);
   }
 
+  //----------------------------------
   // takes coordinates in input space (e.g. kinect coordinates) maps them to the target area, and returns world coordinates
   public PVector getWorldCoordsForInputPixels(PVector p) {
     return getWorldCoordsForInputNorm(new PVector(

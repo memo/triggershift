@@ -1,30 +1,46 @@
-class TSMasker {
-  PImage tsMask;
-  
-  TSMasker() {
-  }
-PImage getMask() { 
-    PImage rgbImage;
 
+
+class TSMasker {
+  PImage rgbImage;    // rgb masked image
+  PImage maskImage;   // grayscale mask image
+  
+  //----------------------------------
+  // update images form openni context
+  void update(SimpleOpenNI context) {
+    
+    // get color image from context
+    rgbImage = context.rgbImage();
+    
+    // if dimensions don't match, allocate new image for mask
+    if(maskImage == null || maskImage.width != rgbImage.width || maskImage.height != rgbImage.height) {
+      maskImage = createImage(rgbImage.width, rgbImage.height, ALPHA);
+    }
+
+    // create a mask image 
     int[] map = context.sceneMap();
-    rgbImage=context.rgbImage();
-    rgbImage.loadPixels();
+    maskImage.loadPixels();
     for (int i=0;i<map.length;i++) {
       if (map[i] > 0) {
-        //if there's a user pixel at this index leave it as it is
-      }
-      else {
-        //otherwise paint it out
-        rgbImage.pixels[i]=color(0, 0, 0);
+        maskImage.pixels[i] = 255;
+      } else {
+        maskImage.pixels[i] = 0;
       }
     }
-      rgbImage.updatePixels();
+    maskImage.updatePixels();
+    
+    // blur mask (too slow)
+    //    maskImage.filter(BLUR, mouseX *10.0/width); // too slow
 
-    return rgbImage;
+    // apply mask
+    rgbImage.mask(maskImage);
   }
   
-/*  PImage blurMask() {
-    return PImage anImage;
-  }*/
+  
+  //----------------------------------
+  // return image
+  PImage getImage() { 
+    return rgbImage;
+  }
+
 };
 
