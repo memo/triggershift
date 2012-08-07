@@ -4,15 +4,14 @@ class TSSkeleton {
   // a skeleton
   // store positions and velocities, scaled and mapped to screen space (in case we have scaled down the kinect input)
   //openni kinect capture / scale / skeleton 
-  int userCount;
-  PFont debugFont;
+  private int userCount;
+  private PFont debugFont;
   //first dimension is users, second dimension is all velocity and positions for each joint
-  TSJoint[][] tsjoints;
+  private TSJoint[][] tsjoints;
   //24 joints are tracked according to documentation, can't find a constant that represents this.
-  int numJoints = 24;
-  int max_users=17;
+  private int numJoints = 24;
+  private int max_users=17;
 
-  PVector test=new PVector(0, 0, 0);
   //----------------------------------
 
   TSSkeleton() {
