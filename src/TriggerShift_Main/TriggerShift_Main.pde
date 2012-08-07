@@ -51,7 +51,7 @@ void setup() {
   skeleton = new TSSkeleton();
   masker = new TSMasker();
   // create 2D Transformer to map kinect onto a smaller part of the screen
-  //  transform2D = new TSTransform2D(new PVector(width, height), new PVector(context.depthWidth(), context.depthHeight()), new PVector(1, 1), new PVector(0.5, 0.5));
+  //transform2D = new TSTransform2D(new PVector(width, height), new PVector(context.depthWidth(), context.depthHeight()), new PVector(1, 1), new PVector(0.5, 0.5));
 
 
   stroke(255, 255, 255);
@@ -94,7 +94,6 @@ void draw() {
 
   // fill our TSSkeleton class
   
-  image(masker.getMask(), 0, 0);
   // draw current scene (pass the userImage and skeleton so we can draw the relevant graphics and track interaction)
   //sceneManager.draw(userImage, skeleton);
 }

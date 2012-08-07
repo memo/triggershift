@@ -16,7 +16,7 @@ class TSSkeleton {
   //----------------------------------
 
   TSSkeleton() {
-    
+
     userCount=0;
     debugFont=loadFont("AlBayan-48.vlw");
 
@@ -29,12 +29,12 @@ class TSSkeleton {
     }
   }
 
-  void updateSkeleton() {
+  public void updateSkeleton() {
     userCount = context.getNumberOfUsers();
     updateVelocities();
   }
   //for debugging purposes
-  void drawAllSkeletons() {
+  public void drawAllSkeletons() {
     pushMatrix();
     translate(width/2, height/2, 0);
     //openni draws upside down
@@ -53,7 +53,7 @@ class TSSkeleton {
   }
 
   //from simpleOPENNI examples/ credits to http://code.google.com/p/simple-openni
-  void drawSkeleton(int userId) {
+  public void drawSkeleton(int userId) {
     strokeWeight(3);
 
     // to get the 3d joint data
@@ -78,8 +78,46 @@ class TSSkeleton {
     drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
     drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);
   }
+
+  //////////////GIVEN A JOINT ID THIS WILL GIVE THE POSITION RELATIVE TO DEPTH MAP SIZE (640*480)///////////////////////////////
+  public PVector getScreenCoords(int userId, int jointType) {
+    //JOINT POS IN WORLD SIZE IE MM
+    PVector jointPos = new PVector();
+    //JOINT POS IN SCEEN SIZE IE PIXELS
+    PVector jointPos_Proj = new PVector(); 
+    context.getJointPositionSkeleton(userId, jointType, jointPos);
+    if (context.isTrackingSkeleton(userId)) {
+      context.convertRealWorldToProjective(jointPos, jointPos_Proj);
+    }
+    return(jointPos_Proj);
+  }
+  //////////////GIVEN A JOINT ID A POSITION THIS WILL RETURN A MAPPED POSITION USING SETTINGS IN TSTRANSFORM2D///////////////////////////////
+  public PVector getTransformedJointCoords(int userId, int jointType, TSTransform2D transform2D, SimpleOpenNI  context) {
+    //JOINT POS IN WORLD SIZE IE MM
+    PVector jointPos = new PVector();
+    //JOINT POS IN SCEEN SIZE IE PIXELS
+    PVector jointPos_Proj = new PVector(); 
+
+    //first get the screen coordinates as opposed to world coordinates
+    context.getJointPositionSkeleton(userId, jointType, jointPos);
+
+    if (context.isTrackingSkeleton(userId)) {
+      context.convertRealWorldToProjective(jointPos, jointPos_Proj);
+    }
+
+    PVector transformedCoords = transform2D.getWorldCoordsForInputPixels(jointPos_Proj);
+
+    return transformedCoords;
+  }
+  public PVector getWorldCoords(int userId, int jointType) {
+    //JOINT POS IN WORLD SIZE IE MM
+    PVector jointPos = new PVector();
+    context.getJointPositionSkeleton(userId, jointType, jointPos);
+
+    return(jointPos);
+  }
   //from simpleOPENNI examples/ credits to http://code.google.com/p/simple-openni
-  void drawLimb(int userId, int jointType1, int jointType2)
+  public void drawLimb(int userId, int jointType1, int jointType2)
   {
     PVector jointPos1 = new PVector();
     PVector jointPos2 = new PVector();
@@ -93,81 +131,9 @@ class TSSkeleton {
     line(jointPos1.x, jointPos1.y, jointPos1.z, 
     jointPos2.x, jointPos2.y, jointPos2.z);
   }
-  //////////////GIVEN A JOINT ID THIS WILL GIVE THE POSITION RELATIVE TO DEPTH MAP SIZE (640*480)///////////////////////////////
-  PVector getScreenCoords(int userId, int jointType) {
-    //JOINT POS IN WORLD SIZE IE MM
-    PVector jointPos = new PVector();
-    //JOINT POS IN SCEEN SIZE IE PIXELS
-    PVector jointPos_Proj = new PVector(); 
-    context.getJointPositionSkeleton(userId, jointType, jointPos);
-    if (context.isTrackingSkeleton(userId)) {
-      context.convertRealWorldToProjective(jointPos, jointPos_Proj);
-    }
-    return(jointPos_Proj);
-  }
-  //////////////GIVEN A JOINT ID A POSITION AND A NEW WIDTH AND HEIGH THIS WILL GIVE THE POSITION RELATIVE TO THAT NEW SIZE///////////////////////////////
-  PVector getMappedCoords(int userId, int jointType, int x, int y, int w, int h) {
-    //JOINT POS IN WORLD SIZE IE MM
-    PVector jointPos = new PVector();
-    //JOINT POS IN SCEEN SIZE IE PIXELS
-    PVector jointPos_Proj = new PVector(); 
-    context.getJointPositionSkeleton(userId, jointType, jointPos);
-    if (context.isTrackingSkeleton(userId)) {
-      context.convertRealWorldToProjective(jointPos, jointPos_Proj);
-    }
-    float xm, ym, zm;
-    xm=x+map(jointPos_Proj.x, 0, context.depthWidth(), 0, w);
-    ym=y+map(jointPos_Proj.y, 0, context.depthHeight(), 0, h);
-    zm=jointPos_Proj.z;
 
-    return(new PVector(xm, ym, zm));
-  }
-  PVector getWorldCoords(int userId, int jointType) {
-    //JOINT POS IN WORLD SIZE IE MM
-    PVector jointPos = new PVector();
-    context.getJointPositionSkeleton(userId, jointType, jointPos);
-
-    return(jointPos);
-  }
-  //am example to test velocity data
-  void drawDebugInfo() {
-    fill(255);
-    textFont(debugFont, 48);
-    int[] userList = context.getUsers();
-    if (userList.length>0) {
-      for (int i=0;i<userList.length;i++) {
-
-        // for (int i=0;i<20;i++) {
-        PVector jointPos1 = new PVector();
-
-        context.getJointPositionSkeleton(userList[i], SimpleOpenNI.SKEL_RIGHT_HAND, jointPos1);
-
-        if (context.isTrackingSkeleton(userList[i])) {
-          PVector jointPos_Proj = new PVector(); 
-          context.convertRealWorldToProjective(jointPos1, jointPos_Proj);
-          try {
-            text("right hand_VEL_X "+tsjoints[userList[i]][SimpleOpenNI.SKEL_RIGHT_HAND].smoothedVelocity.x, 100, height- 150);
-            if (tsjoints[userList[i]][SimpleOpenNI.SKEL_RIGHT_HAND].smoothedVelocity.x>0) {
-              text("right hand going LEFT ", 100, height- 50);
-            }
-            else {
-              text("right hand going RIGHT ", 100, height- 50);
-            }
-            if (  tsjoints[userList[i]][SimpleOpenNI.SKEL_RIGHT_HAND].smoothedVelocity.y<0) {
-              text("right hand going UP ", 100, height- 100);
-            }
-            else {
-              text("right hand going DOWN ", 100, height-100);
-            }
-          }
-          catch(Exception e) {
-            println(e);
-          }
-        }
-      }
-    }
-  }
-  void updateVelocities() {
+ 
+  private void updateVelocities() {
     int[] userList = context.getUsers();
 
     //for each user
