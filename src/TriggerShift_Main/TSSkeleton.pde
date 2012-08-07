@@ -28,7 +28,6 @@ class TSSkeleton {
     }
   }
 
-
   //----------------------------------
   void update(SimpleOpenNI context) {
     userCount = context.getNumberOfUsers();
@@ -142,25 +141,24 @@ class TSSkeleton {
   }
 
 
-  //----------------------------------
-  //////////////GIVEN A JOINT ID A POSITION AND A NEW WIDTH AND HEIGH THIS WILL GIVE THE POSITION RELATIVE TO THAT NEW SIZE///////////////////////////////
-  PVector getMappedCoords(SimpleOpenNI context, int userId, int jointType, int x, int y, int w, int h) {
+  //////////////GIVEN A JOINT ID A POSITION THIS WILL RETURN A MAPPED POSITION USING SETTINGS IN TSTRANSFORM2D///////////////////////////////
+  public PVector getTransformedJointCoords(int userId, int jointType, TSTransform2D transform2D, SimpleOpenNI  context) {
     //JOINT POS IN WORLD SIZE IE MM
     PVector jointPos = new PVector();
     //JOINT POS IN SCEEN SIZE IE PIXELS
     PVector jointPos_Proj = new PVector(); 
+
+    //first get the screen coordinates as opposed to world coordinates
     context.getJointPositionSkeleton(userId, jointType, jointPos);
+
     if (context.isTrackingSkeleton(userId)) {
       context.convertRealWorldToProjective(jointPos, jointPos_Proj);
     }
-    float xm, ym, zm;
-    xm=x+map(jointPos_Proj.x, 0, context.depthWidth(), 0, w);
-    ym=y+map(jointPos_Proj.y, 0, context.depthHeight(), 0, h);
-    zm=jointPos_Proj.z;
 
-    return(new PVector(xm, ym, zm));
+    PVector transformedCoords = transform2D.getWorldCoordsForInputPixels(jointPos_Proj);
+
+    return transformedCoords;
   }
-
 
   //----------------------------------
   PVector getWorldCoords(SimpleOpenNI context, int userId, int jointType) {
@@ -170,7 +168,6 @@ class TSSkeleton {
 
     return(jointPos);
   }
-
 
   //----------------------------------
   //am example to test velocity data

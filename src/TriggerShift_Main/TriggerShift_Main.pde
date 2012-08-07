@@ -79,7 +79,7 @@ void setup() {
   transform2D = new TSTransform2D();
 
   setupUI();
-  
+
   currentStory.startStory();
 
   stroke(255, 255, 255);
@@ -132,7 +132,6 @@ void draw() {
 
 
   currentStory.draw(masker.getImage(), skeleton);
-
 
   cp5.draw();
 }
