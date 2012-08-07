@@ -7,15 +7,18 @@ class TSMasker {
   //----------------------------------
   // update images form openni context
   void update(SimpleOpenNI context) {
-    
-    // get color image from context
-    rgbImage = context.rgbImage();
-    
-    // if dimensions don't match, allocate new image for mask
-    if(maskImage == null || maskImage.width != rgbImage.width || maskImage.height != rgbImage.height) {
-      maskImage = createImage(rgbImage.width, rgbImage.height, ALPHA);
-    }
+    int w = context.rgbImage().width;
+    int h = context.rgbImage().height;
 
+    // init maskImage
+    if(maskImage == null || maskImage.width != w || maskImage.height != h) maskImage = createImage(w, h, ALPHA);
+    
+    // init rgbImage
+    if(rgbImage == null || rgbImage.width != w || rgbImage.height != h) rgbImage = createImage(w, h, RGB);
+
+    // get color image from context
+    rgbImage.copy(context.rgbImage(), 0, 0, w, h, 0, 0, w, h);
+    
     // create a mask image 
     int[] map = context.sceneMap();
     maskImage.loadPixels();

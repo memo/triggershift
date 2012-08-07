@@ -2,9 +2,9 @@ import SimpleOpenNI.*;
 import controlP5.*;
 
 ControlP5 cp5;
-boolean doDrawKinectRGB;
-boolean doDrawKinectDepth;
-boolean doDrawKinectMasked;
+boolean doDrawKinectRGB = false;
+boolean doDrawKinectDepth = false;
+boolean doDrawKinectMasked = true;
 
 SimpleOpenNI  openNIContext;
 
