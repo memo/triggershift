@@ -1,4 +1,10 @@
 import SimpleOpenNI.*;
+import controlP5.*;
+
+ControlP5 cp5;
+boolean doDrawKinectRGB;
+boolean doDrawKinectDepth;
+boolean doDrawKinectMasked;
 
 SimpleOpenNI  openNIContext;
 
@@ -35,19 +41,27 @@ void setupOpenNI() {
   openNIContext.alternativeViewPointDepthToImage();
 }
 
+
+//----------------------------------
+void setupUI() {
+  cp5 = new ControlP5(this);
+  cp5.addToggle("doDrawKinectRGB").linebreak();
+  cp5.addToggle("doDrawKinectDepth").linebreak();
+  cp5.addToggle("doDrawKinectMasked").linebreak();
+}
+
 //----------------------------------
 void setup() {
-  size(1280, 800, P3D);
+  size(1280, 800);
 
-  // setup openni context
   setupOpenNI();
-
-  // setup our scenes
   setupScenes();
 
   skeleton = new TSSkeleton();
   masker = new TSMasker();
   transform2D = new TSTransform2D();
+  
+  setupUI();
 
   stroke(255, 255, 255);
   smooth();
@@ -65,13 +79,13 @@ void draw() {
   openNIContext.update();
   
   // apply mask
-  masker.update(openNIContext);
+  if(doDrawKinectMasked) masker.update(openNIContext);
   
   // update transform2d
   transform2D.outputSizePixels = new PVector(width, height);
   transform2D.inputSizePixels = new PVector(openNIContext.depthImage().width, openNIContext.depthImage().height);
-  transform2D.targetSize = new PVector(1, 1);
-  transform2D.targetCenter = new PVector(0.5, 0.5);
+  transform2D.targetSize = new PVector(0.5, 0.5);
+  transform2D.targetCenter = new PVector(0.5, 0.75);
   transform2D.update();
   
   // update skeleton
@@ -102,8 +116,9 @@ void draw() {
 
   // fill our TSSkeleton class
   
-//  transform2D.drawImage( openNIContext.depthImage() );
-  transform2D.drawImage( masker.getImage() );
+  if(doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
+  if(doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
+  if(doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
   
   // draw current scene (pass the userImage and skeleton so we can draw the relevant graphics and track interaction)
   //sceneManager.draw(userImage, skeleton);
