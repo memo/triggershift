@@ -25,17 +25,14 @@ void setupScenes() {
 void setupOpenNI() {
   //setup openNI context
   openNIContext = new SimpleOpenNI(this);
-  // enable depthMap generation 
+
   openNIContext.enableDepth();
-  // enable camera image generation
   openNIContext.enableRGB();
   openNIContext.enableScene();
+  openNIContext.enableUser(SimpleOpenNI.SKEL_PROFILE_ALL);
 
   openNIContext.setMirror(false);
   openNIContext.alternativeViewPointDepthToImage();
-
-  // enable skeleton generation for all joints
-  openNIContext.enableUser(SimpleOpenNI.SKEL_PROFILE_ALL);
 }
 
 //----------------------------------
@@ -48,12 +45,9 @@ void setup() {
   // setup our scenes
   setupScenes();
 
-  // create skeleton
   skeleton = new TSSkeleton();
   masker = new TSMasker();
-  // create 2D Transformer to map kinect onto a smaller part of the screen
-  //  transform2D = new TSTransform2D(new PVector(width, height), new PVector(context.depthWidth(), context.depthHeight()), new PVector(1, 1), new PVector(0.5, 0.5));
-
+  transform2D = new TSTransform2D();
 
   stroke(255, 255, 255);
   smooth();
@@ -66,18 +60,26 @@ void setup() {
 //----------------------------------
 void draw() {
   background(0);
+  
   // get kinect color image
   openNIContext.update();
   
   // apply mask
   masker.update(openNIContext);
   
+  // update transform2d
+  transform2D.outputSizePixels = new PVector(width, height);
+  transform2D.inputSizePixels = new PVector(openNIContext.depthImage().width, openNIContext.depthImage().height);
+  transform2D.targetSize = new PVector(1, 1);
+  transform2D.targetCenter = new PVector(0.5, 0.5);
+  transform2D.update();
+  
   // update skeleton
   skeleton.update(openNIContext);
   
   
   // skeleton.drawAllSkeletons();
-  image(openNIContext.depthImage(), 0, 0, 320, 240); 
+//  image(openNIContext.depthImage(), 0, 0, 320, 240); 
   /* 
    PVector rHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_RIGHT_HAND) ;
    PVector lHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_LEFT_HAND) ;
@@ -100,11 +102,16 @@ void draw() {
 
   // fill our TSSkeleton class
   
-  image(masker.getImage(), 320, 0, 320, 240);
+  transform2D.drawImage( masker.getImage() );
   // draw current scene (pass the userImage and skeleton so we can draw the relevant graphics and track interaction)
   //sceneManager.draw(userImage, skeleton);
 }
 
+
+
+//----------------------------------
+//----------------------------------
+//----------------------------------
 
 // ARE THESE NEEDED HERE?
 //OPENNI CALLBACKS

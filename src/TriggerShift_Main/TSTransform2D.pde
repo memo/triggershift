@@ -27,23 +27,21 @@ class TSTransform2D {
 
   //----------------------------------
   TSTransform2D() {
-    outputSizePixels.set(width, height, 0);
-    inputSizePixels.set(640, 480, 0);
+    outputSizePixels = new PVector(width, height);
+    inputSizePixels = new PVector(640, 480);
 
-    targetSize.set(1, 1, 0);           // set input target area to cover entire output
-    targetCenter.set(0.5, 0.5, 0);     // set input target to be centered in output
+    targetSize = new PVector(1, 1);           // set input target area to cover entire output
+    targetCenter = new PVector(0.5, 0.5);     // set input target to be centered in output
+    
+    targetSizePixels = new PVector();
+    targetCenterPixels = new PVector();
+    targetTopLeftPixels = new PVector();
 
     update();
   }
 
   //----------------------------------
   TSTransform2D(PVector _outputSizePixels, PVector _inputSizePixels, PVector _targetSize, PVector _targetCenter) {
-    set(_outputSizePixels, _inputSizePixels, _targetSize, _targetCenter);
-  }
-
-
-  //----------------------------------
-  void set(PVector _outputSizePixels, PVector _inputSizePixels, PVector _targetSize, PVector _targetCenter) {
     outputSizePixels = _outputSizePixels;
     inputSizePixels = _inputSizePixels;
 
@@ -82,5 +80,12 @@ class TSTransform2D {
     p.x / inputSizePixels.x,
     p.y / inputSizePixels.y));
   }
+  
+  
+  //----------------------------------
+  public void drawImage(PImage img) {
+    image(img, targetTopLeftPixels.x, targetTopLeftPixels.y, targetSizePixels.x, targetSizePixels.y);
+  }
+
 };
 

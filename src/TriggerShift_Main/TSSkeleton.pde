@@ -35,7 +35,30 @@ class TSSkeleton {
     updateVelocities(context);
   }
 
+ //----------------------------------
+  void updateVelocities(SimpleOpenNI context) {
+    int[] userList = context.getUsers();
 
+    //for each user
+    for (int i=0;i<userList.length;i++) {
+      //if there is a valid skeleton
+      if (context.isTrackingSkeleton(userList[i])) {
+        //for each joint on that skeleton
+        for (int j=0;j<tsjoints.length;j++) {
+          PVector jointPos = new PVector();
+          //get real world coords
+          context.getJointPositionSkeleton(userList[i], j, jointPos);
+          PVector jointPos_Proj = new PVector(); 
+          //convert to screen coords
+          context.convertRealWorldToProjective(jointPos, jointPos_Proj);
+
+          tsjoints[userList[i]][j].update(context, jointPos_Proj);
+        }
+      }
+    }
+  }
+  
+  
   //----------------------------------
   //for debugging purposes
   void drawAllSkeletons(SimpleOpenNI context) {
@@ -189,29 +212,6 @@ class TSSkeleton {
     }
   }
 
-
-  //----------------------------------
-  void updateVelocities(SimpleOpenNI context) {
-    int[] userList = context.getUsers();
-
-    //for each user
-    for (int i=0;i<userList.length;i++) {
-      //if there is a valid skeleton
-      if (context.isTrackingSkeleton(userList[i])) {
-        //for each joint on that skeleton
-        for (int j=0;j<tsjoints.length;j++) {
-          PVector jointPos = new PVector();
-          //get real world coords
-          context.getJointPositionSkeleton(userList[i], j, jointPos);
-          PVector jointPos_Proj = new PVector(); 
-          //convert to screen coords
-          context.convertRealWorldToProjective(jointPos, jointPos_Proj);
-
-          tsjoints[userList[i]][j].update(context, jointPos_Proj);
-        }
-      }
-    }
-  }
 };
 
 /*static int	SKEL_HEAD 
