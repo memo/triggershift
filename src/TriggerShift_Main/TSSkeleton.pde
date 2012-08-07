@@ -35,7 +35,7 @@ class TSSkeleton {
     updateVelocities(context);
   }
 
- //----------------------------------
+  //----------------------------------
   void updateVelocities(SimpleOpenNI context) {
     int[] userList = context.getUsers();
 
@@ -57,8 +57,8 @@ class TSSkeleton {
       }
     }
   }
-  
-  
+
+
   //----------------------------------
   //for debugging purposes
   void drawAllSkeletons(SimpleOpenNI context) {
@@ -211,7 +211,6 @@ class TSSkeleton {
       }
     }
   }
-
 };
 
 /*static int	SKEL_HEAD 

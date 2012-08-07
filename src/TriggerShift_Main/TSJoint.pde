@@ -12,7 +12,7 @@ class TSJoint {
 
   //----------------------------------
   TSJoint(int smoothingAmt) {
-    
+
     buffer= new PVector[smoothingAmt];
 
     for (int i=0;i<buffer.length;i++) {
@@ -25,8 +25,8 @@ class TSJoint {
 
     bufferIndex=0;
   }
-  
-  
+
+
   //----------------------------------
   void update(SimpleOpenNI context, PVector newPos) {
     //update current joint position
@@ -35,10 +35,10 @@ class TSJoint {
     velocity.x= map( newPos.x-prevPos.x, -context.depthWidth(), context.depthWidth(), -1, 1);
     velocity.y= map(newPos.y-prevPos.y, -context.depthHeight(), context.depthHeight(), -1, 1);
     velocity.z= newPos.z-prevPos.z;
-    
+
     //overwrite the circular buffer
     buffer[bufferIndex]=velocity;
-  //and incrememnt the buffer index
+    //and incrememnt the buffer index
     bufferIndex++;
     if (bufferIndex>=buffer.length) {
       bufferIndex=0;

@@ -22,8 +22,8 @@ TSTransform2D transform2D;
 TSMasker masker;
 
 // Stories
-TSStory currentStory;
-ArrayList stories;
+TSStoryBase currentStory;
+ArrayList stories = new ArrayList();
 
 //----------------------------------
 void setupUI() {
@@ -48,12 +48,8 @@ void setupUI() {
 
 //----------------------------------
 void setupStories() {
-  stories = new ArrayList();
-  stories.add(new TestStory1());
-  
-  
-  currentStory = (TSStory) stories.get(0);
-  currentStory.setup();
+  stories.add(new TestStory());
+  currentStory = (TSStoryBase) stories.get(0);
 }
 
 //----------------------------------
@@ -83,6 +79,8 @@ void setup() {
   transform2D = new TSTransform2D();
 
   setupUI();
+  
+  currentStory.startStory();
 
   stroke(255, 255, 255);
   smooth();
@@ -130,6 +128,8 @@ void draw() {
    ellipse(rHand.x, rHand.y, 20, 20);
    ellipse(lHand.x, lHand.y, 20, 20);
    */
+
+
 
   currentStory.draw(masker.getImage(), skeleton);
 
