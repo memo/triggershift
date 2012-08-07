@@ -6,6 +6,8 @@ import controlP5.*;
 boolean doDrawKinectRGB = false;
 boolean doDrawKinectDepth = true;
 boolean doDrawKinectMasked = true;
+boolean doDrawSkeletons = false;
+boolean doDrawDebugInfo = false;
 int maskBlurAmount = 0;
 float videoSizeX = 0.5;
 float videoSizeY = 0.5;
@@ -33,6 +35,9 @@ void setupUI() {
   cp5.addToggle("doDrawKinectRGB").linebreak().moveTo("Display");
   cp5.addToggle("doDrawKinectDepth").linebreak().moveTo("Display");
   cp5.addToggle("doDrawKinectMasked").linebreak().moveTo("Display");
+  cp5.addToggle("doDrawSkeletons").linebreak().moveTo("Display");
+  cp5.addToggle("doDrawDebugInfo").linebreak().moveTo("Display");
+  
   cp5.addSlider("maskBlurAmount", 0, 10).linebreak().moveTo("Display");
   cp5.addSlider("videoSizeX", 0, 1).linebreak().moveTo("Display");
   cp5.addSlider("videoSizeY", 0, 1).linebreak().moveTo("Display");
@@ -69,7 +74,7 @@ void setupOpenNI() {
 
 //----------------------------------
 void setup() {
-  size(1280, 800);
+  size(1280, 800, P3D);
 
   setupOpenNI();
   setupScenes();
@@ -89,7 +94,7 @@ void setup() {
 void draw() {
   cp5.getController("fps").setValue(frameRate);
   
-  background(255, 0, 0);
+  background(80, 0, 0);
   
   // get kinect color image
   openNIContext.update();
@@ -107,9 +112,11 @@ void draw() {
   // update skeleton
   skeleton.update(openNIContext);
   
-  
-  // skeleton.drawAllSkeletons();
-//  image(openNIContext.depthImage(), 0, 0, 320, 240); 
+  if(doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
+  if(doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
+  if(doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
+  if(doDrawSkeletons) skeleton.drawAllSkeletons(openNIContext);
+  if(doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
   /* 
    PVector rHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_RIGHT_HAND) ;
    PVector lHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_LEFT_HAND) ;
@@ -126,17 +133,8 @@ void draw() {
    skeleton.drawDebugInfo();*/
 
 
-  // get skeleton from openNI
-
-  // scale to an arbitrary size and position (e.g. scale down 75%, and align to bottom / center)
-
-  // fill our TSSkeleton class
-  
-  if(doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
-  if(doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
-  if(doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
-  
   //sceneManager.draw(userImage, skeleton);
+  cp5.draw();
 }
 
 
