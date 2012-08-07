@@ -48,7 +48,7 @@ void setupUI() {
 
 //----------------------------------
 void setupStories() {
-  stories.add(new TestStory());
+  stories.add(new StoryTest());
   currentStory = (TSStoryBase) stories.get(0);
 }
 
