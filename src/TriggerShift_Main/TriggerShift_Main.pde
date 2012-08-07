@@ -1,19 +1,40 @@
 import SimpleOpenNI.*;
 import controlP5.*;
 
-ControlP5 cp5;
+
+// params
 boolean doDrawKinectRGB = false;
-boolean doDrawKinectDepth = false;
+boolean doDrawKinectDepth = true;
 boolean doDrawKinectMasked = true;
+float videoSizeX = 0.5;
+float videoSizeY = 0.5;
+float videoPosX = 0.5;
+float videoPosY = 0.75;
 
+
+
+// vars
+ControlP5 cp5;
 SimpleOpenNI  openNIContext;
-
 TSSceneManager sceneManager;
 TSSkeleton skeleton;
 TSTransform2D transform2D;
 TSMasker masker;
 
-PImage userImage;  // contains kinect color image, masked with usermask
+
+
+//----------------------------------
+void setupUI() {
+  cp5 = new ControlP5(this);
+  cp5.addTab("Display");
+  cp5.addToggle("doDrawKinectRGB").linebreak().moveTo("Display");
+  cp5.addToggle("doDrawKinectDepth").linebreak().moveTo("Display");
+  cp5.addToggle("doDrawKinectMasked").linebreak().moveTo("Display");
+  cp5.addSlider("videoSizeX", 0, 1).linebreak().moveTo("Display");
+  cp5.addSlider("videoSizeY", 0, 1).linebreak().moveTo("Display");
+  cp5.addSlider("videoPosX", 0, 1).linebreak().moveTo("Display");
+  cp5.addSlider("videoPosY", 0, 1).linebreak().moveTo("Display");
+}
 
 
 //----------------------------------
@@ -43,14 +64,6 @@ void setupOpenNI() {
 
 
 //----------------------------------
-void setupUI() {
-  cp5 = new ControlP5(this);
-  cp5.addToggle("doDrawKinectRGB").linebreak();
-  cp5.addToggle("doDrawKinectDepth").linebreak();
-  cp5.addToggle("doDrawKinectMasked").linebreak();
-}
-
-//----------------------------------
 void setup() {
   size(1280, 800);
 
@@ -65,9 +78,6 @@ void setup() {
 
   stroke(255, 255, 255);
   smooth();
-
-  //println("SimpleOpenNI.SKEL_RIGHT_HAND "+SimpleOpenNI.SKEL_RIGHT_HAND);
-  // setup userImage
 }
 
 
@@ -84,8 +94,8 @@ void draw() {
   // update transform2d
   transform2D.outputSizePixels = new PVector(width, height);
   transform2D.inputSizePixels = new PVector(openNIContext.depthImage().width, openNIContext.depthImage().height);
-  transform2D.targetSize = new PVector(0.5, 0.5);
-  transform2D.targetCenter = new PVector(0.5, 0.75);
+  transform2D.targetSize = new PVector(videoSizeX, videoSizeY);
+  transform2D.targetCenter = new PVector(videoPosX, videoPosY);
   transform2D.update();
   
   // update skeleton
@@ -120,7 +130,6 @@ void draw() {
   if(doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
   if(doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
   
-  // draw current scene (pass the userImage and skeleton so we can draw the relevant graphics and track interaction)
   //sceneManager.draw(userImage, skeleton);
 }
 
