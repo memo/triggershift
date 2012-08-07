@@ -130,7 +130,6 @@ void draw() {
    */
 
 
-
   currentStory.draw(masker.getImage(), skeleton);
 
   cp5.draw();
