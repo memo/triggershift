@@ -1,17 +1,27 @@
 
-// manages all scenes and triggers
+// base class for a Story
+// a Story is a sequence of Scenes & Triggers that tell an interactive story
+// extend this class to create new stories
 
-class TSSceneManager {
+
+class TSStory {
 
   protected ArrayList scenes;
   protected ArrayList triggers;
 
-  int currentSceneIndex = 0;
-  TSIScene currentScene = null;
-  TSITrigger currentTrigger = null;
+  protected int currentSceneIndex = 0;
+  protected TSIScene currentScene = null;
+  protected TSITrigger currentTrigger = null;
+
 
   //----------------------------------
-  public void addScene(TSIScene s, TSITrigger t) {
+  public void setup() {
+    println("OVERRIDE THIS FUNCTION");
+  }
+  
+
+  //----------------------------------
+  protected void addScene(TSIScene s, TSITrigger t) {
     scenes.add(s);
     triggers.add(t);
   }
@@ -22,7 +32,7 @@ class TSSceneManager {
   }
 
   //----------------------------------
-  public void setCurrentSceneIndex(int i) {
+  protected void setCurrentSceneIndex(int i) {
     if (i >= scenes.size()) {
       // reached end, do something
       return;

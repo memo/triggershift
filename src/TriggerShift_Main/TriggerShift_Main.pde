@@ -1,7 +1,6 @@
 import SimpleOpenNI.*;
 import controlP5.*;
 
-
 // params
 boolean doDrawKinectRGB = false;
 boolean doDrawKinectDepth = true;
@@ -15,29 +14,30 @@ float videoPosX = 0.5;
 float videoPosY = 0.75;
 
 
-
 // vars
 ControlP5 cp5;
 SimpleOpenNI  openNIContext;
-TSSceneManager sceneManager;
 TSSkeleton skeleton;
 TSTransform2D transform2D;
 TSMasker masker;
 
+// Stories
+TSStory currentStory;
+ArrayList stories;
 
 //----------------------------------
 void setupUI() {
   cp5 = new ControlP5(this);
-  
+
   cp5.addSlider("fps", 0, 60).linebreak();
-  
+
   cp5.addTab("Display");
   cp5.addToggle("doDrawKinectRGB").linebreak().moveTo("Display");
   cp5.addToggle("doDrawKinectDepth").linebreak().moveTo("Display");
   cp5.addToggle("doDrawKinectMasked").linebreak().moveTo("Display");
   cp5.addToggle("doDrawSkeletons").linebreak().moveTo("Display");
   cp5.addToggle("doDrawDebugInfo").linebreak().moveTo("Display");
-  
+
   cp5.addSlider("maskBlurAmount", 0, 10).linebreak().moveTo("Display");
   cp5.addSlider("videoSizeX", 0, 1).linebreak().moveTo("Display");
   cp5.addSlider("videoSizeY", 0, 1).linebreak().moveTo("Display");
@@ -47,14 +47,13 @@ void setupUI() {
 
 
 //----------------------------------
-void setupScenes() {
-  TSIScene s;
-  TSITrigger t;
-  // s = new scene;
-  // t = new trigger;
-  //  sceneManager.addScene(s, t);
-
-  // repeat above
+void setupStories() {
+  stories = new ArrayList();
+  stories.add(new TestStory1());
+  
+  
+  currentStory = (TSStory) stories.get(0);
+  currentStory.setup();
 }
 
 //----------------------------------
@@ -77,12 +76,12 @@ void setup() {
   size(1280, 800, P3D);
 
   setupOpenNI();
-  setupScenes();
+  setupStories();
 
   skeleton = new TSSkeleton();
   masker = new TSMasker();
   transform2D = new TSTransform2D();
-  
+
   setupUI();
 
   stroke(255, 255, 255);
@@ -93,30 +92,30 @@ void setup() {
 //----------------------------------
 void draw() {
   cp5.getController("fps").setValue(frameRate);
-  
+
   background(80, 0, 0);
-  
+
   // get kinect color image
   openNIContext.update();
-  
+
   // apply mask
-  if(doDrawKinectMasked) masker.update(openNIContext, maskBlurAmount);
-  
+  if (doDrawKinectMasked) masker.update(openNIContext, maskBlurAmount);
+
   // update transform2d
   transform2D.outputSizePixels = new PVector(width, height);
   transform2D.inputSizePixels = new PVector(openNIContext.depthImage().width, openNIContext.depthImage().height);
   transform2D.targetSize = new PVector(videoSizeX, videoSizeY);
   transform2D.targetCenter = new PVector(videoPosX, videoPosY);
   transform2D.update();
-  
+
   // update skeleton
   skeleton.update(openNIContext);
-  
-  if(doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
-  if(doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
-  if(doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
-  if(doDrawSkeletons) skeleton.drawAllSkeletons(openNIContext);
-  if(doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
+
+  if (doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
+  if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
+  if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
+  if (doDrawSkeletons) skeleton.drawAllSkeletons(openNIContext);
+  if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
   /* 
    PVector rHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_RIGHT_HAND) ;
    PVector lHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_LEFT_HAND) ;
@@ -130,10 +129,11 @@ void draw() {
    fill(255, 0, 0);
    ellipse(rHand.x, rHand.y, 20, 20);
    ellipse(lHand.x, lHand.y, 20, 20);
-   skeleton.drawDebugInfo();*/
+   */
+
+  currentStory.draw(masker.getImage(), skeleton);
 
 
-  //sceneManager.draw(userImage, skeleton);
   cp5.draw();
 }
 

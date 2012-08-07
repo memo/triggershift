@@ -53,7 +53,7 @@ class TSTransform2D {
 
   //----------------------------------
   // calculates, updates and caches various helper variables
-  void update() {
+  public void update() {
     targetSizePixels.x = targetSize.x * outputSizePixels.x;
     targetSizePixels.y = targetSize.y * outputSizePixels.y;
 
@@ -83,6 +83,7 @@ class TSTransform2D {
   
   
   //----------------------------------
+  // draws an image with the transformation
   public void drawImage(PImage img) {
     if(img != null) image(img, targetTopLeftPixels.x, targetTopLeftPixels.y, targetSizePixels.x, targetSizePixels.y);
   }

@@ -1,12 +1,12 @@
 
 
 class TSMasker {
-  PImage rgbImage;    // rgb masked image
-  PImage maskImage;   // grayscale mask image
+  protected PImage rgbImage;    // rgb masked image
+  protected PImage maskImage;   // grayscale mask image
   
   //----------------------------------
   // update images form openni context
-  void update(SimpleOpenNI context, int maskBlurAmount) {
+  public void update(SimpleOpenNI context, int maskBlurAmount) {
     int w = context.rgbImage().width;
     int h = context.rgbImage().height;
 
@@ -41,7 +41,7 @@ class TSMasker {
   
   //----------------------------------
   // return image
-  PImage getImage() { 
+  public PImage getImage() { 
     return rgbImage;
   }
 
