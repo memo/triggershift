@@ -23,10 +23,12 @@ TSTransform2D transform2D;
 TSMasker masker;
 
 
-
 //----------------------------------
 void setupUI() {
   cp5 = new ControlP5(this);
+  
+  cp5.addSlider("fps", 0, 60).linebreak();
+  
   cp5.addTab("Display");
   cp5.addToggle("doDrawKinectRGB").linebreak().moveTo("Display");
   cp5.addToggle("doDrawKinectDepth").linebreak().moveTo("Display");
@@ -85,6 +87,8 @@ void setup() {
 
 //----------------------------------
 void draw() {
+  cp5.getController("fps").setValue(frameRate);
+  
   background(255, 0, 0);
   
   // get kinect color image
