@@ -84,7 +84,7 @@ class TSTransform2D {
   
   //----------------------------------
   public void drawImage(PImage img) {
-    image(img, targetTopLeftPixels.x, targetTopLeftPixels.y, targetSizePixels.x, targetSizePixels.y);
+    if(img != null) image(img, targetTopLeftPixels.x, targetTopLeftPixels.y, targetSizePixels.x, targetSizePixels.y);
   }
 
 };

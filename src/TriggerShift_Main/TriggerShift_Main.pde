@@ -59,7 +59,7 @@ void setup() {
 
 //----------------------------------
 void draw() {
-  background(0);
+  background(255, 0, 0);
   
   // get kinect color image
   openNIContext.update();
@@ -102,7 +102,9 @@ void draw() {
 
   // fill our TSSkeleton class
   
+//  transform2D.drawImage( openNIContext.depthImage() );
   transform2D.drawImage( masker.getImage() );
+  
   // draw current scene (pass the userImage and skeleton so we can draw the relevant graphics and track interaction)
   //sceneManager.draw(userImage, skeleton);
 }
