@@ -139,6 +139,7 @@ class TSSkeleton {
       drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
       drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);
     }
+
   }
 
 
