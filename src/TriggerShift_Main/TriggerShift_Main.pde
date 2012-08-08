@@ -1,78 +1,120 @@
 import SimpleOpenNI.*;
+import controlP5.*;
 
-SimpleOpenNI  context;
+// params
+boolean doDrawKinectRGB = false;
+boolean doDrawKinectDepth = true;
+boolean doDrawKinectMasked = true;
+boolean doDrawSkeletons = true;
+boolean doDrawDebugInfo = true;
+int maskBlurAmount = 0;
+float videoSizeX = 0.5;
+float videoSizeY = 0.5;
+float videoPosX = 0.5;
+float videoPosY = 0.75;
 
-TSSceneManager sceneManager;
+
+// vars
+ControlP5 cp5;
+SimpleOpenNI  openNIContext;
 TSSkeleton skeleton;
 TSTransform2D transform2D;
 TSMasker masker;
 
-PImage userImage;  // contains kinect color image, masked with usermask
+// Stories
+TSStoryBase currentStory;
+ArrayList stories = new ArrayList();
+
+//----------------------------------
+void setupUI() {
+  cp5 = new ControlP5(this);
+
+  cp5.addSlider("fps", 0, 60).linebreak();
+
+  cp5.addTab("Display");
+  cp5.addToggle("doDrawKinectRGB").linebreak().moveTo("Display");
+  cp5.addToggle("doDrawKinectDepth").linebreak().moveTo("Display");
+  cp5.addToggle("doDrawKinectMasked").linebreak().moveTo("Display");
+  cp5.addToggle("doDrawSkeletons").linebreak().moveTo("Display");
+  cp5.addToggle("doDrawDebugInfo").linebreak().moveTo("Display");
+
+  cp5.addSlider("maskBlurAmount", 0, 10).linebreak().moveTo("Display");
+  cp5.addSlider("videoSizeX", 0, 1).linebreak().moveTo("Display");
+  cp5.addSlider("videoSizeY", 0, 1).linebreak().moveTo("Display");
+  cp5.addSlider("videoPosX", 0, 1).linebreak().moveTo("Display");
+  cp5.addSlider("videoPosY", 0, 1).linebreak().moveTo("Display");
+}
 
 
 //----------------------------------
-void setupScenes() {
-  TSIScene s;
-  TSITrigger t;
-  // s = new scene;
-  // t = new trigger;
-  //  sceneManager.addScene(s, t);
-
-  // repeat above
+void setupStories() {
+  stories.add(new StoryTest());
+  currentStory = (TSStoryBase) stories.get(0);
 }
 
 //----------------------------------
-void setupContext() {
+void setupOpenNI() {
   //setup openNI context
-  context = new SimpleOpenNI(this);
-  // enable depthMap generation 
-  context.enableDepth();
-  // enable camera image generation
-  context.enableRGB();
-    context.enableScene();
+  openNIContext = new SimpleOpenNI(this);
 
-  context.setMirror(false);
-  context.alternativeViewPointDepthToImage();
-  // enable skeleton generation for all joints
-  context.enableUser(SimpleOpenNI.SKEL_PROFILE_ALL);
+  openNIContext.enableDepth();
+  openNIContext.enableRGB();
+  openNIContext.enableScene();
+  openNIContext.enableUser(SimpleOpenNI.SKEL_PROFILE_ALL);
+
+  openNIContext.setMirror(false);
+  openNIContext.alternativeViewPointDepthToImage();
 }
+
 
 //----------------------------------
 void setup() {
   size(1280, 800, P3D);
 
-  // setup kinect context
-  setupContext();
+  setupOpenNI();
+  setupStories();
 
-  // setup our scenes
-  setupScenes();
-
-  // create skeleton
   skeleton = new TSSkeleton();
   masker = new TSMasker();
-  // create 2D Transformer to map kinect onto a smaller part of the screen
-  //transform2D = new TSTransform2D(new PVector(width, height), new PVector(context.depthWidth(), context.depthHeight()), new PVector(1, 1), new PVector(0.5, 0.5));
+  transform2D = new TSTransform2D();
 
+  setupUI();
+
+  currentStory.startStory();
 
   stroke(255, 255, 255);
   smooth();
-
-  //println("SimpleOpenNI.SKEL_RIGHT_HAND "+SimpleOpenNI.SKEL_RIGHT_HAND);
-  // setup userImage
 }
 
 
 //----------------------------------
 void draw() {
-  background(0);
+  cp5.getController("fps").setValue(frameRate);
+
+  background(80, 0, 0);
+
   // get kinect color image
-  context.update();
-  // scale to an arbitrary size and position (e.g. scale down 75%, and align to bottom / center)
-  skeleton.updateSkeleton();
-  // mask it with userMask (update userImage)
-  // skeleton.drawAllSkeletons();
-  /* image(context.depthImage(), 0, 0); 
-   
+  openNIContext.update();
+
+  // apply mask
+  if (doDrawKinectMasked) masker.update(openNIContext, maskBlurAmount);
+
+  // update transform2d
+  transform2D.outputSizePixels = new PVector(width, height);
+  transform2D.inputSizePixels = new PVector(openNIContext.depthImage().width, openNIContext.depthImage().height);
+  transform2D.targetSize = new PVector(videoSizeX, videoSizeY);
+  transform2D.targetCenter = new PVector(videoPosX, videoPosY);
+  transform2D.update();
+
+  // update skeleton
+  skeleton.update(openNIContext);
+
+  if (doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
+  if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
+  if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
+  if (doDrawSkeletons) skeleton.drawAllSkeletons(openNIContext);
+  if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
+  /* 
    PVector rHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_RIGHT_HAND) ;
    PVector lHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_LEFT_HAND) ;
    fill(255, 0, 0);
@@ -85,19 +127,19 @@ void draw() {
    fill(255, 0, 0);
    ellipse(rHand.x, rHand.y, 20, 20);
    ellipse(lHand.x, lHand.y, 20, 20);
-   skeleton.drawDebugInfo();*/
+   */
 
 
-  // get skeleton from openNI
+  currentStory.draw(masker.getImage(), skeleton);
 
-  // scale to an arbitrary size and position (e.g. scale down 75%, and align to bottom / center)
-
-  // fill our TSSkeleton class
-  
-  // draw current scene (pass the userImage and skeleton so we can draw the relevant graphics and track interaction)
-  //sceneManager.draw(userImage, skeleton);
+  cp5.draw();
 }
 
+
+
+//----------------------------------
+//----------------------------------
+//----------------------------------
 
 // ARE THESE NEEDED HERE?
 //OPENNI CALLBACKS
@@ -107,7 +149,7 @@ void onNewUser(int userId)
   println("  start pose detection");
 
 
-  context.requestCalibrationSkeleton(userId, true);
+  openNIContext.requestCalibrationSkeleton(userId, true);
 }
 
 void onLostUser(int userId)
@@ -138,13 +180,13 @@ void onEndCalibration(int userId, boolean successfull)
   if (successfull) 
   { 
     println("  User calibrated !!!");
-    context.startTrackingSkeleton(userId);
+    openNIContext.startTrackingSkeleton(userId);
   } 
   else 
   { 
     println("  Failed to calibrate user !!!");
     println("  Start pose detection");
-    context.startPoseDetection("Psi", userId);
+    openNIContext.startPoseDetection("Psi", userId);
   }
 }
 
@@ -153,8 +195,8 @@ void onStartPose(String pose, int userId)
   println("onStartdPose - userId: " + userId + ", pose: " + pose);
   println(" stop pose detection");
 
-  context.stopPoseDetection(userId); 
-  context.requestCalibrationSkeleton(userId, true);
+  openNIContext.stopPoseDetection(userId); 
+  openNIContext.requestCalibrationSkeleton(userId, true);
 }
 
 void onEndPose(String pose, int userId)
