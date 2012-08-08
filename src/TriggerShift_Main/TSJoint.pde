@@ -10,8 +10,9 @@ class TSJoint {
   //for the circular buffer
   int bufferIndex;
 
+  //----------------------------------
   TSJoint(int smoothingAmt) {
-    
+
     buffer= new PVector[smoothingAmt];
 
     for (int i=0;i<buffer.length;i++) {
@@ -24,17 +25,20 @@ class TSJoint {
 
     bufferIndex=0;
   }
-  void updateAll(PVector newPos) {
+
+
+  //----------------------------------
+  void update(SimpleOpenNI context, PVector newPos) {
     //update current joint position
     currentPos=newPos;
     //map velocity to depth image size - I can't find how to get the depth of this context
     velocity.x= map( newPos.x-prevPos.x, -context.depthWidth(), context.depthWidth(), -1, 1);
     velocity.y= map(newPos.y-prevPos.y, -context.depthHeight(), context.depthHeight(), -1, 1);
     velocity.z= newPos.z-prevPos.z;
-    
+
     //overwrite the circular buffer
     buffer[bufferIndex]=velocity;
-  //and incrememnt the buffer index
+    //and incrememnt the buffer index
     bufferIndex++;
     if (bufferIndex>=buffer.length) {
       bufferIndex=0;
@@ -43,6 +47,8 @@ class TSJoint {
     smoothedVelocity=getSmoothedVelocity();
   }
 
+
+  //----------------------------------
   PVector getSmoothedVelocity() {
 
     PVector total=new PVector(0, 0, 0);
