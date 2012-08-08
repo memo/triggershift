@@ -1,3 +1,5 @@
+import processing.opengl.*;
+
 import SimpleOpenNI.*;
 import controlP5.*;
 
@@ -112,7 +114,7 @@ void draw() {
   if (doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
   if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
   if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
-  if (doDrawSkeletons) skeleton.drawAllSkeletons(openNIContext);
+  if (doDrawSkeletons) skeleton.drawAllSkeletons( openNIContext,transform2D);
   if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
   /* 
    PVector rHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_RIGHT_HAND) ;
