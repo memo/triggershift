@@ -5,10 +5,10 @@ import controlP5.*;
 
 // params
 boolean doDrawKinectRGB = false;
-boolean doDrawKinectDepth = true;
+boolean doDrawKinectDepth = false;
 boolean doDrawKinectMasked = true;
 boolean doDrawSkeletons = true;
-boolean doDrawDebugInfo = true;
+boolean doDrawDebugInfo = false;
 int maskBlurAmount = 0;
 float videoSizeX = 0.5;
 float videoSizeY = 0.5;
@@ -50,7 +50,8 @@ void setupUI() {
 
 //----------------------------------
 void setupStories() {
-  stories.add(new StoryTest());
+  //stories.add(new StoryTest());
+  stories.add(new CelineStory());
   currentStory = (TSStoryBase) stories.get(0);
 }
 
