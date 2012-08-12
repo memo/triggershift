@@ -2,7 +2,7 @@ class CelineStory extends TSStoryBase {
 
   CelineStory() {
     println("CelineStory::CelineStory");
-    addScene(new Scene_shrink_grow_image());
+    addScene(new Scene_turn_cards());
     addScene(new Scene_fade_in_colour());
   }
 }
@@ -103,7 +103,7 @@ class Scene_fade_in_colour extends TSSceneBase {
     PVector leftHand = skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector easelPos=transform2D.getWorldCoordsForInputNorm(new PVector(0.2, 0.5, 0));
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.02, 0.5, 0));
-    
+
     //get the distance between hands
     float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
     //this is an estimate, empiracly obtained
@@ -126,7 +126,7 @@ class Scene_fade_in_colour extends TSSceneBase {
   }
 };
 
-//controls alpha of
+//controls size of image with distance between hands
 class Scene_shrink_grow_image extends TSSceneBase {
   PImage easel = loadImage("mug.png");
   PImage picture = loadImage("mug.png");
@@ -153,8 +153,111 @@ class Scene_shrink_grow_image extends TSSceneBase {
     float maxDist= 300;
     //scale the image according to the mapped distance between hands
     float imageScale =  map(distBetweenHands, 0, maxDist, 0.0, 1);
-    
+
     image(picture, picturePos.x, picturePos.y, imageWidth*imageScale, imageHeight*imageScale);
+  }
+};
+
+
+//controls size of image with distance between hands
+class Scene_turn_cards extends TSSceneBase {
+
+  Card [] cards;
+  int [] timers;
+  int numCards=10;
+
+
+  Scene_turn_cards() {
+    println("CelineStory::Scene_turn_cards");
+    setTrigger(new MouseClickTrigger());
+    cards= new Card[numCards];
+    //TODO -replace with card images
+
+    for (int i=0;i<cards.length;i++) {
+      cards[i] = new Card( 50, 100);
+
+      //
+    }
+  }
+
+  // this is called when the scene starts (i.e. is triggered)
+  void onStart() {
+    println("CelineStory::Scene_turn_cards::onStart");
+  }
+
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+
+    PVector leftHand = skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+
+    int x=0;
+    int y=0;
+    for (int i=0;i<cards.length;i++) {
+      PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.2*x, 0.5*y, 0));
+      cards[i].setPos(picturePos);
+      cards[i].check(leftHand);
+      cards[i].draw();
+      x++;
+      if (x>=5) {
+        x=0;
+        y++;
+      }
+    }
+    //scale the image according to the mapped distance between hands
+  }
+};
+//a class for cards which turn over when a joint passes over them and stay in that position until next time a joint passes over them
+class Card {
+  PVector pos;
+  boolean isFaceDown=true;
+  boolean pHandIsOverCard=false;
+  PImage face =loadImage("face.png");
+  PImage back=loadImage("back.png");
+  float cWidth;
+  float cHeight;
+
+  int timer=0;
+  int timeThreshold = 30; //the cards will toggle immediately the first time a hand is over but we want to leave them in their new position
+  //ie not toggle back when the hand isn't over the card anymore
+  Card( float w, float h) {
+    cWidth=w;
+    cHeight=h;
+  }
+  //TODO this would obviously be better in the constructor but the transform2D object is made after this class = TODO use local class instance of transofrm2D
+  void setPos(PVector _pos) {
+    pos=_pos;
+  }
+  void draw() {
+    if (isFaceDown) {
+      image( back, pos.x, pos.y, cWidth, cHeight);
+    }
+    else {
+      image( face, pos.x, pos.y, cWidth, cHeight);
+    }
+  }
+  void check(PVector handPos) {
+    //if this hand is over the card
+    if (pHandIsOverCard!= handIsOverCard( handPos) ) {
+      boolean tooSoon=false;
+
+      if (timer<timeThreshold) {
+        tooSoon=true;
+      }
+      if(!tooSoon){
+      isFaceDown=!isFaceDown;
+      }
+      timer=0;
+    }
+    timer++;
+    pHandIsOverCard = handIsOverCard( handPos);
+
+  }
+  boolean handIsOverCard(PVector handPos) {
+    if (handPos.x> pos.x && handPos.x < pos.x+cWidth && handPos.y> pos.y && handPos.y< pos.y+cHeight) {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 };
 
