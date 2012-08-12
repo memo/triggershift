@@ -2,7 +2,7 @@ class CelineStory extends TSStoryBase {
 
   CelineStory() {
     println("CelineStory::CelineStory");
-    addScene(new Scene_ripPaper());
+    addScene(new Scene_shrink_grow_image());
     addScene(new Scene_fade_in_colour());
   }
 }
@@ -79,7 +79,7 @@ class Scene_ripPaper extends TSSceneBase {
 };
 
 
-//controls alpha of
+//fades an image from 'sepia' to colour with distance between hands
 class Scene_fade_in_colour extends TSSceneBase {
   PImage easel = loadImage("mug.png");
   PImage picture = loadImage("mug.png");
@@ -103,15 +103,18 @@ class Scene_fade_in_colour extends TSSceneBase {
     PVector leftHand = skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector easelPos=transform2D.getWorldCoordsForInputNorm(new PVector(0.2, 0.5, 0));
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.02, 0.5, 0));
-
+    
+    //get the distance between hands
     float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
+    //this is an estimate, empiracly obtained
     float maxDist= 300;
+    //the alpha value 
     float alp =  map(distBetweenHands, 0, maxDist, 0.0, 255);
-    println(alp);
+    //draw the colour image under the sepia one - we are going to make the top layer semi-transparent
     image(picture, picturePos.x, picturePos.y, imageWidth, imageHeight);
 
     pushStyle();
-
+    //tint a sepia -ish colour
     tint(232, 222, 48, alp);
     sepia.loadPixels();
     for (int i=0;i<sepia.pixels.length;i++) {
@@ -120,6 +123,38 @@ class Scene_fade_in_colour extends TSSceneBase {
     sepia.updatePixels();
     image(sepia, picturePos.x, picturePos.y, imageWidth, imageHeight);
     popStyle();
+  }
+};
+
+//controls alpha of
+class Scene_shrink_grow_image extends TSSceneBase {
+  PImage easel = loadImage("mug.png");
+  PImage picture = loadImage("mug.png");
+  float imageWidth = 200;
+  float imageHeight = 100;
+  Scene_shrink_grow_image() {
+    println("CelineStory::Scene_shrink_grow_image");
+    setTrigger(new MouseClickTrigger());
+  }
+
+  // this is called when the scene starts (i.e. is triggered)
+  void onStart() {
+    println("CelineStory::Scene_shrink_grow_image::onStart");
+  }
+
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+
+    PVector rightHand = skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
+    PVector leftHand = skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    PVector easelPos=transform2D.getWorldCoordsForInputNorm(new PVector(0.2, 0.5, 0));
+    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.02, 0.5, 0));
+
+    float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
+    float maxDist= 300;
+    //scale the image according to the mapped distance between hands
+    float imageScale =  map(distBetweenHands, 0, maxDist, 0.0, 1);
+    
+    image(picture, picturePos.x, picturePos.y, imageWidth*imageScale, imageHeight*imageScale);
   }
 };
 
