@@ -52,7 +52,7 @@ void setupUI() {
 //----------------------------------
 void setupStories() {
   //stories.add(new StoryTest());
-  stories.add(new CelineStory());
+  stories.add(new ChardeneStory(this));
   currentStory = (TSStoryBase) stories.get(0);
 }
 
@@ -116,7 +116,7 @@ void draw() {
   if (doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
   if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
   if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
-  if (doDrawSkeletons) skeleton.drawAllSkeletons( openNIContext,transform2D);
+  if (doDrawSkeletons) skeleton.drawAllSkeletons( openNIContext, transform2D);
   if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
   /* 
    PVector rHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_RIGHT_HAND) ;
@@ -207,3 +207,4 @@ void onEndPose(String pose, int userId)
 {
   println("onEndPose - userId: " + userId + ", pose: " + pose);
 }
+
