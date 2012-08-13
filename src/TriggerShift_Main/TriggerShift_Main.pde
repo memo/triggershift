@@ -74,13 +74,14 @@ void setupOpenNI() {
 //----------------------------------
 void setup() {
   size(1280, 800, P3D);
-
-  setupOpenNI();
-  setupStories();
-
   skeleton = new TSSkeleton();
   masker = new TSMasker();
   transform2D = new TSTransform2D();
+  
+  setupOpenNI();
+  setupStories();
+
+
 
   setupUI();
 

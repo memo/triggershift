@@ -2,7 +2,7 @@ class ChardeneStory extends TSStoryBase {
 
   ChardeneStory(PApplet ref) {
     println("ChardeneStory::ChardeneStory");
-    addScene(new Scene_throw_coffee(ref));
+    addScene(new Scene_mortar_board_on_head());
   }
 }
 
@@ -113,6 +113,42 @@ class Scene_throw_coffee extends TSSceneBase {
       //   b.setStrokeWeight(0);
       b.setFill(166, 129, 54);
       world.add(b);
+    }
+  }
+};
+
+//A mortar board flies from the sky and lands ont he head
+class Scene_mortar_board_on_head extends TSSceneBase {
+  PImage mortarBoard= loadImage("mortarboard.png");
+  PVector startPos;
+  float inc=0;
+  float numFramesForAnimation = 50.0;
+  float speed=1.0/numFramesForAnimation;
+  
+  //scale for imagee
+  float w=120;
+  float h=120;
+  Scene_mortar_board_on_head() {
+    println("CelineStory::Scene_mortar_board_on_head");
+    startPos=transform2D.getWorldCoordsForInputNorm(new PVector(0.5, 0.0, 0));
+  }
+
+  // this is called when the scene starts (i.e. is triggered)
+  void onStart() {
+
+    println("CelineStory::Scene_mortar_board_on_head::onStart");
+  }
+
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+
+    PVector endPos= skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
+
+    float currentX = lerp(startPos.x, endPos.x, inc);
+    float currentY = lerp(startPos.y, endPos.y, inc);
+    
+    image(mortarBoard,currentX-(0.5*w),currentY-(0.7*h),w,h);
+    if(inc<1.0){
+    inc+=speed;
     }
   }
 };
