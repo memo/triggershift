@@ -1,4 +1,5 @@
 import processing.opengl.*;
+import fisica.*;
 
 import SimpleOpenNI.*;
 import controlP5.*;
