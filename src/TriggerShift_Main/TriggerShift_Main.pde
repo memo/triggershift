@@ -1,4 +1,4 @@
-import processing.opengl.*;
+  import processing.opengl.*;
 import fisica.*;
 
 import SimpleOpenNI.*;
