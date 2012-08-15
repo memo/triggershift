@@ -20,7 +20,12 @@ class TSSceneBase {
   }
 
 
-
+  //----------------------------------
+  TSSceneBase() {
+    // set default trigger to spacebar
+    setTrigger(new KeyPressTrigger(' '));
+  }
+  
   //----------------------------------
   void startScene() {
     println("TSSceneBase::startScene");

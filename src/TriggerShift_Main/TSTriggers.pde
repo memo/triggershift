@@ -31,6 +31,19 @@ class MouseClickTrigger implements TSTriggerBaseI {
   }
 }
 
+//----------------------------------
+class KeyPressTrigger implements TSTriggerBaseI {
+  char k;
+  KeyPressTrigger(char _k) {
+    k = _k;
+  }
+
+  boolean check() {
+    return keyPressed && (key == k);
+  }
+}
+
+
 
 //----------------returns true if selected joint is in front of threshold position on z axis------------------
 class ZAxisThreshTrigger implements TSTriggerBaseI {
@@ -45,5 +58,4 @@ class ZAxisThreshTrigger implements TSTriggerBaseI {
     return skeleton.getWorldCoords(openNIContext, 1, jointType).z < zThresh;
   }
 };
-
 

@@ -54,7 +54,7 @@ void setupUI() {
 
 //----------------------------------
 void setupStories() {
-  //stories.add(new StoryTest());
+  stories.add(new StoryTest());
   stories.add(new ChardeneStory(this));
   currentStory = (TSStoryBase) stories.get(0);
 }
