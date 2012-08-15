@@ -9,15 +9,15 @@ class TSStoryBase {
   protected ArrayList scenes = new ArrayList();
   protected int currentSceneIndex = 0;
   protected TSSceneBase currentScene = null;
+  
+  public String storyName = "TSStoryBase";  // fill this in with correct name
 
   //----------------------------------
   // OVERRIDE THIS CLASS
   void onEnd() {
     println("TSStoryBase::onEnd");
   }
-
-
-
+  
   //----------------------------------
   void addScene(TSSceneBase s) {
     scenes.add(s);
@@ -25,26 +25,26 @@ class TSStoryBase {
 
   //----------------------------------
   void endStory() {
-    println("TSStoryBase::endStory");
+    println(storyName + "::endStory");
     onEnd();
   }
 
 
   //----------------------------------
   void startStory() {
-    println("TSStoryBase::startStory");
-    setCurrentSceneIndex(0);
+    println(storyName + "::startStory");
+    setSceneIndex(0);
   }
 
   //----------------------------------
-  void setCurrentSceneIndex(int i) {
-    println("TSStoryBase::setCurrentSceneIndex: " + i);
+  void setSceneIndex(int i) {
+    println(storyName + "::setSceneIndex: " + i);
     if (i >= scenes.size()) {
       // reached end, do something
-      println("TSStoryBase::setCurrentSceneIndex: reached end");
+      println(storyName + "::setSceneIndex: reached end");
       return;
     } else if(i<0) {
-      println("TSStoryBase::setCurrentSceneIndex: reached start");
+      println(storyName + "::setSceneIndex: reached start");
       return;
     }
 
@@ -53,16 +53,23 @@ class TSStoryBase {
     currentScene.startScene();
   }
   
-      //----------------------------------
+  
+  //----------------------------------
+  int getSceneIndex() {
+    return currentSceneIndex;
+  }
+
+
+  //----------------------------------
   void nextScene() {
-    println("TSStoryBase::nextScene");
-    setCurrentSceneIndex(currentSceneIndex+1);
+    println(storyName + "::nextScene");
+    setSceneIndex(currentSceneIndex+1);
   }
 
       //----------------------------------
   void prevScene() {
-    println("TSStoryBase::prevScene");
-    setCurrentSceneIndex(currentSceneIndex-1);
+    println(storyName + "::prevScene");
+    setSceneIndex(currentSceneIndex-1);
   }
 
 

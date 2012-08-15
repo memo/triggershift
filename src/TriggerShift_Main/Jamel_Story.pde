@@ -1,7 +1,12 @@
 class JamelStory extends TSStoryBase {
 
   JamelStory() {
-    println("JamelStory::JamelStory");
-   
+    storyName = "JamelStory";
+    println(storyName + "::" + storyName);
+  }
+
+  //----------------------------------
+  void onEnd() {
+    println(storyName + "::onEnd");
   }
 }
