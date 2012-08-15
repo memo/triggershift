@@ -50,7 +50,7 @@ class Scene_throw_coffee extends TSSceneBase {
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    PVector leftHand = skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    PVector leftHand = openNIContext != null ? skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext) : new PVector();
 
     if (getElapsedSeconds() >2000) {
       //tie the poly to the hand position
