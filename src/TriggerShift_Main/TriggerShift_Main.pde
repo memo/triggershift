@@ -26,6 +26,7 @@ SimpleOpenNI  openNIContext = null;
 TSSkeleton skeleton = null;
 TSTransform2D transform2D = null;
 TSMasker masker = null;
+int lastUserId = 1;
 
 // labels
 Textlabel tlFPS;
@@ -196,7 +197,7 @@ void onNewUser(int userId)
   println("onNewUser - userId: " + userId);
   println("  start pose detection");
 
-
+  lastUserId = userId;
   openNIContext.requestCalibrationSkeleton(userId, true);
 }
 
@@ -212,6 +213,7 @@ void onExitUser(int userId)
 
 void onReEnterUser(int userId)
 {
+   lastUserId = userId;
   println("onReEnterUser - userId: " + userId);
 }
 

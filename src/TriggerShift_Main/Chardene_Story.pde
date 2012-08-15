@@ -53,7 +53,7 @@ class Scene_throw_coffee extends TSSceneBase {
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    PVector leftHand = openNIContext != null ? skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext) : new PVector();
+    PVector leftHand = openNIContext != null ? skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext) : new PVector();
 
     if (getElapsedSeconds() >2000) {
       //tie the poly to the hand position
@@ -123,8 +123,8 @@ class Scene_throw_coffee extends TSSceneBase {
     world.setGravity(0, 300);
   }
   void setupPhysicsObjects() {
-    //  PVector startPos =new PVector(500,500);// skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);//
-    //      PVector startPos = skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);//
+    //  PVector startPos =new PVector(500,500);// skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);//
+    //      PVector startPos = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);//
     startPos =transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.7, 0));
     println("startPos "+startPos);
     float x;
@@ -202,7 +202,7 @@ class Scene_mortar_board_on_head extends TSSceneBase {
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
 
-    PVector endPos= skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
+    PVector endPos= skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
 
     float currentX = lerp(startPos.x, endPos.x, inc);
     float currentY = lerp(startPos.y, endPos.y, inc);
@@ -250,7 +250,7 @@ class Scene_vote_in_box extends TSSceneBase {
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
 
-    PVector leftHand= skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    PVector leftHand= skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.01, 0.5, 0));
 
     PVector centreOfVote= new PVector(leftHand.x - (0.5*vote.width), leftHand.y   );
@@ -307,8 +307,8 @@ class Scene_zoom_from_space extends TSSceneBase {
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-   PVector rightHand = skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
-    PVector leftHand = skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+   PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
+    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
 
     float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
