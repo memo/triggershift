@@ -60,40 +60,40 @@ class Scene_throw_coffee extends TSSceneBase {
       image(mug, leftHand.x-wCupImage, leftHand.y-(0.5*hCupImage), wCupImage, hCupImage);
     }
     /*if ( getElapsedSeconds() >10000) {
-      //get a list of bodies
-      ArrayList bodies= world.getBodies();
-
-      // println(bodies.size()+" "+words.length);
-      for (int i=0;i<bodies.size();i+=20) {
-        pushMatrix();
-        FBody body = (FBody) bodies.get(i);
-        //check it's not the cup
-        try {
-          FBody parent = body.getParent();
-
-          String [] explodedBodyName = splitTokens(parent.getName(), "_");
-          if (explodedBodyName[0].equals("coffee")) {
-
-            //get position and rotation
-            float x=body.getX();
-            float y=body.getY();
-            
-            float angle = PI-atan2(body.getVelocityY(), body.getVelocityX());
-            println(angle);
-
-            int index=int(explodedBodyName[1]);
-            translate(x-(0.5*textWidth(words[index])), y);
-            rotate(angle);
-            text(words[index], 0, 0);
-          }
-        }
-        catch(Exception e) {
-        }
-        popMatrix();
-      }
-    }*/
+     //get a list of bodies
+     ArrayList bodies= world.getBodies();
+     
+     // println(bodies.size()+" "+words.length);
+     for (int i=0;i<bodies.size();i+=20) {
+     pushMatrix();
+     FBody body = (FBody) bodies.get(i);
+     //check it's not the cup
+     try {
+     FBody parent = body.getParent();
+     
+     String [] explodedBodyName = splitTokens(parent.getName(), "_");
+     if (explodedBodyName[0].equals("coffee")) {
+     
+     //get position and rotation
+     float x=body.getX();
+     float y=body.getY();
+     
+     float angle = PI-atan2(body.getVelocityY(), body.getVelocityX());
+     println(angle);
+     
+     int index=int(explodedBodyName[1]);
+     translate(x-(0.5*textWidth(words[index])), y);
+     rotate(angle);
+     text(words[index], 0, 0);
+     }
+     }
+     catch(Exception e) {
+     }
+     popMatrix();
+     }
+     }*/
   }
-void addShape(PVector [] vertices, PVector startPos) {
+  void addShape(PVector [] vertices, PVector startPos) {
     FPoly l = new FPoly();
     for (int i=0;i<vertices.length;i++) {
       l.vertex(vertices[i].x, vertices[i].y);
@@ -112,7 +112,7 @@ void addShape(PVector [] vertices, PVector startPos) {
     joint.setDrawable(false);
     world.add(joint);
   }
- 
+
   void setupWorld() {
     Fisica.init(ref);
 
@@ -135,11 +135,11 @@ void addShape(PVector [] vertices, PVector startPos) {
     //  x=0;
     // y=0;
     //a simple u with no thinkness doesn't seem to work - causes assertion errors - i think becasue it's squashing the shapes into much
-   /* mug[0]=new PVector(x, y);
-    mug[1]=new PVector(x, y+hCup);
-    mug[2]=new PVector(x+wCup, y+hCup);
-    mug[3]=new PVector(x+wCup, y);
-    */
+    /* mug[0]=new PVector(x, y);
+     mug[1]=new PVector(x, y+hCup);
+     mug[2]=new PVector(x+wCup, y+hCup);
+     mug[3]=new PVector(x+wCup, y);
+     */
     mug[0]=new PVector(x, y);
     mug[1]=new PVector(x+thickness, y);
     mug[2]=new PVector(x+thickness, y+hCup-thickness);
@@ -150,11 +150,11 @@ void addShape(PVector [] vertices, PVector startPos) {
     mug[7]=new PVector(x, y+hCup);
     mug[8]=new PVector(x, y);
     //a thin top
-  //  mug[9]=new PVector(x+wCup, y);
+    //  mug[9]=new PVector(x+wCup, y);
 
     //make a poly and add to world
     addShape(mug, startPos);
-   
+
     println(x+" start pos of my "+y);
     int gridX=0;
     int gridY=0;
@@ -207,6 +207,31 @@ class Scene_mortar_board_on_head extends TSSceneBase {
     if (inc<1.0) {
       inc+=speed;
     }
+  }
+};
+
+
+//A mortar board flies from the sky and lands ont he head
+class Scene_vote_in_box extends TSSceneBase {
+  PImage ballotBox= loadImage("ballotbox.png");
+  PImage vote= loadImage("vote.png");
+  //scale for imagee
+  float wBallotBox=120;
+  float hBallotBox=120;
+  float wVote=120;
+  float hVote=120;
+  Scene_vote_in_box() {
+    println("CelineStory::Scene_vote_in_box");
+  }
+
+  // this is called when the scene starts (i.e. is triggered)
+  void onStart() {
+
+    println("CelineStory::Scene_vote_in_box::onStart");
+  }
+
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+    PVector leftHand= skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
   }
 };
 

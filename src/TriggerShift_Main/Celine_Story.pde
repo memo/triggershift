@@ -164,7 +164,7 @@ class Scene_turn_cards extends TSSceneBase {
 
   Card [] cards;
   int [] timers;
-  int numCards=10;
+  int numCards=8;
 
 
   Scene_turn_cards() {
@@ -172,11 +172,14 @@ class Scene_turn_cards extends TSSceneBase {
     setTrigger(new MouseClickTrigger());
     cards= new Card[numCards];
     //TODO -replace with card images
-
+    int index=1;
     for (int i=0;i<cards.length;i++) {
-      cards[i] = new Card( 50, 100);
-
-      //
+      //TODO update to use back of image file names
+      cards[i] = new Card( 50, 100, "playingcards"+str(index)+".png", "playingcards"+str(5-index)+".png" );
+      index++;
+      if (index>=5) {
+        index=1;
+      }
     }
   }
 
@@ -210,17 +213,19 @@ class Card {
   PVector pos;
   boolean isFaceDown=true;
   boolean pHandIsOverCard=false;
-  PImage face =loadImage("face.png");
-  PImage back=loadImage("back.png");
+  PImage face;
+  PImage back;
   float cWidth;
   float cHeight;
 
   int timer=0;
   int timeThreshold = 30; //the cards will toggle immediately the first time a hand is over but we want to leave them in their new position
   //ie not toggle back when the hand isn't over the card anymore
-  Card( float w, float h) {
+  Card( float w, float h, String faceFilename, String backFilename) {
     cWidth=w;
     cHeight=h;
+    face =loadImage(faceFilename);
+    back=loadImage(backFilename);
   }
   //TODO this would obviously be better in the constructor but the transform2D object is made after this class = TODO use local class instance of transofrm2D
   void setPos(PVector _pos) {
@@ -242,14 +247,13 @@ class Card {
       if (timer<timeThreshold) {
         tooSoon=true;
       }
-      if(!tooSoon){
-      isFaceDown=!isFaceDown;
+      if (!tooSoon) {
+        isFaceDown=!isFaceDown;
       }
       timer=0;
     }
     timer++;
     pHandIsOverCard = handIsOverCard( handPos);
-
   }
   boolean handIsOverCard(PVector handPos) {
     if (handPos.x> pos.x && handPos.x < pos.x+cWidth && handPos.y> pos.y && handPos.y< pos.y+cHeight) {
