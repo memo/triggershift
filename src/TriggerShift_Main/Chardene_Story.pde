@@ -2,7 +2,8 @@ class ChardeneStory extends TSStoryBase {
 
   ChardeneStory(PApplet ref) {
     println("ChardeneStory::ChardeneStory");
-    //addScene(new Scene_mortar_board_on_head());
+    addScene(new Scene_mortar_board_on_head());
+    addScene(new Scene_vote_in_box());
     addScene(new Scene_zoom_from_space());
   }
 }

@@ -4,6 +4,9 @@ class CelineStory extends TSStoryBase {
     println("CelineStory::CelineStory");
     addScene(new Scene_fade_in_colour());
     addScene(new Scene_turn_cards());
+    addScene(new Scene_ripPaper());
+    addScene(new Scene_shrink_grow_image());
+
   }
 }
 
