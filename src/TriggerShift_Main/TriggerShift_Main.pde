@@ -27,6 +27,10 @@ TSSkeleton skeleton = null;
 TSTransform2D transform2D = null;
 TSMasker masker = null;
 
+// labels
+Textlabel tlFPS;
+Textlabel tlStory;
+
 // Stories
 TSStoryBase currentStory = null;
 ArrayList stories = new ArrayList();
@@ -36,6 +40,8 @@ void setupUI() {
   cp5 = new ControlP5(this);
 
   cp5.addSlider("fps", 0, 60).linebreak();
+  tlFPS = cp5.addTextlabel("calculating fps");
+  tlStory = cp5.addTextlabel("loading story");
 
   cp5.addTab("Display");
   cp5.addToggle("doDrawKinectRGB").linebreak().moveTo("Display");
@@ -106,7 +112,7 @@ void setup() {
 
 //----------------------------------
 void draw() {
-  cp5.getController("fps").setValue(frameRate);
+//  cp5.getController("fps").setValue(frameRate);
 
   background(80, 0, 0);
 
@@ -153,6 +159,10 @@ void draw() {
 
 
   currentStory.draw(masker.getImage(), skeleton);
+  
+  
+  tlFPS.setValue(str(frameRate));
+  tlStory.setValue(currentStory.storyName);
 
   cp5.draw();
 }
