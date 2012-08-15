@@ -4,6 +4,9 @@ import fisica.*;
 import SimpleOpenNI.*;
 import controlP5.*;
 
+// SET THIS TO TRUE OR FALSE
+boolean useOpenNI = false;
+
 // params
 boolean doDrawKinectRGB = false;
 boolean doDrawKinectDepth = false;
@@ -18,11 +21,11 @@ float videoPosY = 0.75;
 
 
 // vars
-ControlP5 cp5;
-SimpleOpenNI  openNIContext;
-TSSkeleton skeleton;
-TSTransform2D transform2D;
-TSMasker masker;
+ControlP5 cp5 = null;
+SimpleOpenNI  openNIContext = null;
+TSSkeleton skeleton = null;
+TSTransform2D transform2D = null;
+TSMasker masker = null;
 
 // Stories
 TSStoryBase currentStory;
@@ -50,10 +53,22 @@ void setupUI() {
 
 
 //----------------------------------
+void setStory(int i) {
+  if(i >= stories.size()) i = stories.size();
+  currentStory = (TSStoryBase) stories.get(i);
+  currentStory.startStory();
+}
+
+//----------------------------------
 void setupStories() {
-  //stories.add(new StoryTest());
-  stories.add(new ChardeneStory(this));
-  currentStory = (TSStoryBase) stories.get(0);
+  stories.add(new StoryTest());  // 0
+  stories.add(new ChardeneStory(this));  // 1
+  stories.add(new CelineStory());  // 2
+  stories.add(new JamelStory());  // 3
+  stories.add(new LornaStory());  // 4
+  stories.add(new ManiStory());  // 5
+  
+  setStory(0);  // use keyboard 0-5 to choose story
 }
 
 //----------------------------------
@@ -77,15 +92,11 @@ void setup() {
   skeleton = new TSSkeleton();
   masker = new TSMasker();
   transform2D = new TSTransform2D();
-  
-  setupOpenNI();
+
+  if (useOpenNI) setupOpenNI();
   setupStories();
 
-
-
   setupUI();
-
-  currentStory.startStory();
 
   stroke(255, 255, 255);
   smooth();
@@ -99,26 +110,31 @@ void draw() {
   background(80, 0, 0);
 
   // get kinect color image
-  openNIContext.update();
+  if (openNIContext != null) {
+    openNIContext.update();
 
-  // apply mask
-  if (doDrawKinectMasked) masker.update(openNIContext, maskBlurAmount);
+    // apply mask
+    if (doDrawKinectMasked) masker.update(openNIContext, maskBlurAmount);
 
-  // update transform2d
+    // update skeleton
+    skeleton.update(openNIContext);
+
+    // update transform2d
+    transform2D.inputSizePixels = new PVector(openNIContext.depthImage().width, openNIContext.depthImage().height);
+  }
+
   transform2D.outputSizePixels = new PVector(width, height);
-  transform2D.inputSizePixels = new PVector(openNIContext.depthImage().width, openNIContext.depthImage().height);
   transform2D.targetSize = new PVector(videoSizeX, videoSizeY);
   transform2D.targetCenter = new PVector(videoPosX, videoPosY);
   transform2D.update();
 
-  // update skeleton
-  skeleton.update(openNIContext);
-
-  if (doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
-  if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
-  if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
-  if (doDrawSkeletons) skeleton.drawAllSkeletons( openNIContext, transform2D);
-  if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
+  if (openNIContext != null) {
+    if (doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
+    if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
+    if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
+    if (doDrawSkeletons) skeleton.drawAllSkeletons( openNIContext, transform2D);
+    if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
+  }
   /* 
    PVector rHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_RIGHT_HAND) ;
    PVector lHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_LEFT_HAND) ;
@@ -140,6 +156,22 @@ void draw() {
   cp5.draw();
 }
 
+
+//----------------------------------
+void keyPressed() {
+  switch(key) {
+    case '0': setStory(0); break;
+    case '1': setStory(1); break;
+    case '2': setStory(2); break;
+    case '3': setStory(3); break;
+    case '4': setStory(4); break;
+    case '5': setStory(5); break;
+    case '.': currentStory.nextScene(); break;
+    case ',': currentStory.prevScene(); break;
+    case 'r': currentStory.startStory(); break;
+    
+  }
+}
 
 
 //----------------------------------

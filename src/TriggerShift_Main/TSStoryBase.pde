@@ -29,12 +29,28 @@ class TSStoryBase {
       // reached end, do something
       println("TSStoryBase::setCurrentSceneIndex: reached end");
       return;
+    } else if(i<0) {
+      println("TSStoryBase::setCurrentSceneIndex: reached start");
+      return;
     }
 
     currentSceneIndex = i;
     currentScene = (TSSceneBase) scenes.get(i);
     currentScene.startScene();
   }
+  
+      //----------------------------------
+  void nextScene() {
+    println("TSStoryBase::nextScene");
+    setCurrentSceneIndex(currentSceneIndex+1);
+  }
+
+      //----------------------------------
+  void prevScene() {
+    println("TSStoryBase::prevScene");
+    setCurrentSceneIndex(currentSceneIndex-1);
+  }
+
 
 
   //----------------------------------
@@ -42,7 +58,7 @@ class TSStoryBase {
     if (currentScene==null) return;
 
     // check trigger
-    if (currentScene.checkTrigger()) setCurrentSceneIndex(currentSceneIndex+1);
+    if (currentScene.checkTrigger()) nextScene();
 
     // draw current scene
     currentScene.onDraw(userImage, skeleton);

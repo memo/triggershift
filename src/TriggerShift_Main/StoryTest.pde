@@ -7,6 +7,7 @@ class StoryTest extends TSStoryBase {
     println("StoryTest::StoryTest");
     addScene(new Scene1());
     addScene(new Scene2());
+    addScene(new Scene3());
   }
 
 
@@ -17,7 +18,7 @@ class StoryTest extends TSStoryBase {
     // create triggers and other init in constructor
     Scene1() {
       println("StoryTest::Scene1");
-      setTrigger(new MouseAreaTrigger(0, 0, 250, 250, false));
+      setTrigger(new MouseClickTrigger());
     }
 
     // this is called when the scene starts (i.e. is triggered)
@@ -40,7 +41,7 @@ class StoryTest extends TSStoryBase {
     // create triggers and other init in constructor
     Scene2() {
       println("StoryTest::Scene2");
-      setTrigger(new MouseAreaTrigger(0, 0, 250, 250, false));
+      setTrigger(new MouseClickTrigger());
     }
 
     // this is called when the scene starts (i.e. is triggered)
@@ -54,6 +55,29 @@ class StoryTest extends TSStoryBase {
       //      println("StoryTest::Scene2::onDraw");
       fill(0, 255, 0);
       ellipse(250, 200, 300, 200);
+    }
+  };
+  
+  
+    //----------------------------------
+  class Scene3 extends TSSceneBase {
+    // create triggers and other init in constructor
+    Scene3() {
+      println("StoryTest::Scene3");
+      setTrigger(new MouseClickTrigger());
+    }
+
+    // this is called when the scene starts (i.e. is triggered)
+    void onStart() {
+      println("StoryTest::Scene3::onStart");
+    }
+
+    // this is the scenes draw function
+    // use getElapsedSeconds() to see how long the scene has been running (useful for transitions)
+    void onDraw(PImage userImage, TSSkeleton skeleton) {
+      //      println("StoryTest::Scene2::onDraw");
+      fill(0, 0, 255);
+      ellipse(450, 200, 300, 200);
     }
   };
 };
