@@ -95,7 +95,7 @@ void setupOpenNI() {
 
 //----------------------------------
 void setup() {
-  size(1280, 800, OPENGL);
+  size(1280, 800, P3D);
   skeleton = new TSSkeleton();
   masker = new TSMasker();
   transform2D = new TSTransform2D();
