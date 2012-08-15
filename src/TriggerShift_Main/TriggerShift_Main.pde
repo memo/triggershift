@@ -67,11 +67,11 @@ void setStory(int i) {
 //----------------------------------
 void setupStories() {
   stories.add(new StoryTest());  // 0
-  stories.add(new CharleneStory(this));  // 1
-  stories.add(new CelineStory());  // 2
+  stories.add(new ManiStory());  // 1
+  stories.add(new LornaStory());  // 2
   stories.add(new JamelStory());  // 3
-  stories.add(new LornaStory());  // 4
-  stories.add(new ManiStory());  // 5
+  stories.add(new CelineStory());  // 4
+  stories.add(new CharleneStory(this));  // 5
   
   setStory(0);  // use keyboard 0-5 to choose story
 }
