@@ -10,11 +10,25 @@ class TSStoryBase {
   protected int currentSceneIndex = 0;
   protected TSSceneBase currentScene = null;
 
+  //----------------------------------
+  // OVERRIDE THIS CLASS
+  void onEnd() {
+    println("TSStoryBase::onEnd");
+  }
+
+
 
   //----------------------------------
   void addScene(TSSceneBase s) {
     scenes.add(s);
   }
+
+  //----------------------------------
+  void endStory() {
+    println("TSStoryBase::endStory");
+    onEnd();
+  }
+
 
   //----------------------------------
   void startStory() {

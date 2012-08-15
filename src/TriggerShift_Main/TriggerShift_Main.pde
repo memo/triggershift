@@ -5,7 +5,7 @@ import SimpleOpenNI.*;
 import controlP5.*;
 
 // SET THIS TO TRUE OR FALSE
-boolean useOpenNI = false;
+boolean useOpenNI = true;
 
 // params
 boolean doDrawKinectRGB = false;
@@ -28,7 +28,7 @@ TSTransform2D transform2D = null;
 TSMasker masker = null;
 
 // Stories
-TSStoryBase currentStory;
+TSStoryBase currentStory = null;
 ArrayList stories = new ArrayList();
 
 //----------------------------------
@@ -55,6 +55,7 @@ void setupUI() {
 //----------------------------------
 void setStory(int i) {
   if(i >= stories.size()) i = stories.size();
+  if(currentStory != null) currentStory.endStory();
   currentStory = (TSStoryBase) stories.get(i);
   currentStory.startStory();
 }
