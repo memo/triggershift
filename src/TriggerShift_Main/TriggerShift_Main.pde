@@ -67,7 +67,7 @@ void setStory(int i) {
 //----------------------------------
 void setupStories() {
   stories.add(new StoryTest());  // 0
-  stories.add(new ChardeneStory(this));  // 1
+  stories.add(new CharleneStory(this));  // 1
   stories.add(new CelineStory());  // 2
   stories.add(new JamelStory());  // 3
   stories.add(new LornaStory());  // 4
