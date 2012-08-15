@@ -258,10 +258,12 @@ class Scene_vote_in_box extends TSSceneBase {
     float slotWidth= ballotBoxFront.width*0.5;
     float tolerance=10;
     //if the vote is near the slot and this is the first time
-    if (centreOfVote.x > slotPos.x && centreOfVote.x < slotPos.x + slotWidth && centreOfVote.y > slotPos.y && ! lock ) {
-      inBox=true; 
-      votePosAtStartOfAnimation = new PVector(leftHand.x-vote.width, leftHand.y-(0.5*vote.height));
-      lock=true;
+    if (getElapsedSeconds()>2000) {
+      if (centreOfVote.x > slotPos.x && centreOfVote.x < slotPos.x + slotWidth && centreOfVote.y > slotPos.y && ! lock ) {
+        inBox=true; 
+        votePosAtStartOfAnimation = new PVector(leftHand.x-vote.width, leftHand.y-(0.5*vote.height));
+        lock=true;
+      }
     }
     //if we are in the box take control away from the hand and animate a drop down into the box
     if (inBox) {
@@ -307,7 +309,7 @@ class Scene_zoom_from_space extends TSSceneBase {
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-   PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
+    PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
 
@@ -315,20 +317,19 @@ class Scene_zoom_from_space extends TSSceneBase {
     float maxDist= 300;
     //scale the image according to the mapped distance between hands
     float imageScale =  map(distBetweenHands, 0, maxDist, 0.0, 1);
-    imageScale=constrain(imageScale,0.01,0.96);
-    
-    if(imageScale >= 0.0 && imageScale < 0.5 ){
-      blended= lerpImage(city, country, imageScale *map(imageScale,0.0,0.5,0,1)   );
-    }
-    else if(imageScale >= 0.5 && imageScale < 1.0){
-      blended= lerpImage(country, world, imageScale *map(imageScale,0.5,1.0,0,1) );
-    }
-    
-    image(blended, picturePos.x, picturePos.y);
+    imageScale=constrain(imageScale, 0.01, 0.96);
 
+    if (imageScale >= 0.0 && imageScale < 0.5 ) {
+      blended= lerpImage(city, country, imageScale *map(imageScale, 0.0, 0.5, 0, 1)   );
+    }
+    else if (imageScale >= 0.5 && imageScale < 1.0) {
+      blended= lerpImage(country, world, imageScale *map(imageScale, 0.5, 1.0, 0, 1) );
+    }
+
+    image(blended, picturePos.x, picturePos.y);
   }
-  
-  PImage lerpImage(PImage image1, PImage image2, float amt){
+
+  PImage lerpImage(PImage image1, PImage image2, float amt) {
     PImage blendImage= createImage(image1.width, image1.height, ARGB);
     image1.loadPixels();
     image2.loadPixels();
@@ -336,7 +337,7 @@ class Scene_zoom_from_space extends TSSceneBase {
     for (int i =0 ;i< image1.pixels.length ;i++) {
       color a = image1.pixels[i];
       color b = image2.pixels[i];
-       blendImage.pixels[i]= lerpColor(a, b, amt);
+      blendImage.pixels[i]= lerpColor(a, b, amt);
     }
 
     image1.updatePixels();
