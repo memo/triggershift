@@ -44,6 +44,20 @@ class KeyPressTrigger implements TSTriggerBaseI {
 }
 
 
+//----------------------------------
+class TimeTrigger implements TSTriggerBaseI {
+  float t;
+  float startTime;
+  
+  TimeTrigger(float _t) {
+    t = _t;
+    startTime = millis();
+  }
+  
+  boolean check() {
+  }
+}
+
 
 //----------------returns true if selected joint is in front of threshold position on z axis------------------
 class ZAxisThreshTrigger implements TSTriggerBaseI {
