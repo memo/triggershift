@@ -41,11 +41,13 @@ class TSStoryBase {
   
       //----------------------------------
   void nextScene() {
+    println("TSStoryBase::nextScene");
     setCurrentSceneIndex(currentSceneIndex+1);
   }
 
       //----------------------------------
   void prevScene() {
+    println("TSStoryBase::prevScene");
     setCurrentSceneIndex(currentSceneIndex-1);
   }
 

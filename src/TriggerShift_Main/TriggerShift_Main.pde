@@ -53,10 +53,22 @@ void setupUI() {
 
 
 //----------------------------------
+void setStory(int i) {
+  if(i >= stories.size()) i = stories.size();
+  currentStory = (TSStoryBase) stories.get(i);
+  currentStory.startStory();
+}
+
+//----------------------------------
 void setupStories() {
-  stories.add(new StoryTest());
-  stories.add(new ChardeneStory(this));
-  currentStory = (TSStoryBase) stories.get(0);
+  stories.add(new StoryTest());  // 0
+  stories.add(new ChardeneStory(this));  // 1
+  stories.add(new CelineStory());  // 2
+  stories.add(new JamelStory());  // 3
+  stories.add(new LornaStory());  // 4
+  stories.add(new ManiStory());  // 5
+  
+  setStory(0);  // use keyboard 0-5 to choose story
 }
 
 //----------------------------------
@@ -84,11 +96,7 @@ void setup() {
   if (useOpenNI) setupOpenNI();
   setupStories();
 
-
-
   setupUI();
-
-  currentStory.startStory();
 
   stroke(255, 255, 255);
   smooth();
@@ -152,9 +160,15 @@ void draw() {
 //----------------------------------
 void keyPressed() {
   switch(key) {
+    case '0': setStory(0); break;
+    case '1': setStory(1); break;
+    case '2': setStory(2); break;
+    case '3': setStory(3); break;
+    case '4': setStory(4); break;
+    case '5': setStory(5); break;
     case '.': currentStory.nextScene(); break;
     case ',': currentStory.prevScene(); break;
-    case 'r': currentStory.setCurrentSceneIndex(0); break;
+    case 'r': currentStory.startStory(); break;
     
   }
 }
