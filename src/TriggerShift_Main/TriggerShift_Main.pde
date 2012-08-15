@@ -149,6 +149,15 @@ void draw() {
 }
 
 
+//----------------------------------
+void keyPressed() {
+  switch(key) {
+    case ' ': currentStory.nextScene(); break;
+    case 'r': currentStory.setCurrentSceneIndex(0); break;
+    
+  }
+}
+
 
 //----------------------------------
 //----------------------------------
