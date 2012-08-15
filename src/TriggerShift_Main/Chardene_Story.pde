@@ -3,7 +3,7 @@ class ChardeneStory extends TSStoryBase {
   ChardeneStory(PApplet ref) {
     println("ChardeneStory::ChardeneStory");
     //addScene(new Scene_mortar_board_on_head());
-    addScene(new Scene_throw_coffee(ref));
+    addScene(new Scene_zoom_from_space());
   }
 }
 
@@ -28,6 +28,7 @@ class Scene_throw_coffee extends TSSceneBase {
 
   Scene_throw_coffee(PApplet _ref) {
     println("CelineStory::Scene_throw_coffee");
+    setTrigger(new KeyPressTrigger('q'));
     ref =_ref;
   }
 
@@ -187,6 +188,7 @@ class Scene_mortar_board_on_head extends TSSceneBase {
   float h=120;
   Scene_mortar_board_on_head() {
     println("CelineStory::Scene_mortar_board_on_head");
+    setTrigger(new KeyPressTrigger('w'));
     startPos=transform2D.getWorldCoordsForInputNorm(new PVector(0.5, 0.0, 0));
   }
 
@@ -213,25 +215,132 @@ class Scene_mortar_board_on_head extends TSSceneBase {
 
 //A mortar board flies from the sky and lands ont he head
 class Scene_vote_in_box extends TSSceneBase {
-  PImage ballotBox= loadImage("ballotbox.png");
-  PImage vote= loadImage("vote.png");
+  PImage ballotBoxFront= loadImage("ballotboxFront.png");
+  PImage ballotBoxBack= loadImage("ballotboxBack.png");
+  PImage vote= loadImage("voteUpright.png");
+
+  //is the centre of the vote card over the slot
+  boolean inBox=false;
+  //is this the first time this has happened? 
+  boolean lock=false;
+
   //scale for imagee
-  float wBallotBox=120;
-  float hBallotBox=120;
-  float wVote=120;
-  float hVote=120;
+  int wBallotBox=200;
+  int hBallotBox=200;
+  int wVote=120;
+  int hVote=120;
+  int yInc=0;
+  //where the vote is when it first goes in the box
+  PVector votePosAtStartOfAnimation;
+
   Scene_vote_in_box() {
+    setTrigger(new KeyPressTrigger('e'));
     println("CelineStory::Scene_vote_in_box");
   }
 
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
-
     println("CelineStory::Scene_vote_in_box::onStart");
+    ballotBoxFront.resize(wBallotBox, hBallotBox);
+    ballotBoxBack.resize(wBallotBox, hBallotBox);
+    vote.resize(wVote, hVote);
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
+
     PVector leftHand= skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.01, 0.5, 0));
+
+    PVector centreOfVote= new PVector(leftHand.x - (0.5*vote.width), leftHand.y   );
+    PVector slotPos = new PVector(picturePos.x+(ballotBoxFront.width * 0.2), picturePos.y+(ballotBoxFront.height * 0.1));
+    float slotWidth= ballotBoxFront.width*0.5;
+    float tolerance=10;
+    //if the vote is near the slot and this is the first time
+    if (centreOfVote.x > slotPos.x && centreOfVote.x < slotPos.x + slotWidth && centreOfVote.y > slotPos.y && ! lock ) {
+      inBox=true; 
+      votePosAtStartOfAnimation = new PVector(leftHand.x-vote.width, leftHand.y-(0.5*vote.height));
+      lock=true;
+    }
+    //if we are in the box take control away from the hand and animate a drop down into the box
+    if (inBox) {
+      image(ballotBoxBack, picturePos.x, picturePos.y);
+      image(vote, votePosAtStartOfAnimation.x, votePosAtStartOfAnimation.y+yInc);
+      image(ballotBoxFront, picturePos.x, picturePos.y);
+
+      if (votePosAtStartOfAnimation.y+yInc+(vote.height) <picturePos.y+ ballotBoxFront.height) {
+        yInc+=2;
+      }
+    }
+    else {
+      image(ballotBoxBack, picturePos.x, picturePos.y);
+      image(vote, leftHand.x-vote.width, leftHand.y-(0.5*vote.height));
+      image(ballotBoxFront, picturePos.x, picturePos.y);
+    }
+  }
+};
+//A mortar board flies from the sky and lands ont he head
+class Scene_zoom_from_space extends TSSceneBase {
+
+  PImage world= loadImage("world.png");
+  PImage country= loadImage("country.png");
+  PImage city= loadImage("city1.png");
+  PImage blended = loadImage("world.png");
+
+  int imageWidth = 200;
+  int imageHeight = 200;
+
+  Scene_zoom_from_space() {
+    println("CelineStory::Scene_zoom_from_space");
+
+    setTrigger(new KeyPressTrigger('w'));
+  }
+
+  // this is called when the scene starts (i.e. is triggered)
+  void onStart() {
+    println("CelineStory::Scene_zoom_from_space::onStart");
+    country.resize(imageWidth, imageHeight);
+    world.resize(imageWidth, imageHeight);
+    city.resize(imageWidth, imageHeight);
+    blended.resize(imageWidth, imageHeight);
+  }
+
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+   PVector rightHand = skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
+    PVector leftHand = skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
+
+    float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
+    float maxDist= 300;
+    //scale the image according to the mapped distance between hands
+    float imageScale =  map(distBetweenHands, 0, maxDist, 0.0, 1);
+    imageScale=constrain(imageScale,0.01,0.96);
+    
+    if(imageScale >= 0.0 && imageScale < 0.5 ){
+      blended= lerpImage(city, country, imageScale *map(imageScale,0.0,0.5,0,1)   );
+    }
+    else if(imageScale >= 0.5 && imageScale < 1.0){
+      blended= lerpImage(country, world, imageScale *map(imageScale,0.5,1.0,0,1) );
+    }
+    
+    image(blended, picturePos.x, picturePos.y);
+
+  }
+  
+  PImage lerpImage(PImage image1, PImage image2, float amt){
+    PImage blendImage= createImage(image1.width, image1.height, ARGB);
+    image1.loadPixels();
+    image2.loadPixels();
+    blendImage.loadPixels();
+    for (int i =0 ;i< image1.pixels.length ;i++) {
+      color a = image1.pixels[i];
+      color b = image2.pixels[i];
+       blendImage.pixels[i]= lerpColor(a, b, amt);
+    }
+
+    image1.updatePixels();
+    image2.updatePixels();
+    blendImage.updatePixels();
+    return blendImage;
   }
 };
 
