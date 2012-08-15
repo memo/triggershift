@@ -55,6 +55,7 @@ class TimeTrigger implements TSTriggerBaseI {
   }
   
   boolean check() {
+    return false;
   }
 }
 
