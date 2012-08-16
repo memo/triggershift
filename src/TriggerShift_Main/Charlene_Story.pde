@@ -3,6 +3,7 @@ class CharleneStory extends TSStoryBase {
   CharleneStory(PApplet ref) {
     storyName = "CharleneStory";
     println(storyName + "::" + storyName);
+    addScene(new Scene_flickBook());
     addScene(new Scene_throw_coffee(ref));
     addScene(new Scene_mortar_board_on_head());
     addScene(new Scene_vote_in_box());
@@ -29,13 +30,13 @@ class Scene_throw_coffee extends TSSceneBase {
   String[] words= new String[numBlobs];
 
   Scene_throw_coffee(PApplet _ref) {
-    println("CelineStory::Scene_throw_coffee");
+    println("Charlene::Scene_throw_coffee");
     ref =_ref;
   }
 
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
-    println("CelineStory::Scene_throw_coffee::onStart");
+    println("Charlene::Scene_throw_coffee::onStart");
     setupWorld();
     setupPhysicsObjects();
     words[1]="geography";
@@ -199,7 +200,7 @@ class Scene_mortar_board_on_head extends TSSceneBase {
   float w=120;
   float h=120;
   Scene_mortar_board_on_head() {
-    println("CelineStory::Scene_mortar_board_on_head");
+    println("Charlene::Scene_mortar_board_on_head");
     setTrigger(new KeyPressTrigger('w'));
     startPos=transform2D.getWorldCoordsForInputNorm(new PVector(0.5, 0.0, 0));
   }
@@ -207,7 +208,7 @@ class Scene_mortar_board_on_head extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
 
-    println("CelineStory::Scene_mortar_board_on_head::onStart");
+    println("Charlene::Scene_mortar_board_on_head::onStart");
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -247,12 +248,12 @@ class Scene_vote_in_box extends TSSceneBase {
 
   Scene_vote_in_box() {
     setTrigger(new KeyPressTrigger('e'));
-    println("CelineStory::Scene_vote_in_box");
+    println("Charlene::Scene_vote_in_box");
   }
 
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
-    println("CelineStory::Scene_vote_in_box::onStart");
+    println("Charlene::Scene_vote_in_box::onStart");
     ballotBoxFront.resize(wBallotBox, hBallotBox);
     ballotBoxBack.resize(wBallotBox, hBallotBox);
     vote.resize(wVote, hVote);
@@ -311,7 +312,7 @@ class Scene_zoom_from_space extends TSSceneBase {
 
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
-    println("CelineStory::Scene_zoom_from_space::onStart");
+    println("Charlene::Scene_zoom_from_space::onStart");
     country.resize(imageWidth, imageHeight);
     world.resize(imageWidth, imageHeight);
     city.resize(imageWidth, imageHeight);
@@ -354,6 +355,53 @@ class Scene_zoom_from_space extends TSSceneBase {
     image2.updatePixels();
     blendImage.updatePixels();
     return blendImage;
+  }
+};
+
+
+//A mortar board flies from the sky and lands ont he head
+class Scene_flickBook extends TSSceneBase {
+  int numPageCells=8;
+  PImage [] book = new PImage[numPageCells];
+
+
+  int imageWidth = 200;
+  int imageHeight = 200;
+  int frameIndex=0;
+  
+  Scene_flickBook() {
+    println("Charlene::Scene_flickBook");
+    for(int i=0;i<numPageCells;i++){
+     book[i]=loadImage("chardene/bookPage_"+str(i)+".png");
+    }
+    setTrigger(new KeyPressTrigger('w'));
+  }
+
+  // this is called when the scene starts (i.e. is triggered)
+  void onStart() {
+    println("Charlene::Scene_flickBook::onStart");
+    for(int i=0;i<numPageCells;i++){
+    book[i].resize(imageWidth, imageHeight);
+    }
+  
+  }
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
+    image(book[frameIndex],picturePos.x,picturePos.y);
+    
+    ellipse(300+(frameIndex*10),200,20,20);
+    println(skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND,transform2D, openNIContext).x );
+    float thresh=0.01;
+    
+    //if the left hand is moving to the right increment the page index
+    if(skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND,transform2D, openNIContext).x >0+thresh){
+      frameIndex++;
+    }
+    if(frameIndex>=book.length){
+     frameIndex=0; // frameIndex=book.length-1; 
+    }
+
   }
 };
 

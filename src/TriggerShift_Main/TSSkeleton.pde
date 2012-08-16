@@ -238,6 +238,10 @@ class TSSkeleton {
     }
   }
 
+  public PVector getJointVelocity(int userId, int jointType, TSTransform2D transform2D, SimpleOpenNI  context) {
+    return tsjoints[userId][jointType].velocity;
+  }
+
   //----------------------------------
   PVector getWorldCoords(SimpleOpenNI context, int userId, int jointType) {
     if (context != null) {
