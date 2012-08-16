@@ -391,8 +391,6 @@ class Scene_flickBook extends TSSceneBase {
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
     image(book[frameIndex], picturePos.x, picturePos.y);
 
-    ellipse(300+(frameIndex*10), 200, 20, 20);
-    println(skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext).x );
     float thresh=0.01;
 
     //if the left hand is moving to the right increment the page index

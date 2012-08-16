@@ -20,6 +20,10 @@ float videoSizeY = 0.5;
 float videoPosX = 0.5;
 float videoPosY = 0.75;
 float spreadArmExtent = 300.0;
+float imageRotateAngle = 6.156;
+float leftShift = 0.7;
+float upShift = 0.7;
+
 
 // vars
 ControlP5 cp5 = null;
@@ -28,7 +32,8 @@ TSSkeleton skeleton = null;
 TSTransform2D transform2D = null;
 TSMasker masker = null;
 int lastUserId = 1;
-
+//for printing debug info to screen
+PFont debugFont;
 // Stories
 TSStoryBase currentStory = null;
 ArrayList stories = new ArrayList();
@@ -55,6 +60,9 @@ void setupUI() {
   cp5.addSlider("videoPosX", 0, 1).linebreak().moveTo("Display");
   cp5.addSlider("videoPosY", 0, 1).linebreak().moveTo("Display");
   cp5.addSlider("spreadArmExtent", 0, 500).linebreak().moveTo("Display");
+  cp5.addSlider("imageRotateAngle", 0, TWO_PI).linebreak().moveTo("Display");
+  cp5.addSlider("leftShift", 0, 1).linebreak().moveTo("Display");
+  cp5.addSlider("upShift", 0, 1).linebreak().moveTo("Display");
 
 }
 
@@ -105,6 +113,8 @@ void setup() {
   setupStories();
 
   setupUI();
+  debugFont=loadFont("AlBayan-48.vlw");
+  textFont(debugFont, 48);
 
   stroke(255, 255, 255);
  // smooth();
