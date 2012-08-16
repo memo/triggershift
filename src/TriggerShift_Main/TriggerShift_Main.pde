@@ -28,10 +28,6 @@ TSTransform2D transform2D = null;
 TSMasker masker = null;
 int lastUserId = 1;
 
-// labels
-Textlabel tlFPS;
-Textlabel tlStory;
-
 // Stories
 TSStoryBase currentStory = null;
 ArrayList stories = new ArrayList();
@@ -41,9 +37,10 @@ void setupUI() {
   cp5 = new ControlP5(this);
 
   cp5.addSlider("fps", 0, 60).linebreak();
-  tlFPS = cp5.addTextlabel("calculating fps");
-  tlStory = cp5.addTextlabel("loading story");
+  cp5.addTextlabel("FPS").setText("calculating...").linebreak();
+  cp5.addTextlabel("STORY").setText("loading...").linebreak();
 
+                    
   cp5.addTab("Display");
   cp5.addToggle("doDrawKinectRGB").linebreak().moveTo("Display");
   cp5.addToggle("doDrawKinectDepth").linebreak().moveTo("Display");
@@ -72,11 +69,11 @@ void setStory(int i) {
 //----------------------------------
 void setupStories() {
   stories.add(new StoryTest());  // 0
-  stories.add(new ChardeneStory(this));  // 1
-  stories.add(new CelineStory());  // 2
+  stories.add(new ManiStory());  // 1
+  stories.add(new LornaStory());  // 2
   stories.add(new JamelStory());  // 3
-  stories.add(new LornaStory());  // 4
-  stories.add(new ManiStory());  // 5
+  stories.add(new CelineStory());  // 4
+  stories.add(new CharleneStory(this));  // 5
   
   setStory(0);  // use keyboard 0-5 to choose story
 }
@@ -115,8 +112,6 @@ void setup() {
 
 //----------------------------------
 void draw() {
-//  cp5.getController("fps").setValue(frameRate);
-
   background(80, 0, 0);
 
   // get kinect color image
@@ -160,12 +155,11 @@ void draw() {
    ellipse(lHand.x, lHand.y, 20, 20);
    */
 
-
   currentStory.draw(masker.getImage(), skeleton);
   
-  
-  tlFPS.setValue(str(frameRate));
-  tlStory.setValue(currentStory.storyName);
+  cp5.getController("fps").setValue(frameRate);
+  ((Textlabel)cp5.getController("FPS")).setText(str(frameRate));
+  ((Textlabel)cp5.getController("STORY")).setText(currentStory.storyName);
 
   cp5.draw();
 }

@@ -1,7 +1,7 @@
-class ChardeneStory extends TSStoryBase {
+class CharleneStory extends TSStoryBase {
 
-  ChardeneStory(PApplet ref) {
-    storyName = "ChardeneStory";
+  CharleneStory(PApplet ref) {
+    storyName = "CharleneStory";
     println(storyName + "::" + storyName);
     addScene(new Scene_mortar_board_on_head());
     addScene(new Scene_vote_in_box());
