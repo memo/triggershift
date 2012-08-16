@@ -3,7 +3,9 @@ class CharleneStory extends TSStoryBase {
   CharleneStory(PApplet ref) {
     storyName = "CharleneStory";
     println(storyName + "::" + storyName);
+    
     addScene(new Scene_flickBook());
+    addScene(new Scene_clock_hands());
     addScene(new Scene_throw_coffee(ref));
     addScene(new Scene_mortar_board_on_head());
     addScene(new Scene_vote_in_box());
@@ -24,7 +26,7 @@ class Scene_throw_coffee extends TSSceneBase {
   boolean cupIsGrabbed=false;
   boolean drawingHasStarted=false;
   PVector startPos;
-  
+
   //the blobs of coffee
   int  numBlobs= 10;
   String[] words= new String[numBlobs];
@@ -85,14 +87,14 @@ class Scene_throw_coffee extends TSSceneBase {
             //get position and rotation
             float x=body.getX();
             float y=body.getY();
-            if(dist(x,y, leftHand.x,leftHand.y)>100){
-            float angle = atan2(body.getVelocityY(), body.getVelocityX());
-            println(angle);
-            fill(255);
-            int index=int(explodedBodyName[1]);
-            translate(x-(0.5*textWidth(words[index])), y);
-            rotate(angle);
-            text(words[index], 0, 0);
+            if (dist(x, y, leftHand.x, leftHand.y)>100) {
+              float angle = atan2(body.getVelocityY(), body.getVelocityX());
+              println(angle);
+              fill(255);
+              int index=int(explodedBodyName[1]);
+              translate(x-(0.5*textWidth(words[index])), y);
+              rotate(angle);
+              text(words[index], 0, 0);
             }
           }
         }
@@ -368,11 +370,11 @@ class Scene_flickBook extends TSSceneBase {
   int imageWidth = 200;
   int imageHeight = 200;
   int frameIndex=0;
-  
+
   Scene_flickBook() {
     println("Charlene::Scene_flickBook");
-    for(int i=0;i<numPageCells;i++){
-     book[i]=loadImage("chardene/bookPage_"+str(i)+".png");
+    for (int i=0;i<numPageCells;i++) {
+      book[i]=loadImage("chardene/bookPage_"+str(i)+".png");
     }
     setTrigger(new KeyPressTrigger('w'));
   }
@@ -380,28 +382,74 @@ class Scene_flickBook extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("Charlene::Scene_flickBook::onStart");
-    for(int i=0;i<numPageCells;i++){
-    book[i].resize(imageWidth, imageHeight);
+    for (int i=0;i<numPageCells;i++) {
+      book[i].resize(imageWidth, imageHeight);
     }
-  
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
-    image(book[frameIndex],picturePos.x,picturePos.y);
-    
-    ellipse(300+(frameIndex*10),200,20,20);
-    println(skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND,transform2D, openNIContext).x );
+    image(book[frameIndex], picturePos.x, picturePos.y);
+
+    ellipse(300+(frameIndex*10), 200, 20, 20);
+    println(skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext).x );
     float thresh=0.01;
-    
+
     //if the left hand is moving to the right increment the page index
-    if(skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND,transform2D, openNIContext).x >0+thresh){
+    if (skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext).x >0+thresh) {
       frameIndex++;
     }
-    if(frameIndex>=book.length){
-     frameIndex=0; // frameIndex=book.length-1; 
+    if (frameIndex>=book.length) {
+      frameIndex=0; // frameIndex=book.length-1;
     }
+  }
+};
 
+
+//A mortar board flies from the sky and lands ont he head
+class Scene_clock_hands extends TSSceneBase {
+  int bookImageWidth = 200;
+  int bookImageHeight = 200;
+  PImage hourHand=loadImage("chardene/hourHand.png");
+  PImage minuteHand=loadImage("chardene/hourHand.png");
+  PImage book = loadImage("chardene/bookPage_0.png");
+  int imageWidth = 20;
+  int imageHeight = 100;
+  float angle=0.0;
+
+  Scene_clock_hands() {
+    println("Charlene::Scene_clock_hands");
+    
+    hourHand.resize(imageWidth, imageHeight);
+    minuteHand.resize(int(0.8*imageWidth), int( 0.6*imageHeight));
+    book.resize(bookImageWidth,bookImageHeight);
+    
+    setTrigger(new KeyPressTrigger('w'));
+  }
+
+  // this is called when the scene starts (i.e. is triggered)
+  void onStart() {
+    println("Charlene::Scene_flickBook::onStart");
+  }
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
+    image(book, picturePos.x, picturePos.y);
+    pushMatrix();
+    translate(picturePos.x+(0.5*bookImageWidth), picturePos.y+(0.5*bookImageHeight));
+    rotate(angle*60.0);
+    image(hourHand,-0.5*hourHand.width,-hourHand.height);
+    popMatrix();
+    pushMatrix();
+    translate(picturePos.x+(0.5*bookImageWidth), picturePos.y+(0.5*bookImageHeight));
+    rotate(angle);
+    image(minuteHand,-0.5*minuteHand.width,-minuteHand.height);
+    popMatrix();
+    pushStyle();
+    fill(0);
+    noStroke();
+    ellipse(picturePos.x+(0.5*bookImageWidth), picturePos.y+(0.5*bookImageHeight),imageWidth/2,imageWidth/2);
+    popStyle();
+    angle+=0.005;
   }
 };
 
