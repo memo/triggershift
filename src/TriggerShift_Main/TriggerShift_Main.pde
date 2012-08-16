@@ -13,6 +13,7 @@ boolean doDrawKinectDepth = false;
 boolean doDrawKinectMasked = true;
 boolean doDrawSkeletons = true;
 boolean doDrawDebugInfo = false;
+
 int maskBlurAmount = 0;
 float videoSizeX = 0.5;
 float videoSizeY = 0.5;

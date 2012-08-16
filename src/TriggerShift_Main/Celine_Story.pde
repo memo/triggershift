@@ -3,13 +3,10 @@ class CelineStory extends TSStoryBase {
   CelineStory() {
     storyName = "CelineStory";
     println(storyName + "::" + storyName);
-     addScene(new Scene_shrink_grow_image());
-      addScene(new Scene_ripPaper());
+    addScene(new Scene_shrink_grow_image());
+    addScene(new Scene_ripPaper());
     addScene(new Scene_fade_in_colour());
     addScene(new Scene_turn_cards());
-   
-   
-
   }
 }
 
