@@ -16,27 +16,37 @@ class Scene_ripPaper extends TSSceneBase {
   PImage leftHalf = loadImage("celine/left.png");
   PImage rightHalf= loadImage("celine/right.png");
 
-  int imageWidth = 120;
-  int imageHeight = 200;
-  float angle=0;
-  float angle1=0;
+  int imageWidth=120;
+  int imageHeight=200;
+  float angle;
+  float angle1;
   //to lerp distance when halves are thrown away
-  float lerpAmt=0;
-  float angleInc=0;
+  float lerpAmt;
+  float angleInc;
   //set to true if the 2 halves get past about 20 degrees
-  boolean startToFlyAway=false;
+  boolean startToFlyAway;
 
   Scene_ripPaper() {
     println("CelineStory::Scene_ripPaper");
     setTrigger(new KeyPressTrigger('q'));
-    leftHalf.resize(imageWidth, imageHeight);
-    rightHalf.resize(imageWidth, imageHeight);
+    leftHalf.resize(imageWidth/2, imageHeight);
+    rightHalf.resize(imageWidth/2, imageHeight);
     easel.resize(int(2.2*imageWidth), int(2.8*imageHeight));
   }
 
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("CelineStory::Scene_ripPaper::onStart");
+
+    imageWidth = 120;
+    imageHeight = 200;
+    angle=0;
+    angle1=0;
+    //to lerp distance when halves are thrown away
+    lerpAmt=0;
+    angleInc=0;
+    //set to true if the 2 halves get past about 20 degrees
+    startToFlyAway=false;
   }
 
   // this is the scenes draw function
@@ -51,117 +61,118 @@ class Scene_ripPaper extends TSSceneBase {
     PVector leftHalfPos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
     PVector rightHalfPos= new PVector(leftHalfPos.x+(leftHalf.width), leftHalfPos.y, leftHalfPos.z) ;
 
+    if (getElapsedSeconds()>8000) {
+      ///get the angle between hand and elbow
+      leftHand.sub(leftElbow);
+      leftHand.normalize();
 
-    ///get the angle between hand and elbow
-    leftHand.sub(leftElbow);
-    leftHand.normalize();
+      if (!startToFlyAway) {
+        // image(easel, leftHalfPos.x- (easel.width*0.7575), leftHalfPos.y-(easel.height*0.6868));
 
-    if (!startToFlyAway) {
-      // image(easel, leftHalfPos.x- (easel.width*0.7575), leftHalfPos.y-(easel.height*0.6868));
+        pushMatrix();
+        PVector imageOrientation = new PVector(1, 0, 0);
 
-      pushMatrix();
-      PVector imageOrientation = new PVector(1, 0, 0);
+        //get the dot and cross products
+        angle = acos(imageOrientation.dot(leftHand));
+        PVector axis = imageOrientation.cross(leftHand);
+        text(str(angle), 100, 100);
+        //>0.5
+        //translate to the place we want to draw the image
+        translate(leftHalfPos.x, leftHalfPos.y, leftHalfPos.z);
 
-      //get the dot and cross products
-      angle = acos(imageOrientation.dot(leftHand));
-      PVector axis = imageOrientation.cross(leftHand);
-      text(str(angle), 100, 100);
-      //>0.5
-      //translate to the place we want to draw the image
-      translate(leftHalfPos.x, leftHalfPos.y, leftHalfPos.z);
+        //draw the easel behind the 2 halves of the image
+        image(easel, -(easel.width*0.7575), -(easel.height*0.6868));
+        //rotate by joint orientation of forearm
+        rotate(angle, axis.x, axis.y, -axis.z);
 
-      //draw the easel behind the 2 halves of the image
-      image(easel, -(easel.width*0.7575), -(easel.height*0.6868));
-      //rotate by joint orientation of forearm
-      rotate(angle, axis.x, axis.y, -axis.z);
+        //shift up so it rotates around bottom left
+        translate(-leftHalf.height*0.2, -leftHalf.height, 0);
+        image(leftHalf, 0, 0);
+        popMatrix();
 
-      //shift up so it rotates around bottom left
-      translate(-leftHalf.height*0.2, -leftHalf.height, 0);
-      image(leftHalf, 0, 0);
-      popMatrix();
+        rightHand.sub(rightElbow);
+        rightHand.normalize();
 
-      rightHand.sub(rightElbow);
-      rightHand.normalize();
-
-      pushMatrix();
-      imageOrientation = new PVector(1, 0, 0);
-      angle1 = acos(imageOrientation.dot(rightHand));
-      //<2.0
-      text(str(angle1), 100, 150);
-      axis = imageOrientation.cross(rightHand);
-      translate(rightHalfPos.x-rightHalf.width, rightHalfPos.y, rightHalfPos.z);
-      rotateZ(PI);
-      rotate(angle1, axis.x, axis.y, -axis.z);
+        pushMatrix();
+        imageOrientation = new PVector(1, 0, 0);
+        angle1 = acos(imageOrientation.dot(rightHand));
+        //<2.0
+        text(str(angle1), 100, 150);
+        axis = imageOrientation.cross(rightHand);
+        translate(rightHalfPos.x-rightHalf.width, rightHalfPos.y, rightHalfPos.z);
+        rotateZ(PI);
+        rotate(angle1, axis.x, axis.y, -axis.z);
 
 
-      translate(-rightHalf.width, -rightHalf.height, 0);
-      image(rightHalf, 0, 0);
-      popMatrix();
+        translate(-rightHalf.width, -rightHalf.height, 0);
+        image(rightHalf, 0, 0);
+        popMatrix();
 
-      if (angle>0.5 && angle1<2.0) {
-        startToFlyAway=true;
+        if (angle>0.5 && angle1<2.0) {
+          startToFlyAway=true;
+        }
+        else {
+          startToFlyAway=false;
+        }
+        text(str(startToFlyAway), 100, 200);
       }
+      //if the paper has been ripped, start to spin the pieces away
       else {
-        startToFlyAway=false;
+        PVector targetPosLeft=new PVector(-110.0, height/2, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.0, 0.2, 0));
+        PVector targetPosRight=new PVector(width+110.0, height/2, 0 );//transform2D.getWorldCoordsForInputNorm(new PVector(1.0, 0.2, 0));
+        ellipse(targetPosLeft.x, targetPosLeft.y, 20, 20);
+        ellipse(targetPosRight.x, targetPosRight.y, 20, 20);
+
+        //draw the easel
+        pushMatrix();
+        translate(leftHalfPos.x, leftHalfPos.y, leftHalfPos.z);
+        image(easel, -(easel.width*0.7575), -(easel.height*0.6868));
+        popMatrix();
+        //draw the left
+        pushMatrix();
+        PVector imageOrientation = new PVector(1, 0, 0);
+        PVector axis = imageOrientation.cross(leftHand);
+
+        float lerpedX = lerp (leftHalfPos.x, targetPosLeft.x, lerpAmt);
+        float lerpedY = lerp (leftHalfPos.y, targetPosLeft.y, lerpAmt);
+        //translate to the place we want to draw the image
+        // translate(leftHalfPos.x, leftHalfPos.y, leftHalfPos.z);
+        translate(lerpedX, lerpedY, leftHalfPos.z);
+        //draw the easel behind the 2 halves of the image
+        //rotate by joint orientation of forearm
+        rotateZ(angleInc);
+        rotate(angle, axis.x, axis.y, -axis.z);
+
+        //shift up so it rotates around bottom left
+        translate(-leftHalf.height*0.2, -leftHalf.height, 0);
+        image(leftHalf, 0, 0);
+        popMatrix();
+
+        rightHand.sub(rightElbow);
+        rightHand.normalize();
+
+        pushMatrix();
+        imageOrientation = new PVector(1, 0, 0);
+        angle1 = acos(imageOrientation.dot(rightHand));
+        //<2.0
+        text(str(angle1), 100, 150);
+        axis = imageOrientation.cross(rightHand);
+
+        lerpedX = lerp (rightHalfPos.x, targetPosRight.x, lerpAmt);
+        lerpedY = lerp (rightHalfPos.y, targetPosRight.y, lerpAmt);
+
+        translate(lerpedX-rightHalf.width, lerpedY, rightHalfPos.z);
+
+        rotateZ(PI-angleInc);
+        rotate(angle1, axis.x, axis.y, -axis.z);
+
+
+        translate(-rightHalf.width, -rightHalf.height, 0);
+        image(rightHalf, 0, 0);
+        popMatrix();
+        angleInc+=0.05;
+        lerpAmt+=0.05;
       }
-      text(str(startToFlyAway), 100, 200);
-    }
-    //if the paper has been ripped, start to spin the pieces away
-    else {
-      PVector targetPosLeft=new PVector(-110.0, height/2, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.0, 0.2, 0));
-      PVector targetPosRight=new PVector(width+110.0, height/2, 0 );//transform2D.getWorldCoordsForInputNorm(new PVector(1.0, 0.2, 0));
-      ellipse(targetPosLeft.x, targetPosLeft.y, 20, 20);
-      ellipse(targetPosRight.x, targetPosRight.y, 20, 20);
-
-      //draw the easel
-      pushMatrix();
-      translate(leftHalfPos.x, leftHalfPos.y, leftHalfPos.z);
-      image(easel, -(easel.width*0.7575), -(easel.height*0.6868));
-      popMatrix();
-      //draw the left
-      pushMatrix();
-      PVector imageOrientation = new PVector(1, 0, 0);
-      PVector axis = imageOrientation.cross(leftHand);
-
-      float lerpedX = lerp (leftHalfPos.x, targetPosLeft.x, lerpAmt);
-      float lerpedY = lerp (leftHalfPos.y, targetPosLeft.y, lerpAmt);
-      //translate to the place we want to draw the image
-      // translate(leftHalfPos.x, leftHalfPos.y, leftHalfPos.z);
-      translate(lerpedX, lerpedY, leftHalfPos.z);
-      //draw the easel behind the 2 halves of the image
-      //rotate by joint orientation of forearm
-      rotateZ(angleInc);
-      //rotate(angle+angleInc, axis.x, axis.y, -axis.z);
-
-      //shift up so it rotates around bottom left
-      translate(-leftHalf.height*0.2, -leftHalf.height, 0);
-      image(leftHalf, 0, 0);
-      popMatrix();
-
-      rightHand.sub(rightElbow);
-      rightHand.normalize();
-
-      pushMatrix();
-      imageOrientation = new PVector(1, 0, 0);
-      angle1 = acos(imageOrientation.dot(rightHand));
-      //<2.0
-      text(str(angle1), 100, 150);
-      axis = imageOrientation.cross(rightHand);
-
-      lerpedX = lerp (rightHalfPos.x, targetPosRight.x, lerpAmt);
-      lerpedY = lerp (rightHalfPos.y, targetPosRight.y, lerpAmt);
-
-      translate(lerpedX-rightHalf.width, lerpedY, rightHalfPos.z);
-
-      rotateZ(PI-angleInc);
-      // rotate(angle1, axis.x, axis.y, -axis.z);
-
-
-      translate(-rightHalf.width, -rightHalf.height, 0);
-      image(rightHalf, 0, 0);
-      popMatrix();
-      angleInc+=0.05;
-      lerpAmt+=0.05;
     }
   }
 };
@@ -172,22 +183,24 @@ class Scene_fade_in_colour extends TSSceneBase {
   PImage easel = loadImage("celine/easel.png");
   PImage picture = loadImage("celine/skyscraper1.png");
   PImage sepia = loadImage("celine/skyscraper1.png");
-  int imageWidth = 120;
-  int imageHeight = 200;
-  float angle=0;
+  int imageWidth=120;
+  int imageHeight=200;
+  float angle;
   Scene_fade_in_colour() {
     println("CelineStory::Scene_fade_in_colour");
     setTrigger(new KeyPressTrigger('w'));
     sepia.filter(GRAY);
+    picture.resize(imageWidth, imageHeight);
+    sepia.resize(imageWidth, imageHeight);
+    easel.resize(int(2.2*imageWidth), int(2.8*imageHeight));
   }
 
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("CelineStory::Scene_fade_in_colour::onStart");
-    picture.resize(imageWidth, imageHeight);
-    sepia.resize(imageWidth, imageHeight);
-
-    easel.resize(int(2.2*imageWidth), int(2.8*imageHeight));
+    imageWidth = 120;
+    imageHeight = 200;
+    angle=0;
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -212,10 +225,10 @@ class Scene_fade_in_colour extends TSSceneBase {
     popMatrix();
     pushStyle();
     //tint a sepia -ish colour
-    tint(232, 222, 48, 255-alp);
+    tint(232, 222, 48, alp);
     sepia.loadPixels();
     for (int i=0;i<sepia.pixels.length;i++) {
-      sepia.pixels[i]=color(red(sepia.pixels[i]), green(sepia.pixels[i] ), blue( sepia.pixels[i] ), 255-alp ) ;
+      sepia.pixels[i]=color(red(sepia.pixels[i]), green(sepia.pixels[i] ), blue( sepia.pixels[i] ), alp ) ;
     }
     sepia.updatePixels();
     pushMatrix();
@@ -231,18 +244,22 @@ class Scene_fade_in_colour extends TSSceneBase {
 class Scene_shrink_grow_image extends TSSceneBase {
   PImage easel = loadImage("celine/easel.png");
   PImage picture = loadImage("celine/skyscraper1.png");
-  int imageWidth = 120;
-  int imageHeight = 200;
+  int imageWidth=120;
+  int imageHeight=200;
+
   Scene_shrink_grow_image() {
     println("CelineStory::Scene_shrink_grow_image");
     setTrigger(new MouseClickTrigger());
+    picture.resize(imageWidth, imageHeight);
+    easel.resize(int(2.2*imageWidth), int(2.8*imageHeight));
   }
 
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("CelineStory::Scene_shrink_grow_image::onStart");
-    picture.resize(imageWidth, imageHeight);
-    easel.resize(int(2.2*imageWidth), int(2.8*imageHeight));
+
+    imageWidth = 120;
+    imageHeight = 200;
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {

@@ -3,7 +3,7 @@ class CharleneStory extends TSStoryBase {
   CharleneStory(PApplet ref) {
     storyName = "CharleneStory";
     println(storyName + "::" + storyName);
-    
+
     addScene(new Scene_flickBook());
     addScene(new Scene_clock_hands());
     addScene(new Scene_throw_coffee(ref));
@@ -18,13 +18,13 @@ class Scene_throw_coffee extends TSSceneBase {
   FMouseJoint joint;
   PApplet ref;
   PImage mug=loadImage("chardene/mugUpright.png");
-  int wCup=50;
-  int hCup=80;
-  int wCupImage=3*wCup;
-  int hCupImage=3*hCup;
-  int timer=0;
-  boolean cupIsGrabbed=false;
-  boolean drawingHasStarted=false;
+  int wCup;
+  int hCup;
+  int wCupImage;
+  int hCupImage;
+  int timer;
+  boolean cupIsGrabbed;
+  boolean drawingHasStarted;
   PVector startPos;
 
   //the blobs of coffee
@@ -50,6 +50,15 @@ class Scene_throw_coffee extends TSSceneBase {
     words[7]="study";
     words[8]="careers";
     words[9]="ignorance";
+
+    wCup=50;
+    hCup=80;
+    wCupImage=3*wCup;
+    hCupImage=3*hCup;
+    timer=0;
+    cupIsGrabbed=false;
+    drawingHasStarted=false;
+
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -194,13 +203,13 @@ class Scene_throw_coffee extends TSSceneBase {
 class Scene_mortar_board_on_head extends TSSceneBase {
   PImage mortarBoard= loadImage("chardene/mortarboard.png");
   PVector startPos;
-  float inc=0;
-  float numFramesForAnimation = 50.0;
-  float speed=1.0/numFramesForAnimation;
+  float inc;
+  float numFramesForAnimation;
+  float speed;
 
   //scale for imagee
-  float w=120;
-  float h=120;
+  float w;
+  float h;
   Scene_mortar_board_on_head() {
     println("Charlene::Scene_mortar_board_on_head");
     setTrigger(new KeyPressTrigger('w'));
@@ -211,6 +220,12 @@ class Scene_mortar_board_on_head extends TSSceneBase {
   void onStart() {
 
     println("Charlene::Scene_mortar_board_on_head::onStart");
+    inc=0;
+    numFramesForAnimation = 50.0;
+    speed=1.0/numFramesForAnimation;
+    //scale for imagee
+    w=120;
+    h=120;
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -235,16 +250,16 @@ class Scene_vote_in_box extends TSSceneBase {
   PImage vote= loadImage("chardene/voteUpright.png");
 
   //is the centre of the vote card over the slot
-  boolean inBox=false;
+  boolean inBox;
   //is this the first time this has happened? 
-  boolean lock=false;
+  boolean lock;
 
   //scale for imagee
-  int wBallotBox=200;
-  int hBallotBox=200;
-  int wVote=120;
-  int hVote=120;
-  int yInc=0;
+  int wBallotBox;
+  int hBallotBox;
+  int wVote;
+  int hVote;
+  int yInc;
   //where the vote is when it first goes in the box
   PVector votePosAtStartOfAnimation;
 
@@ -259,6 +274,18 @@ class Scene_vote_in_box extends TSSceneBase {
     ballotBoxFront.resize(wBallotBox, hBallotBox);
     ballotBoxBack.resize(wBallotBox, hBallotBox);
     vote.resize(wVote, hVote);
+
+    //is the centre of the vote card over the slot
+    inBox=false;
+    //is this the first time this has happened? 
+    lock=false;
+
+    //scale for imagee
+    wBallotBox=200;
+    hBallotBox=200;
+    wVote=120;
+    hVote=120;
+    yInc=0;
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -303,8 +330,8 @@ class Scene_zoom_from_space extends TSSceneBase {
   PImage city= loadImage("chardene/city1.png");
   PImage blended = loadImage("chardene/world.png");
 
-  int imageWidth = 200;
-  int imageHeight = 200;
+  int imageWidth;
+  int imageHeight;
 
   Scene_zoom_from_space() {
     println("CelineStory::Scene_zoom_from_space");
@@ -319,6 +346,9 @@ class Scene_zoom_from_space extends TSSceneBase {
     world.resize(imageWidth, imageHeight);
     city.resize(imageWidth, imageHeight);
     blended.resize(imageWidth, imageHeight);
+
+    imageWidth = 200;
+    imageHeight = 200;
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -417,11 +447,11 @@ class Scene_clock_hands extends TSSceneBase {
 
   Scene_clock_hands() {
     println("Charlene::Scene_clock_hands");
-    
+
     hourHand.resize(imageWidth, imageHeight);
     minuteHand.resize(int(0.8*imageWidth), int( 0.6*imageHeight));
-    book.resize(bookImageWidth,bookImageHeight);
-    
+    book.resize(bookImageWidth, bookImageHeight);
+
     setTrigger(new KeyPressTrigger('w'));
   }
 
@@ -435,17 +465,17 @@ class Scene_clock_hands extends TSSceneBase {
     pushMatrix();
     translate(picturePos.x+(0.5*bookImageWidth), picturePos.y+(0.5*bookImageHeight));
     rotate(angle*60.0);
-    image(hourHand,-0.5*hourHand.width,-hourHand.height);
+    image(hourHand, -0.5*hourHand.width, -hourHand.height);
     popMatrix();
     pushMatrix();
     translate(picturePos.x+(0.5*bookImageWidth), picturePos.y+(0.5*bookImageHeight));
     rotate(angle);
-    image(minuteHand,-0.5*minuteHand.width,-minuteHand.height);
+    image(minuteHand, -0.5*minuteHand.width, -minuteHand.height);
     popMatrix();
     pushStyle();
     fill(0);
     noStroke();
-    ellipse(picturePos.x+(0.5*bookImageWidth), picturePos.y+(0.5*bookImageHeight),imageWidth/2,imageWidth/2);
+    ellipse(picturePos.x+(0.5*bookImageWidth), picturePos.y+(0.5*bookImageHeight), imageWidth/2, imageWidth/2);
     popStyle();
     angle+=0.005;
   }
