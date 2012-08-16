@@ -1,4 +1,4 @@
-  import processing.opengl.*;
+import processing.opengl.*;
 import fisica.*;
 
 import SimpleOpenNI.*;
@@ -18,7 +18,7 @@ float videoSizeX = 0.5;
 float videoSizeY = 0.5;
 float videoPosX = 0.5;
 float videoPosY = 0.75;
-
+float spreadArmExtent = 300.0;
 
 // vars
 ControlP5 cp5 = null;
@@ -56,6 +56,8 @@ void setupUI() {
   cp5.addSlider("videoSizeY", 0, 1).linebreak().moveTo("Display");
   cp5.addSlider("videoPosX", 0, 1).linebreak().moveTo("Display");
   cp5.addSlider("videoPosY", 0, 1).linebreak().moveTo("Display");
+  cp5.addSlider("spreadArmExtent", 0, 500).linebreak().moveTo("Display");
+
 }
 
 
@@ -89,7 +91,7 @@ void setupOpenNI() {
   openNIContext.enableScene();
   openNIContext.enableUser(SimpleOpenNI.SKEL_PROFILE_ALL);
 
-  openNIContext.setMirror(false);
+  openNIContext.setMirror(true);
   openNIContext.alternativeViewPointDepthToImage();
 }
 
@@ -107,7 +109,7 @@ void setup() {
   setupUI();
 
   stroke(255, 255, 255);
-  smooth();
+ // smooth();
 }
 
 

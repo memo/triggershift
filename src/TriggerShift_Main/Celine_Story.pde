@@ -3,20 +3,21 @@ class CelineStory extends TSStoryBase {
   CelineStory() {
     storyName = "CelineStory";
     println(storyName + "::" + storyName);
-    
+     addScene(new Scene_shrink_grow_image());
+      addScene(new Scene_ripPaper());
     addScene(new Scene_fade_in_colour());
     addScene(new Scene_turn_cards());
-    addScene(new Scene_ripPaper());
-    addScene(new Scene_shrink_grow_image());
+   
+   
 
   }
 }
 
 //
 class Scene_ripPaper extends TSSceneBase {
-  PImage easel = loadImage("easel.png");
-  PImage leftHalf = loadImage("left.png");
-  PImage rightHalf= loadImage("right.png");
+  PImage easel = loadImage("celine/easel.png");
+  PImage leftHalf = loadImage("celine/left.png");
+  PImage rightHalf= loadImage("celine/right.png");
 
   int imageWidth = 80;
   int imageHeight = 200;
@@ -94,9 +95,9 @@ class Scene_ripPaper extends TSSceneBase {
 
 //fades an image from 'sepia' to colour with distance between hands //TODO cut around sepia image!
 class Scene_fade_in_colour extends TSSceneBase {
-  PImage easel = loadImage("easel.png");
-  PImage picture = loadImage("skyscraper1.png");
-  PImage sepia = loadImage("skyscraper1.png");
+  PImage easel = loadImage("celine/easel.png");
+  PImage picture = loadImage("celine/skyscraper1.png");
+  PImage sepia = loadImage("celine/skyscraper1.png");
   int imageWidth = 80;
   int imageHeight = 200;
   Scene_fade_in_colour() {
@@ -146,8 +147,8 @@ class Scene_fade_in_colour extends TSSceneBase {
 
 //controls size of image with distance between hands
 class Scene_shrink_grow_image extends TSSceneBase {
-  PImage easel = loadImage("easel.png");
-  PImage picture = loadImage("skyscraper1.png");
+  PImage easel = loadImage("celine/easel.png");
+  PImage picture = loadImage("celine/skyscraper1.png");
   int imageWidth = 80;
   int imageHeight = 200;
   Scene_shrink_grow_image() {
@@ -197,7 +198,7 @@ class Scene_turn_cards extends TSSceneBase {
     int index=1;
     for (int i=0;i<cards.length;i++) {
       //TODO update to use back of image file names
-      cards[i] = new Card( 60, 100, "playingcards"+str(index)+".png", "back"+str(index)+".png" );
+      cards[i] = new Card( 60, 100, "celine/playingcards"+str(index)+".png", "celine/back"+str(index)+".png" );
       index++;
       if (index>=5) {
         index=1;

@@ -16,7 +16,7 @@ class Scene_throw_coffee extends TSSceneBase {
   FMouseJoint joint;
   PApplet ref;
   PFont font=loadFont("AdobeGothicStd-Bold-14.vlw");
-  PImage mug=loadImage("mug.png");
+  PImage mug=loadImage("chardene/mug.png");
   int wCup=50;
   int hCup=50;
   int wCupImage=3*wCup;
@@ -179,7 +179,7 @@ class Scene_throw_coffee extends TSSceneBase {
 };
 //A mortar board flies from the sky and lands ont he head
 class Scene_mortar_board_on_head extends TSSceneBase {
-  PImage mortarBoard= loadImage("mortarboard.png");
+  PImage mortarBoard= loadImage("chardene/mortarboard.png");
   PVector startPos;
   float inc=0;
   float numFramesForAnimation = 50.0;
@@ -217,9 +217,9 @@ class Scene_mortar_board_on_head extends TSSceneBase {
 
 //A mortar board flies from the sky and lands ont he head
 class Scene_vote_in_box extends TSSceneBase {
-  PImage ballotBoxFront= loadImage("ballotboxFront.png");
-  PImage ballotBoxBack= loadImage("ballotboxBack.png");
-  PImage vote= loadImage("voteUpright.png");
+  PImage ballotBoxFront= loadImage("chardene/ballotboxFront.png");
+  PImage ballotBoxBack= loadImage("chardene/ballotboxBack.png");
+  PImage vote= loadImage("chardene/voteUpright.png");
 
   //is the centre of the vote card over the slot
   boolean inBox=false;
@@ -285,10 +285,10 @@ class Scene_vote_in_box extends TSSceneBase {
 //A mortar board flies from the sky and lands ont he head
 class Scene_zoom_from_space extends TSSceneBase {
 
-  PImage world= loadImage("world.png");
-  PImage country= loadImage("country.png");
-  PImage city= loadImage("city1.png");
-  PImage blended = loadImage("world.png");
+  PImage world= loadImage("chardene/world.png");
+  PImage country= loadImage("chardene/country.png");
+  PImage city= loadImage("chardene/city1.png");
+  PImage blended = loadImage("chardene/world.png");
 
   int imageWidth = 200;
   int imageHeight = 200;
