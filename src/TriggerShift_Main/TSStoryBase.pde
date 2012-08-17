@@ -27,11 +27,17 @@ class TSStoryBase {
   void endStory() {
     println(storyName + "::endStory");
     onEnd();
+    println("-------------------------------------------------");
+    println("-------------------------------------------------");
+    println(" ");
   }
 
 
   //----------------------------------
   void startStory() {
+    println(" ");
+    println("-------------------------------------------------");
+    println("-------------------------------------------------");
     println(storyName + "::startStory");
     setSceneIndex(0);
   }

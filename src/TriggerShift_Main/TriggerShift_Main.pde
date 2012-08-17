@@ -34,9 +34,11 @@ TSMasker masker = null;
 int lastUserId = 1;
 //for printing debug info to screen
 PFont debugFont;
+
 // Stories
 TSStoryBase currentStory = null;
-ArrayList stories = new ArrayList();
+int numStorys = 6; // including test story
+//ArrayList stories = new ArrayList();
 
 //----------------------------------
 void setupUI() {
@@ -69,21 +71,29 @@ void setupUI() {
 
 //----------------------------------
 void setStory(int i) {
-  if(i >= stories.size()) i = stories.size();
   if(currentStory != null) currentStory.endStory();
-  currentStory = (TSStoryBase) stories.get(i);
+  
+  switch(i) {
+    case 0: currentStory = new StoryTest(); break;
+    case 1: currentStory = new ManiStory(); break;
+    case 2: currentStory = new LornaStory(); break;
+    case 3: currentStory = new JamelStory(); break;
+    case 4: currentStory = new CelineStory(); break;
+    case 5: currentStory = new CharleneStory(this); break;
+  }
+    
   currentStory.startStory();
 }
 
 //----------------------------------
 void setupStories() {
-  stories.add(new StoryTest());  // 0
-  stories.add(new ManiStory());  // 1
-  stories.add(new LornaStory());  // 2
-  stories.add(new JamelStory());  // 3
-  stories.add(new CelineStory());  // 4
-  stories.add(new CharleneStory(this));  // 5
-  
+//  stories.add(new StoryTest());  // 0
+//  stories.add(new ManiStory());  // 1
+//  stories.add(new LornaStory());  // 2
+//  stories.add(new JamelStory());  // 3
+//  stories.add(new CelineStory());  // 4
+//  stories.add(new CharleneStory(this));  // 5
+//  
   setStory(0);  // use keyboard 0-5 to choose story
 }
 

@@ -30,6 +30,7 @@ class TSSceneBase {
   
   //----------------------------------
   void startScene() {
+    println("--------------------");
     println(sceneName + "::startScene");
     startTime = millis();
     onStart();
