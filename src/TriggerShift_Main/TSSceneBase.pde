@@ -6,6 +6,8 @@
 class TSSceneBase {
   protected int startTime = 0;
   protected TSTriggerBaseI trigger;
+  
+  public String sceneName = "TSSceneBase";  // fill this in with correct name in subclass
 
   //----------------------------------
   // OVERRIDE THIS FUNCTION
@@ -23,12 +25,12 @@ class TSSceneBase {
   //----------------------------------
   TSSceneBase() {
     // set default trigger to spacebar
-    setTrigger(new KeyPressTrigger(' '));
+//    setTrigger(new KeyPressTrigger(' '));
   }
   
   //----------------------------------
   void startScene() {
-    println("TSSceneBase::startScene");
+    println(sceneName + "::startScene");
     startTime = millis();
     onStart();
   }
@@ -40,7 +42,7 @@ class TSSceneBase {
 
   //----------------------------------
   void setTrigger(TSTriggerBaseI t) {
-    println("TSSceneBase::setTrigger " + t);
+    println(sceneName + "::setTrigger " + t);
     trigger = t;
   }
 

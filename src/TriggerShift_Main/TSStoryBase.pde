@@ -10,10 +10,10 @@ class TSStoryBase {
   protected int currentSceneIndex = 0;
   protected TSSceneBase currentScene = null;
   
-  public String storyName = "TSStoryBase";  // fill this in with correct name
+  public String storyName = "TSStoryBase";  // fill this in with correct name in subclass
 
   //----------------------------------
-  // OVERRIDE THIS CLASS
+  // OVERRIDE THIS FUNCTION
   void onEnd() {
     println("TSStoryBase::onEnd");
   }
