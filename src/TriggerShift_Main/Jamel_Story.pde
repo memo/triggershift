@@ -32,12 +32,12 @@ class JamelStory extends TSStoryBase {
       sceneName = "Scene1 FLAG INTRO";
       println(storyName + "::" + sceneName);
       imgFlag = loadImage("jamel/flag.png");
-      }
+    }
 
-      //----------------
-      void onStart() {
-        println(storyName + "::" + sceneName + "::onStart");
-      }
+    //----------------
+    void onStart() {
+      println(storyName + "::" + sceneName + "::onStart");
+    }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -57,6 +57,9 @@ class JamelStory extends TSStoryBase {
   class Scene2 extends TSSceneBase {
     PImage imgPound;
     ArrayList posArray;
+    ArrayList particles;
+
+    //----------------
     Scene2() {
       sceneName = "Scene2 GRAPH";
       println(storyName + "::" + sceneName);
@@ -67,6 +70,7 @@ class JamelStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       posArray = new ArrayList();
+      particles = new ArrayList();
     }
 
     //----------------
@@ -76,9 +80,11 @@ class JamelStory extends TSStoryBase {
       PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
       PVector activeHand = leftHand.y < rightHand.y ? leftHand : rightHand;
 
-      // draw graph
+      // add latest hand
       posArray.add(activeHand.get());
-      if(posArray.size() > 100) posArray.remove(0);  // trim array
+      if (posArray.size() > 100) posArray.remove(0);  // trim array
+
+      // draw graph
       noFill();
       strokeWeight(10);
       strokeJoin(ROUND);
@@ -87,18 +93,44 @@ class JamelStory extends TSStoryBase {
       PVector p1 = new PVector(-1000, -1000, -1000);
       for (int i=0; i<posArray.size(); i++) {
         PVector p2 = (PVector)posArray.get(i);
-        PVector pdiff = PVector.sub(p1, p2);
+        PVector diff = PVector.sub(p1, p2);
         // only draw if distance between points is less than threshold
-        if(pdiff.mag() < transform2D.targetSizePixels.y/10) {
+        if (diff.mag() < transform2D.targetSizePixels.y * 0.1) {
           stroke(255, 200, 100, i * 255.0/posArray.size());
           vertex(p2.x, p2.y);
-        } else {
+        } 
+        else {
           endShape();
           beginShape();
         }
         p1.set(p2);
       }
       endShape();
+
+
+
+      // add particle if velocity is above threshold
+      if (posArray.size() > 1) {
+        PVector prv = ((PVector)posArray.get(posArray.size()-2)).get();
+        PVector now = ((PVector)posArray.get(posArray.size()-1)).get();
+        PVector vel = PVector.sub(prv, now);
+        if (vel.mag() > transform2D.targetSizePixels.y * 0.03) {
+          float r = transform2D.targetSizePixels.y * 0.1;
+          now.x += random(-r, r);
+          now.y += random(-r, r);
+          now.z += random(-r, r);
+          vel.mult(-0.2);
+          particles.add(new MSAParticle(now, vel, random(-30, 30), random(-3, 3), random(height/80, height/40), 1.0, 1.0, 0.95));
+        }
+      }
+
+      if (particles.size() > 30) particles.remove(0);  // trim array
+      // draw particles
+      for (int i=0; i<particles.size(); i++) {
+        MSAParticle p = (MSAParticle) particles.get(i);
+        p.draw(imgPound);
+      }
+
       popStyle();
     }
   };
