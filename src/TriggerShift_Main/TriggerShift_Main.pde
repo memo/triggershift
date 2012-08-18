@@ -15,10 +15,10 @@ boolean doDrawSkeletons = true;
 boolean doDrawDebugInfo = false;
 
 int maskBlurAmount = 0;
-float videoSizeX = 0.5;
-float videoSizeY = 0.5;
+float videoSizeX = 1;
+float videoSizeY = 1;
 float videoPosX = 0.5;
-float videoPosY = 0.75;
+float videoPosY = 0.5;
 float spreadArmExtent = 300.0;
 float imageRotateAngle = 6.156;
 float leftShift = 0.7;

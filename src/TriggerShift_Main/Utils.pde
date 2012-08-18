@@ -21,3 +21,12 @@ PVector getLowestHand() {
   return leftHand.y > rightHand.y ? leftHand : rightHand;
 }
 
+
+PVector getHead() {
+  return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
+}
+
+PVector getHip() {
+  return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HIP, transform2D, openNIContext);
+}
+

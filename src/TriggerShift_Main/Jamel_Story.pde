@@ -135,6 +135,9 @@ class JamelStory extends TSStoryBase {
   class Scene3 extends TSSceneBase {
     PImage imgTramp1 = loadImage("jamel/tramp1.png");
     PImage imgTramp2 = loadImage("jamel/tramp2.png");
+    PImage imgTrampMasked1 = createImage(imgTramp1.width, imgTramp1.height, ARGB);
+    PImage imgTrampMasked2 = createImage(imgTramp2.width, imgTramp2.height, ARGB);
+    float t;
     
     Scene3() {
       sceneName = "Scene3";
@@ -148,6 +151,34 @@ class JamelStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      // position of hand relative to waist->head
+      float newt = constrain(map(getHighestHand().y, getHip().y, getHead().y, 0.0, 1.0), 0.0, 1.0);
+      // smooth
+      t += (newt - t) * 0.2;
+
+      float h = height * 0.7;
+      float s = h / imgTramp1.height;
+      float w = imgTramp1.width * s;
+      
+//      imgTrampMasked1 = createImage(imgTramp1.width, (int)(imgTramp1.height * (1-t)), ARGB);
+//      imgTrampMasked2 = createImage(imgTramp2.width, (int)(imgTramp2.height * t), ARGB);
+      
+      imgTrampMasked1.loadPixels();
+      Arrays.fill(imgTrampMasked1.pixels, 0);
+      imgTrampMasked1.updatePixels();
+      int h1 = (int)(imgTrampMasked1.height * (1-t));
+      imgTrampMasked1.copy(imgTramp1, 0, 0, imgTramp1.width, h1, 0, 0, imgTramp1.width, h1);
+      
+      imgTrampMasked2.loadPixels();
+      Arrays.fill(imgTrampMasked2.pixels, 0);
+      imgTrampMasked2.updatePixels();
+      int h2 = (int)(imgTrampMasked2.height * t);
+      int y2 = imgTrampMasked2.height - h2;
+      imgTrampMasked2.copy(imgTramp2, 0, y2, imgTramp2.width, h2, 0, y2, imgTramp2.width, h2);
+      
+      image(imgTrampMasked1, width*0.2, 0, imgTrampMasked1.width * s, imgTrampMasked1.height * s);
+      image(imgTrampMasked2, width*0.2, 0, imgTrampMasked2.width * s, imgTrampMasked2.height * s);
+      
     }
   };
 
