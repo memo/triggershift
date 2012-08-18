@@ -40,12 +40,15 @@ class JamelStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      pushStyle();
       image(imgFlag, 0, 0, width, height);
 
       // play BEEP sound
       if (keyPressed && key == ' ') {
         println("BEEEP");
       }
+      
+      popStyle();
     }
   };
 
@@ -151,6 +154,8 @@ class JamelStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      pushStyle();
+      
       // position of hand relative to waist->head
       float newt = constrain(map(getHighestHand().y, getHip().y, getHead().y, 0.0, 1.0), 0.0, 1.0);
       // smooth
@@ -179,12 +184,41 @@ class JamelStory extends TSStoryBase {
       image(imgTrampMasked1, width*0.2, 0, imgTrampMasked1.width * s, imgTrampMasked1.height * s);
       image(imgTrampMasked2, width*0.2, 0, imgTrampMasked2.width * s, imgTrampMasked2.height * s);
       
+      popStyle();
     }
   };
 
   //----------------------------------
+  // cats in trees
   class Scene4 extends TSSceneBase {
-    // create triggers and other init in constructor
+    PImage imgTree = loadImage("jamel/tree.png");
+    ArrayList trees;
+    
+    class Tree {
+      float targetHeight;
+      PVector pos = new PVector();
+      float height;
+      float speed;
+      float startTime;
+      
+      Tree() {
+        targetHeight = random(height*0.4, height * 0.8);
+        pos.x = random(0, width);
+        pos.y = random(height * 0.5, height * 0.8);
+        height = 0;
+        speed = random(0.1, 0.1);
+        startTime = random(0, 5);
+      }
+      
+      void draw() {
+        if(getElapsedSeconds() > startTime) height += (targetHeight-height) * speed;
+        
+        imageMode(CENTER);
+        targetHeight = height;
+        image(imgTree, pos.x, pos.y);//, imgTree.width * targetHeight / imgTree.height, targetHeight);
+      }
+    };
+    
     Scene4() {
       sceneName = "Scene4";
       println(storyName + "::" + sceneName);
@@ -193,10 +227,23 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
+      trees = new ArrayList();
+      int numTrees = 10;//(int)random(10, 15);
+      for(int i=0; i<numTrees; i++) {
+        trees.add(new Tree());
+      }
     }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      pushStyle();
+      
+      for(int i=0; i<trees.size(); i++) {
+        Tree t = (Tree)trees.get(i);
+        t.draw();
+      }
+      
+      popStyle();
     }
   };
 
