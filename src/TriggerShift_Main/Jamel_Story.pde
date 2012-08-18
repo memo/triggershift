@@ -27,11 +27,10 @@ class JamelStory extends TSStoryBase {
   //----------------------------------
   // jump through flag
   class Scene1 extends TSSceneBase {
-    PImage imgFlag;
+    PImage imgFlag = loadImage("jamel/flag.png");
     Scene1() {
       sceneName = "Scene1 FLAG INTRO";
       println(storyName + "::" + sceneName);
-      imgFlag = loadImage("jamel/flag.png");
     }
 
     //----------------
@@ -55,7 +54,7 @@ class JamelStory extends TSStoryBase {
   //----------------------------------
   // draw graph and pound signs
   class Scene2 extends TSSceneBase {
-    PImage imgPound;
+    PImage imgPound = loadImage("jamel/pound.png");
     ArrayList posArray;
     ArrayList particles;
 
@@ -63,7 +62,6 @@ class JamelStory extends TSStoryBase {
     Scene2() {
       sceneName = "Scene2 GRAPH";
       println(storyName + "::" + sceneName);
-      imgPound = loadImage("jamel/pound.png");
     }
 
     //----------------
@@ -76,9 +74,7 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       pushStyle();
-      PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
-      PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
-      PVector activeHand = leftHand.y < rightHand.y ? leftHand : rightHand;
+      PVector activeHand = getHighestHand();
 
       // add latest hand
       posArray.add(activeHand.get());
@@ -107,8 +103,6 @@ class JamelStory extends TSStoryBase {
       }
       endShape();
 
-
-
       // add particle if velocity is above threshold
       if (posArray.size() > 1) {
         PVector prv = ((PVector)posArray.get(posArray.size()-2)).get();
@@ -120,11 +114,11 @@ class JamelStory extends TSStoryBase {
           now.y += random(-r, r);
           now.z += random(-r, r);
           vel.mult(-0.2);
-          particles.add(new MSAParticle(now, vel, random(-30, 30), random(-3, 3), random(height/80, height/40), 1.0, 1.0, 0.95));
+          particles.add(new MSAParticle(now, vel, random(-30, 30), random(-3, 3), random(height/80, height/40), 1.0, 1.0, 0.98));
         }
       }
 
-      if (particles.size() > 30) particles.remove(0);  // trim array
+      if (particles.size() > 20) particles.remove(0);  // trim array
       // draw particles
       for (int i=0; i<particles.size(); i++) {
         MSAParticle p = (MSAParticle) particles.get(i);
@@ -137,8 +131,11 @@ class JamelStory extends TSStoryBase {
 
 
   //----------------------------------
+  // Tramp
   class Scene3 extends TSSceneBase {
-    // create triggers and other init in constructor
+    PImage imgTramp1 = loadImage("jamel/tramp1.png");
+    PImage imgTramp2 = loadImage("jamel/tramp2.png");
+    
     Scene3() {
       sceneName = "Scene3";
       println(storyName + "::" + sceneName);
