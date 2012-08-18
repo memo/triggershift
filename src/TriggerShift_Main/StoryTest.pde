@@ -27,11 +27,13 @@ class StoryTest extends TSStoryBase {
       setTrigger(new MouseClickTrigger());
     }
 
+    //----------------
     // this is called when the scene starts (i.e. is triggered)
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
     }
 
+    //----------------
     // this is the scenes draw function
     // use getElapsedSeconds() to see how long the scene has been running (useful for transitions)
     void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -50,11 +52,13 @@ class StoryTest extends TSStoryBase {
       setTrigger(new MouseClickTrigger());
     }
 
+    //----------------
     // this is called when the scene starts (i.e. is triggered)
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
     }
 
+    //----------------
     // this is the scenes draw function
     // use getElapsedSeconds() to see how long the scene has been running (useful for transitions)
     void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -74,11 +78,13 @@ class StoryTest extends TSStoryBase {
       setTrigger(new MouseClickTrigger());
     }
 
+    //----------------
     // this is called when the scene starts (i.e. is triggered)
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
     }
 
+    //----------------
     // this is the scenes draw function
     // use getElapsedSeconds() to see how long the scene has been running (useful for transitions)
     void onDraw(PImage userImage, TSSkeleton skeleton) {

@@ -20,9 +20,10 @@ class TSTransform2D {
   PVector targetSize;      // size of target area (in normalized coordinates) (i.e. how much of the output should the input be mapped to)
   PVector targetCenter;    // center coordinates of target area (in normalized coordinates) (i.e. where in the output should the input be mapped to)
 
-  protected PVector targetSizePixels;      // size of target area (in pixels)
-  protected PVector targetCenterPixels;    // center coordinates of target area (in pixels)
-  protected PVector targetTopLeftPixels;   // top left coordinates of target area (in pixels)
+  // calculated automatically:
+  PVector targetSizePixels;      // size of target area (in pixels)
+  PVector targetCenterPixels;    // center coordinates of target area (in pixels)
+  PVector targetTopLeftPixels;   // top left coordinates of target area (in pixels)
 
 
   //----------------------------------
