@@ -3,7 +3,7 @@ class CharleneStory extends TSStoryBase {
   CharleneStory(PApplet ref) {
     storyName = "CharleneStory";
     println(storyName + "::" + storyName);
-
+    addScene(new Scene_shatter_image());
     addScene(new Scene_flickBook());
     addScene(new Scene_clock_hands());
     addScene(new Scene_throw_coffee(ref));
@@ -434,7 +434,7 @@ class Scene_flickBook extends TSSceneBase {
 };
 
 
-//A mortar board flies from the sky and lands ont he head
+//Animated clock hands are superimposed over book
 class Scene_clock_hands extends TSSceneBase {
   int bookImageWidth = 200;
   int bookImageHeight = 200;
@@ -480,4 +480,58 @@ class Scene_clock_hands extends TSSceneBase {
     angle+=0.005;
   }
 };
+
+//A 
+class Scene_shatter_image extends TSSceneBase {
+ 
+  int imageWidth = 200;
+  int imageHeight = 200;
+  int numShards=8;
+  float angle=0.0;
+  boolean moveShards=false;
+  MSAParticle [] shards = new MSAParticle[numShards];
+  PImage [] shardImages = new PImage[numShards];
+  
+  Scene_shatter_image() {
+    println("Charlene::Scene_shatter_image");
+    for(int i=0;i<numShards;i++){
+      shardImages[i]=loadImage("chardene/bookPage_"+str(i)+".png");
+      shards[i]= new MSAParticle(transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0)), new PVector(0, 0, 0), 0.0, 0.0, imageWidth/2, 255, 0,0); 
+      // shards[i]= new MSAParticle(transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0)) , new PVector(0, 0, 0), random(-30, 30),  random(-3, 3), random(height/80, height/40), 1.0, 1.0, 1);
+    }
+    setTrigger(new KeyPressTrigger('w'));
+  }
+
+  // this is called when the scene starts (i.e. is triggered)
+  void onStart() {
+    println("Charlene::Scene_shatter_image::onStart");
+  }
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+    if(getElapsedSeconds()>4000&&!moveShards){
+      println("reset");
+      for(int i=0;i<numShards;i++){
+         shards[i].posVel=new PVector(random(-3 ,3) ,  random(4,8),0  );
+         shards[i].rotVel=  random(-3, 3);
+      }
+      moveShards=true;
+    }
+    for(int i=0;i<numShards;i++){
+      //override the fade
+      shards[i].alpha=1;
+      shards[i].draw(shardImages[i]);
+     //image( shardImages[i],transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0)).x,transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0)).y);
+    }
+  }
+};
+
+class Shard{
+  PImage sImage; 
+  PVector centre;
+  Shard(PImage _sImage, PVector _centre){
+    sImage =_sImage; 
+    centre =_centre;
+  }
+  
+}
+
 

@@ -3,6 +3,7 @@ class CelineStory extends TSStoryBase {
   CelineStory() {
     storyName = "CelineStory";
     println(storyName + "::" + storyName);
+    addScene(new Scene_flick_through_images());
     addScene(new Scene_shrink_grow_image());
     addScene(new Scene_ripPaper());
     addScene(new Scene_fade_in_colour());
@@ -387,6 +388,69 @@ class Card {
     }
     else {
       return false;
+    }
+  }
+};
+
+//A mortar board flies from the sky and lands ont he head
+class Scene_flick_through_images extends TSSceneBase {
+  int numImages=8;
+  PImage [] images = new PImage[numImages];
+
+  int imageWidth = 200;
+  int imageHeight = 200;
+  int frameIndex=0;
+  int topImageXShift=0;
+  int timeOutThresh=30;
+  int counter=timeOutThresh+1;
+  boolean firstTime=true;
+  Scene_flick_through_images() {
+    println("Charlene::Scene_flickBook");
+    for (int i=0;i<numImages;i++) {
+      //TODO replace with correct image url
+      images[i]=loadImage("chardene/bookPage_"+str(i)+".png");
+    }
+    setTrigger(new KeyPressTrigger('w'));
+  }
+
+  // this is called when the scene starts (i.e. is triggered)
+  void onStart() {
+    println("Charlene::Scene_flickBook::onStart");
+    for (int i=0;i<numImages;i++) {
+      images[i].resize(imageWidth, imageHeight);
+    }
+    topImageXShift=0;
+  }
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
+    image(images[frameIndex], picturePos.x, picturePos.y);
+
+    PImage section =images[frameIndex+1].get(0, 0, topImageXShift, height);
+    image(section, picturePos.x+images[frameIndex+1].width-topImageXShift, picturePos.y);
+
+    float thresh=0.01;
+    //if(timeOut>
+    //if the left hand is moving to the right and its a little while since we did this...
+    if (skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext).x >0+thresh && counter>timeOutThresh) {
+      float numSteps= 5.0;
+      float speed = images[frameIndex+1].width/numSteps;
+      //don't move past the left edge of where we want the image to go
+      if (topImageXShift<images[frameIndex+1].width ) {
+        topImageXShift+=speed;
+      }
+      else {
+        frameIndex++;
+        topImageXShift=0;
+        counter=0;
+      }
+    }
+    counter++;
+
+    if (counter>60) {
+    }
+    if (frameIndex>=images.length-1) {
+      frameIndex=0; // frameIndex=images.length-1;
     }
   }
 };
