@@ -66,7 +66,7 @@ class Scene_throw_coffee extends TSSceneBase {
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     PVector leftHand = skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
 
-    if (getElapsedSeconds()>2000) {
+    if (getElapsedSeconds()>2) {
       world.step();
       //tie the poly to the hand position
       PVector handMinusStartPos = new PVector((leftHand.x-(0.5*wCupImage))-startPos.x, (leftHand.y-(0.5*hCup))-startPos.y, 0);
@@ -80,7 +80,7 @@ class Scene_throw_coffee extends TSSceneBase {
       world.draw();
       image(mug, leftHand.x-wCupImage, leftHand.y-(0.5*hCupImage), wCupImage, hCupImage);
     }
-    if ( getElapsedSeconds() >4000) {
+    if ( getElapsedSeconds() >4) {
       //get a list of bodies
       ArrayList bodies= world.getBodies();
 
@@ -300,7 +300,7 @@ class Scene_vote_in_box extends TSSceneBase {
     float slotWidth= ballotBoxFront.width*0.5;
     float tolerance=10;
     //if the vote is near the slot and this is the first time
-    if (getElapsedSeconds()>2000) {
+    if (getElapsedSeconds()>2) {
       if (centreOfVote.x > slotPos.x && centreOfVote.x < slotPos.x + slotWidth && centreOfVote.y > slotPos.y && ! lock ) {
         inBox=true; 
         votePosAtStartOfAnimation = new PVector(leftHand.x-vote.width, leftHand.y-(0.5*vote.height));

@@ -62,7 +62,7 @@ class Scene_ripPaper extends TSSceneBase {
     PVector leftHalfPos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
     PVector rightHalfPos= new PVector(leftHalfPos.x+(leftHalf.width), leftHalfPos.y, leftHalfPos.z) ;
 
-    if (getElapsedSeconds()>8000) {
+    if (getElapsedSeconds()>8) {
       ///get the angle between hand and elbow
       leftHand.sub(leftElbow);
       leftHand.normalize();

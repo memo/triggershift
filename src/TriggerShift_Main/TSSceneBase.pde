@@ -38,7 +38,7 @@ class TSSceneBase {
 
   //----------------------------------
   float getElapsedSeconds() {
-    return (millis() - startTime);
+    return (millis() - startTime) * 0.001;
   }
 
   //----------------------------------
