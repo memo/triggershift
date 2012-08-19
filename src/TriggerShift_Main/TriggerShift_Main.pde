@@ -10,8 +10,8 @@ boolean useOpenNI = true;
 // params
 boolean doDrawKinectRGB = false;
 boolean doDrawKinectDepth = false;
-boolean doDrawKinectMasked = true;
-boolean doDrawSkeletons = true;
+boolean doDrawKinectMasked = false;
+boolean doDrawSkeletons = false;
 boolean doDrawDebugInfo = false;
 
 int maskBlurAmount = 0;
@@ -153,13 +153,6 @@ void draw() {
   transform2D.targetCenter = new PVector(videoPosX, videoPosY);
   transform2D.update();
 
-  if (openNIContext != null) {
-    if (doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
-    if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
-    if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
-    if (doDrawSkeletons) skeleton.drawAllSkeletons( openNIContext, transform2D);
-    if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
-  }
   /* 
    PVector rHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_RIGHT_HAND) ;
    PVector lHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_LEFT_HAND) ;
@@ -176,6 +169,14 @@ void draw() {
    */
 
   currentStory.draw(masker.getImage(), skeleton);
+    
+  if (openNIContext != null) {
+    if (doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
+    if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
+    if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
+    if (doDrawSkeletons) skeleton.drawAllSkeletons( openNIContext, transform2D);
+    if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
+  }
   
   cp5.getController("fps").setValue(frameRate);
   ((Textlabel)cp5.getController("FPS")).setText(str(frameRate));
@@ -197,6 +198,10 @@ void keyPressed() {
     case '.': currentStory.nextScene(); break;
     case ',': currentStory.prevScene(); break;
     case 'r': currentStory.startStory(); break;
+    
+    case 'c': doDrawKinectRGB ^= true; break;
+    case 's': doDrawSkeletons ^= true; break;
+    case 'd': doDrawDebugInfo ^= true; break;
     
   }
 }
