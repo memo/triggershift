@@ -139,7 +139,7 @@ void draw() {
     openNIContext.update();
 
     // apply mask
-    if (doDrawKinectMasked) masker.update(openNIContext, maskBlurAmount);
+    masker.update(openNIContext, maskBlurAmount);
 
     // update skeleton
     skeleton.update(openNIContext);
