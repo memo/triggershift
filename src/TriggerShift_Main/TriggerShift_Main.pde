@@ -5,7 +5,7 @@ import SimpleOpenNI.*;
 import controlP5.*;
 
 // SET THIS TO TRUE OR FALSE
-boolean useOpenNI = false;
+boolean useOpenNI = true;
 
 // params
 boolean doDrawKinectRGB = false;
@@ -23,7 +23,6 @@ float spreadArmExtent = 300.0;
 float imageRotateAngle = 6.156;
 float leftShift = 0.7;
 float upShift = 0.7;
-
 
 // vars
 ControlP5 cp5 = null;

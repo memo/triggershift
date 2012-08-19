@@ -1,8 +1,9 @@
 class CharleneStory extends TSStoryBase {
-
+  //TODO change scene names
   CharleneStory(PApplet ref) {
     storyName = "CharleneStory";
     println(storyName + "::" + storyName);
+    addScene(new Scene_spin_right_wrong());
     addScene(new Scene_shatter_image());
     addScene(new Scene_flickBook());
     addScene(new Scene_clock_hands());
@@ -17,7 +18,7 @@ class Scene_throw_coffee extends TSSceneBase {
   FWorld world;
   FMouseJoint joint;
   PApplet ref;
-  PImage mug=loadImage("chardene/mugUpright.png");
+  PImage mug=loadImage("charlene/mugUpright.png");
   int wCup;
   int hCup;
   int wCupImage;
@@ -58,7 +59,6 @@ class Scene_throw_coffee extends TSSceneBase {
     timer=0;
     cupIsGrabbed=false;
     drawingHasStarted=false;
-
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -201,7 +201,7 @@ class Scene_throw_coffee extends TSSceneBase {
 
 //A mortar board flies from the sky and lands ont he head
 class Scene_mortar_board_on_head extends TSSceneBase {
-  PImage mortarBoard= loadImage("chardene/mortarboard.png");
+  PImage mortarBoard= loadImage("charlene/mortarboard.png");
   PVector startPos;
   float inc;
   float numFramesForAnimation;
@@ -245,9 +245,9 @@ class Scene_mortar_board_on_head extends TSSceneBase {
 
 //A mortar board flies from the sky and lands ont he head
 class Scene_vote_in_box extends TSSceneBase {
-  PImage ballotBoxFront= loadImage("chardene/ballotboxFront.png");
-  PImage ballotBoxBack= loadImage("chardene/ballotboxBack.png");
-  PImage vote= loadImage("chardene/voteUpright.png");
+  PImage ballotBoxFront= loadImage("charlene/ballotboxFront.png");
+  PImage ballotBoxBack= loadImage("charlene/ballotboxBack.png");
+  PImage vote= loadImage("charlene/voteUpright.png");
 
   //is the centre of the vote card over the slot
   boolean inBox;
@@ -325,10 +325,10 @@ class Scene_vote_in_box extends TSSceneBase {
 //A mortar board flies from the sky and lands ont he head
 class Scene_zoom_from_space extends TSSceneBase {
 
-  PImage world= loadImage("chardene/world.png");
-  PImage country= loadImage("chardene/country.png");
-  PImage city= loadImage("chardene/city1.png");
-  PImage blended = loadImage("chardene/world.png");
+  PImage world= loadImage("charlene/world.png");
+  PImage country= loadImage("charlene/country.png");
+  PImage city= loadImage("charlene/city1.png");
+  PImage blended = loadImage("charlene/world.png");
 
   int imageWidth;
   int imageHeight;
@@ -404,7 +404,7 @@ class Scene_flickBook extends TSSceneBase {
   Scene_flickBook() {
     println("Charlene::Scene_flickBook");
     for (int i=0;i<numPageCells;i++) {
-      book[i]=loadImage("chardene/bookPage_"+str(i)+".png");
+      book[i]=loadImage("charlene/bookPage_"+str(i)+".png");
     }
     setTrigger(new KeyPressTrigger('w'));
   }
@@ -438,9 +438,9 @@ class Scene_flickBook extends TSSceneBase {
 class Scene_clock_hands extends TSSceneBase {
   int bookImageWidth = 200;
   int bookImageHeight = 200;
-  PImage hourHand=loadImage("chardene/hourHand.png");
-  PImage minuteHand=loadImage("chardene/hourHand.png");
-  PImage book = loadImage("chardene/bookPage_0.png");
+  PImage hourHand=loadImage("charlene/hourHand.png");
+  PImage minuteHand=loadImage("charlene/hourHand.png");
+  PImage book = loadImage("charlene/bookPage_0.png");
   int imageWidth = 20;
   int imageHeight = 100;
   float angle=0.0;
@@ -483,21 +483,28 @@ class Scene_clock_hands extends TSSceneBase {
 
 //A 
 class Scene_shatter_image extends TSSceneBase {
- 
+
   int imageWidth = 200;
   int imageHeight = 200;
   int numShards=8;
   float angle=0.0;
   boolean moveShards=false;
-  MSAParticle [] shards = new MSAParticle[numShards];
+  ShardParticle [] shards = new ShardParticle[numShards];
   PImage [] shardImages = new PImage[numShards];
-  
+
   Scene_shatter_image() {
     println("Charlene::Scene_shatter_image");
-    for(int i=0;i<numShards;i++){
-      shardImages[i]=loadImage("chardene/bookPage_"+str(i)+".png");
-      shards[i]= new MSAParticle(transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0)), new PVector(0, 0, 0), 0.0, 0.0, imageWidth/2, 255, 0,0); 
-      // shards[i]= new MSAParticle(transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0)) , new PVector(0, 0, 0), random(-30, 30),  random(-3, 3), random(height/80, height/40), 1.0, 1.0, 1);
+    int x=0;
+    int y=0;
+    int rowLength=3;
+    for (int i=0;i<numShards;i++) {
+      shardImages[i]=loadImage("charlene/bookPage_"+str(i)+".png");
+      shards[i]= new ShardParticle(transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0)), new PVector(0, 0, 0), 0.0, 0.0, imageWidth/2, 255, 0, 0); 
+      shards[i].setOffset(new PVector (x, y));
+      x++;
+      if (x>=rowLength) {
+        y++;
+      }
     }
     setTrigger(new KeyPressTrigger('w'));
   }
@@ -507,31 +514,68 @@ class Scene_shatter_image extends TSSceneBase {
     println("Charlene::Scene_shatter_image::onStart");
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    if(getElapsedSeconds()>4000&&!moveShards){
+    if (getElapsedSeconds()>4000&&!moveShards) {
       println("reset");
-      for(int i=0;i<numShards;i++){
-         shards[i].posVel=new PVector(random(-3 ,3) ,  random(4,8),0  );
-         shards[i].rotVel=  random(-3, 3);
+      for (int i=0;i<numShards;i++) {
+        shards[i].posVel=new PVector(random(-3, 3), random(4, 8), 0  );
+        shards[i].rotVel=  random(-3, 3);
       }
       moveShards=true;
     }
-    for(int i=0;i<numShards;i++){
+    for (int i=0;i<numShards;i++) {
       //override the fade
-      shards[i].alpha=1;
       shards[i].draw(shardImages[i]);
-     //image( shardImages[i],transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0)).x,transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0)).y);
+      //image( shardImages[i],transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0)).x,transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0)).y);
     }
   }
 };
+//circling left hand gesture above the shoulder rotates one image to another on the flip side
+class Scene_spin_right_wrong extends TSSceneBase {
 
-class Shard{
-  PImage sImage; 
-  PVector centre;
-  Shard(PImage _sImage, PVector _centre){
-    sImage =_sImage; 
-    centre =_centre;
+  int imageWidth = 200;
+  int imageHeight = 200;
+
+  PImage right=loadImage("charlene/right.png");
+  PImage wrong=loadImage("charlene/wrong.png");
+
+  Scene_spin_right_wrong() {
+    println("Charlene::Scene_spin_right_wrong");
+    right.resize(imageWidth, imageHeight);
+    wrong.resize(imageWidth, imageHeight);
+
+    setTrigger(new KeyPressTrigger('w'));
   }
-  
-}
 
+  // this is called when the scene starts (i.e. is triggered)
+  void onStart() {
+    println("Charlene::Scene_spin_right_wrong::onStart");
+  }
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+    pushMatrix();
+    PVector leftHand = skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_HAND);
+    PVector leftShoulder = skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_SHOULDER);
+    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.2, 0));
+    //get the angle between the left shoulder and the left hand as if looking down from above ie at the x z plane
+    float angle = atan2( leftShoulder.z- leftHand.z, leftShoulder.x- leftHand.x);
+    translate(picturePos.x+(0.5*imageWidth), picturePos.y);
+    //draw the front
+    pushMatrix();
+    rotateY(angle);
+    translate(-0.5*imageWidth, 0, 0);
+    rect(0, 0, imageWidth, imageHeight);
+    translate(0, 0, 1);
+    image(right, 0, 0);
+    popMatrix();
+    //draw the back
+    pushMatrix();
+
+    rotateY(angle+PI);
+    translate(0, 0, 2);
+
+    translate(-0.5*imageWidth, 0, 0);
+    image(wrong, 0, 0);
+    popMatrix();
+    popMatrix();
+  }
+};
 

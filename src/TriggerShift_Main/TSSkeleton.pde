@@ -208,7 +208,15 @@ class TSSkeleton {
     } 
     else return new PVector();
   }
+  //from simpleOPENNI examples/ credits to http://code.google.com/p/simple-openni
+  public PVector getJointCoords(SimpleOpenNI context, int userId, int jointType1)
+  {
+    PVector jointPos1 = new PVector();
+    // draw the joint position
+    context.getJointPositionSkeleton(userId, jointType1, jointPos1);
 
+    return jointPos1;
+  }
 
   //////////////GIVEN A JOINT ID A POSITION THIS WILL RETURN A MAPPED POSITION USING SETTINGS IN TSTRANSFORM2D///////////////////////////////
   public PVector getJointCoordsInWorld(int userId, int jointType, TSTransform2D transform2D, SimpleOpenNI  context) {
