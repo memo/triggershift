@@ -3,6 +3,7 @@ class CharleneStory extends TSStoryBase {
   CharleneStory(PApplet ref) {
     storyName = "CharleneStory";
     println(storyName + "::" + storyName);
+    addScene(new Scene_power_hands());
     addScene(new Scene_spin_right_wrong());
     addScene(new Scene_shatter_image());
     addScene(new Scene_flickBook());
@@ -576,6 +577,63 @@ class Scene_spin_right_wrong extends TSSceneBase {
     image(wrong, 0, 0);
     popMatrix();
     popMatrix();
+  }
+};
+
+
+//circling left hand gesture above the shoulder rotates one image to another on the flip side
+class Scene_power_hands extends TSSceneBase {
+
+  int imageWidth = 200;
+  int imageHeight = 200;
+
+  PImage orb=loadImage("charlene/glowingorb.png");
+  float alpha;
+  float inc;
+  float rot;
+  Scene_power_hands() {
+    println("Charlene::Scene_power_hands");
+    orb.resize(imageWidth, imageHeight);
+
+    setTrigger(new KeyPressTrigger('w'));
+  }
+
+  // this is called when the scene starts (i.e. is triggered)
+  void onStart() {
+    println("Charlene::Scene_power_hands::onStart");
+    alpha=0;
+    inc=2;
+    rot=0;
+  }
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+    pushStyle();
+    pushMatrix();
+    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
+    //add some pulsing glow
+    tint(255, 100+alpha);
+
+    //width is the distance between hands
+    float _width=rightHand.x-leftHand.x;
+    //get the height in proportion so we don't squash the image
+    float proportion = _width/imageWidth;
+    float _height=imageHeight*proportion;
+    //translate to drawing point
+    translate(leftHand.x, leftHand.y-(0.5*_height));
+    //tranlsate to rotation point
+    translate(_width/2, _height/2, -(0.5*_height));
+    //rotate
+    rotate(rot);
+    //tranlsate back from rotation point
+    translate(-_width/2, -_height/2, (0.5*_height));
+    image(orb, 0, 0, _width, _height );
+    alpha+=inc;
+    rot+=0.05;
+    if (alpha>=155||alpha<0) {
+      inc*=-1;
+    }
+    popMatrix();
+    popStyle();
   }
 };
 
