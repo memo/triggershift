@@ -41,6 +41,7 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       pushStyle();
+      transform2D.drawImage( userImage );
       image(imgFlag, 0, 0, width, height);
 
       // play BEEP sound
@@ -76,6 +77,7 @@ class JamelStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      transform2D.drawImage( userImage );
       pushStyle();
       PVector activeHand = getHighestHand();
 
@@ -154,6 +156,8 @@ class JamelStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      transform2D.drawImage( userImage );
+
       pushStyle();
       
       // position of hand relative to waist->head
@@ -237,13 +241,15 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       pushStyle();
-      
       for(int i=0; i<trees.size(); i++) {
         Tree t = (Tree)trees.get(i);
         t.draw();
       }
-      
       popStyle();
+      
+      pushStyle();
+      transform2D.drawImage( userImage );
+      popStyle();      
     }
   };
 
