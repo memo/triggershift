@@ -3,9 +3,10 @@ class CharleneStory extends TSStoryBase {
   CharleneStory(PApplet ref) {
     storyName = "CharleneStory";
     println(storyName + "::" + storyName);
+    addScene(new Scene_drop_set());
+    addScene(new Scene_shatter_image());
     addScene(new Scene_power_hands());
     addScene(new Scene_spin_right_wrong());
-    addScene(new Scene_shatter_image());
     addScene(new Scene_flickBook());
     addScene(new Scene_clock_hands());
     addScene(new Scene_throw_coffee(ref));
@@ -487,21 +488,24 @@ class Scene_shatter_image extends TSSceneBase {
 
   int imageWidth = 200;
   int imageHeight = 200;
-  int numShards=8;
+  int numShards=10;
   float angle=0.0;
   boolean moveShards=false;
   ShardParticle [] shards = new ShardParticle[numShards];
   PImage [] shardImages = new PImage[numShards];
+  boolean handOver;
+  PVector picturePos;
 
   Scene_shatter_image() {
     println("Charlene::Scene_shatter_image");
     int x=0;
     int y=0;
-    int rowLength=3;
+    float rowLength=4.0;
+    picturePos =transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
     for (int i=0;i<numShards;i++) {
-      shardImages[i]=loadImage("charlene/bookPage_"+str(i)+".png");
-      shards[i]= new ShardParticle(transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0)), new PVector(0, 0, 0), 0.0, 0.0, imageWidth/2, 255, 0, 0); 
-      shards[i].setOffset(new PVector (x, y));
+      shardImages[i]=loadImage("charlene/shard"+str(i+1)+".png");
+      shards[i]= new ShardParticle(picturePos, new PVector(0, 0, 0), 0.0, 0.0, imageWidth/2, 255, 0, 0); 
+      shards[i].setOffset(new PVector (x*(imageWidth/rowLength), y*(0.333*imageHeight)));
       x++;
       if (x>=rowLength) {
         y++;
@@ -513,9 +517,16 @@ class Scene_shatter_image extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("Charlene::Scene_shatter_image::onStart");
+    handOver=false;
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    if (getElapsedSeconds()>4000&&!moveShards) {
+
+    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    if (leftHand.x>picturePos.x && leftHand.x<picturePos.x+imageWidth && leftHand.y>picturePos.y && leftHand.y<picturePos.y+imageHeight) {
+      handOver=true;
+    }
+
+    if (handOver&&!moveShards) {
       println("reset");
       for (int i=0;i<numShards;i++) {
         shards[i].posVel=new PVector(random(-3, 3), random(4, 8), 0  );
@@ -524,9 +535,7 @@ class Scene_shatter_image extends TSSceneBase {
       moveShards=true;
     }
     for (int i=0;i<numShards;i++) {
-      //override the fade
       shards[i].draw(shardImages[i]);
-      //image( shardImages[i],transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0)).x,transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0)).y);
     }
   }
 };
@@ -636,4 +645,64 @@ class Scene_power_hands extends TSSceneBase {
     popStyle();
   }
 };
+
+
+
+//two arms dropping down makes curtain fall
+class Scene_drop_set extends TSSceneBase {
+
+  int imageWidth = width;
+  int imageHeight = height;
+  PVector picturePos;
+  PImage theatre=loadImage("charlene/theatre.png");
+  boolean startDrop;
+  boolean endDrop;
+  
+  Scene_drop_set() {
+    println("Charlene::Scene_drop_set");
+    theatre.resize(imageWidth, imageHeight);
+
+    setTrigger(new KeyPressTrigger('w'));
+  }
+
+  // this is called when the scene starts (i.e. is triggered)
+  void onStart() {
+    println("Charlene::Scene_drop_set::onStart");
+    startDrop=false;
+    endDrop=false;
+  }
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+    pushStyle();
+    pushMatrix();
+    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
+    PVector head = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
+    //SKEL_WAIST is not working! 
+    PVector waist = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HIP, transform2D, openNIContext);
+    
+   float maxRange = waist.y-head.y;
+println(maxRange+" "+waist.y+" "+head.y);
+    //if both arms go above the head start linking the image pos to hands
+    
+    if (leftHand.y<head.y && rightHand.y<head.y) startDrop = true;
+    
+    if (startDrop) {
+      if(!endDrop){
+        float mappedY = map (leftHand.y-head.y, 0, maxRange,0, height+50);
+        picturePos= new PVector(0,mappedY);
+      }
+       if(picturePos.y>height){
+        endDrop=true; 
+       }
+    }
+    else {
+       picturePos= new PVector(0,0);
+    }
+    image(theatre, picturePos.x, picturePos.y);
+
+    popMatrix();
+    popStyle();
+  }
+};
+
 

@@ -405,17 +405,17 @@ class Scene_flick_through_images extends TSSceneBase {
   int counter=timeOutThresh+1;
   boolean firstTime=true;
   Scene_flick_through_images() {
-    println("Charlene::Scene_flickBook");
+    println("Celine::Scene_flickBook");
     for (int i=0;i<numImages;i++) {
       //TODO replace with correct image url
-      images[i]=loadImage("chardene/bookPage_"+str(i)+".png");
+      images[i]=loadImage("charlene/bookPage_"+str(i)+".png");
     }
     setTrigger(new KeyPressTrigger('w'));
   }
 
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
-    println("Charlene::Scene_flickBook::onStart");
+    println("Celine::Scene_flickBook::onStart");
     for (int i=0;i<numImages;i++) {
       images[i].resize(imageWidth, imageHeight);
     }
