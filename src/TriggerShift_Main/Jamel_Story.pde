@@ -499,7 +499,7 @@ class JamelStory extends TSStoryBase {
     float x1, x2;
     
     Scene8() {
-      sceneName = "Scene8";
+      sceneName = "Scene8 PRISON";
       println(storyName + "::" + sceneName);
     }
 
@@ -529,9 +529,10 @@ class JamelStory extends TSStoryBase {
   };
 
   //------------------------------------------------------------------------------------------------------
+  // no marriage
   class Scene9 extends TSSceneBase {
     Scene9() {
-      sceneName = "Scene9";
+      sceneName = "Scene9 NOMARRIAGE";
       println(storyName + "::" + sceneName);
     }
 
@@ -542,13 +543,15 @@ class JamelStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      drawMaskedUser();
     }
   };
 
   //------------------------------------------------------------------------------------------------------
+  // forever
   class Scene10 extends TSSceneBase {
     Scene10() {
-      sceneName = "Scene10";
+      sceneName = "Scene10 FOREVER";
       println(storyName + "::" + sceneName);
     }
 
@@ -559,6 +562,7 @@ class JamelStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      drawMaskedUser();
     }
   };
 
