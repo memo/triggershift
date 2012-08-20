@@ -47,6 +47,8 @@ class JamelStory extends TSStoryBase {
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       drawMaskedUser();
       pushStyle();
+      imageMode(CORNER);
+
       if (isRipped == false) {
         image(imgFlag, 0, 0, width, height);
       } 
@@ -182,9 +184,6 @@ class JamelStory extends TSStoryBase {
       float s = h / imgTramp1.height;
       float w = imgTramp1.width * s;
 
-      //      imgTrampMasked1 = createImage(imgTramp1.width, (int)(imgTramp1.height * (1-t)), ARGB);
-      //      imgTrampMasked2 = createImage(imgTramp2.width, (int)(imgTramp2.height * t), ARGB);
-
       imgTrampMasked1.loadPixels();
       Arrays.fill(imgTrampMasked1.pixels, 0);
       imgTrampMasked1.updatePixels();
@@ -198,6 +197,7 @@ class JamelStory extends TSStoryBase {
       int y2 = imgTrampMasked2.height - h2;
       imgTrampMasked2.copy(imgTramp2, 0, y2, imgTramp2.width, h2, 0, y2, imgTramp2.width, h2);
 
+      imageMode(CORNER);
       image(imgTrampMasked1, width*0.2, 0, imgTrampMasked1.width * s, imgTrampMasked1.height * s);
       image(imgTrampMasked2, width*0.2, 0, imgTrampMasked2.width * s, imgTrampMasked2.height * s);
 
@@ -395,9 +395,6 @@ class JamelStory extends TSStoryBase {
         float s = h / imgTramp1.height;
         float w = imgTramp1.width * s;
 
-        //      imgTrampMasked1 = createImage(imgTramp1.width, (int)(imgTramp1.height * (1-t)), ARGB);
-        //      imgTrampMasked2 = createImage(imgTramp2.width, (int)(imgTramp2.height * t), ARGB);
-
         imgTrampMasked1.loadPixels();
         Arrays.fill(imgTrampMasked1.pixels, 0);
         imgTrampMasked1.updatePixels();
@@ -411,6 +408,7 @@ class JamelStory extends TSStoryBase {
         int y2 = imgTrampMasked2.height - h2;
         imgTrampMasked2.copy(imgTramp2, 0, y2, imgTramp2.width, h2, 0, y2, imgTramp2.width, h2);
 
+        imageMode(CORNER);
         image(imgTrampMasked1, width*0.2, 0, imgTrampMasked1.width * s, imgTrampMasked1.height * s);
         image(imgTrampMasked2, width*0.2, 0, imgTrampMasked2.width * s, imgTrampMasked2.height * s);
 
@@ -447,6 +445,7 @@ class JamelStory extends TSStoryBase {
   };
 
   //------------------------------------------------------------------------------------------------------
+  // hair
   class Scene7 extends TSSceneBase {
     PImage imgHair1 = loadImage("jamel/interestinghair.png");
     PImage imgHair2 = loadImage("jamel/boringhair.png");
@@ -494,7 +493,11 @@ class JamelStory extends TSStoryBase {
   };
 
   //------------------------------------------------------------------------------------------------------
+  // prison
   class Scene8 extends TSSceneBase {
+    PImage imgBars = loadImage("jamel/prisonbars.png");
+    float x1, x2;
+    
     Scene8() {
       sceneName = "Scene8";
       println(storyName + "::" + sceneName);
@@ -503,10 +506,25 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
+      x1 = 0;
+      x2 = width;
     }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      drawMaskedUser();
+      
+      pushStyle();
+      imageMode(CORNER);
+      float h = height;
+      float w = h / imgBars.height * width;
+      
+      x1 += (map(getLeftHand().x, getHip().x - getMaxArmLength(), getHip().x, 0, width/2) - x1) * 0.5;
+      x2 += (map(getRightHand().x, getHip().x + getMaxArmLength(), getHip().x, width, width/2) - x2) * 0.5;
+      
+      image(imgBars, x1 - w, 0, w, h);
+      image(imgBars, x2, 0, w, h);
+      popStyle();
     }
   };
 
