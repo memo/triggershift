@@ -3,13 +3,15 @@ class CharleneStory extends TSStoryBase {
   CharleneStory(PApplet ref) {
     storyName = "CharleneStory";
     println(storyName + "::" + storyName);
+
+    addScene(new Scene_clock_hands());
+    addScene(new Scene_throw_coffee(ref));
+
     addScene(new Scene_drop_set());
     addScene(new Scene_shatter_image());
     addScene(new Scene_power_hands());
     addScene(new Scene_spin_right_wrong());
     addScene(new Scene_flickBook());
-    addScene(new Scene_clock_hands());
-    addScene(new Scene_throw_coffee(ref));
     addScene(new Scene_mortar_board_on_head());
     addScene(new Scene_vote_in_box());
     addScene(new Scene_zoom_from_space());
@@ -21,19 +23,18 @@ class Scene_throw_coffee extends TSSceneBase {
   FMouseJoint joint;
   PApplet ref;
   PImage mug=loadImage("charlene/mugUpright.png");
-  int wCup;
-  int hCup;
-  int wCupImage;
-  int hCupImage;
-  int timer;
-  boolean cupIsGrabbed;
-  boolean drawingHasStarted;
+  PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.01, 0.5, 0));
+  int imageWidth;
+  int imageHeight;
+
   PVector startPos;
 
   //the blobs of coffee
-  int  numBlobs= 10;
+  int  numBlobs= 30;
   String[] words= new String[numBlobs];
-
+  ShardParticle [] blobs = new ShardParticle[numBlobs];
+  boolean isThrown;
+  boolean lock;
   Scene_throw_coffee(PApplet _ref) {
     println("Charlene::Scene_throw_coffee");
     ref =_ref;
@@ -42,8 +43,15 @@ class Scene_throw_coffee extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("Charlene::Scene_throw_coffee::onStart");
-    setupWorld();
-    setupPhysicsObjects();
+
+    imageWidth = 200;
+    imageHeight = 200;
+    isThrown=false;
+    lock=false;
+    mug.resize(imageWidth, imageHeight);
+    //  setupWorld();
+    //   setupPhysicsObjects();
+    words[0]="biology";
     words[1]="geography";
     words[2]="history";
     words[3]="ICT";
@@ -54,150 +62,60 @@ class Scene_throw_coffee extends TSSceneBase {
     words[8]="careers";
     words[9]="ignorance";
 
-    wCup=50;
-    hCup=80;
-    wCupImage=3*wCup;
-    hCupImage=3*hCup;
-    timer=0;
-    cupIsGrabbed=false;
-    drawingHasStarted=false;
+
+    int index=0;
+    for (int i=0;i<numBlobs;i++) {
+      blobs[i]= new ShardParticle(picturePos, new PVector(0, 0, 0), 0.0, 0.0, imageWidth/6, 255, 0, 0);
+      blobs[i].setWord(words[index]);
+      index++;
+      if (index>=10) {
+        index=0;
+      }
+    }
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    PVector leftHand = skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    //PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
 
-    if (getElapsedSeconds()>2) {
-      world.step();
-      //tie the poly to the hand position
-      PVector handMinusStartPos = new PVector((leftHand.x-(0.5*wCupImage))-startPos.x, (leftHand.y-(0.5*hCup))-startPos.y, 0);
-
-      if (dist(startPos.x, startPos.y, leftHand.x-(0.5*wCupImage), leftHand.y)<50) {
-        cupIsGrabbed=true;
+    pushMatrix();
+    //if leftHand vector is up fast, then add an upward velocity to particles
+    //if the left hand is moving to the right increment the page index
+    float thresh=0.02;
+    fill(166, 129, 54);
+    if (getElapsedSeconds()>4) {
+      if (skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext).y >thresh && !lock ) {
+        isThrown=true;
       }
-      if (cupIsGrabbed) {
-        joint.setTarget(handMinusStartPos.x-(0.5*wCupImage), handMinusStartPos.y);
-      }
-      world.draw();
-      image(mug, leftHand.x-wCupImage, leftHand.y-(0.5*hCupImage), wCupImage, hCupImage);
-    }
-    if ( getElapsedSeconds() >4) {
-      //get a list of bodies
-      ArrayList bodies= world.getBodies();
-
-      // println(bodies.size()+" "+words.length);
-      for (int i=0;i<bodies.size();i+=20) {
-        pushMatrix();
-        FBody body = (FBody) bodies.get(i);
-        //check it's not the cup
-        try {
-          FBody parent = body.getParent();
-
-          String [] explodedBodyName = splitTokens(parent.getName(), "_");
-          if (explodedBodyName[0].equals("coffee")) {
-
-            //get position and rotation
-            float x=body.getX();
-            float y=body.getY();
-            if (dist(x, y, leftHand.x, leftHand.y)>100) {
-              float angle = atan2(body.getVelocityY(), body.getVelocityX());
-              println(angle);
-              fill(255);
-              int index=int(explodedBodyName[1]);
-              translate(x-(0.5*textWidth(words[index])), y);
-              rotate(angle);
-              text(words[index], 0, 0);
+      if (isThrown) {
+        if (!lock) {
+          for (int i=0;i<blobs.length;i++) {
+            blobs[i].setPosVel(new PVector(random(-3, 3), random(-2, -8), 0));
+            blobs[i].setRotVel(random(-3, 3));
+            float distThresh= 50;
+            if (dist(blobs[i].pos.x, blobs[i].pos.y, leftHand.x, leftHand.y )>distThresh) {
+              blobs[i].showWord=true;
             }
-          }
+          } 
+          lock=true;
         }
-        catch(Exception e) {
-        }
-        popMatrix();
       }
+      else {
+        for (int i=0;i<blobs.length;i++) {
+          blobs[i].setPos(new PVector(leftHand.x-(0.4*mug.width), leftHand.y, 0)  );
+        }
+      }
+      for (int i=0;i<blobs.length;i++) {
+        blobs[i].draw();
+      }
+      //if particle distance is a little away from the mug
+      //turn the particles into words
+      //ellipse(leftHand.x, leftHand.y, 20, 20);
     }
-  }
-  void addShape(PVector [] vertices, PVector startPos) {
-    FPoly l = new FPoly();
-    for (int i=0;i<vertices.length;i++) {
-      l.vertex(vertices[i].x, vertices[i].y);
-    }
-    l.setStatic(false);
-    l.setFill(200);
-    l.setFriction(0);
-    l.setDensity(1);
-    l.setName("cup");
-    l.setGrabbable(false);
-    l.setRotatable(false);
-    world.add(l);
-    joint =new FMouseJoint(l, 0, 0) ;
-    joint.setAnchor(0, 0);
-    joint.setStroke(0);
-    joint.setDamping(0);
-    joint.setDrawable(false);
-    world.add(joint);
-  }
-  void setupWorld() {
-    Fisica.init(ref);
+    image(mug, leftHand.x-(0.7*mug.width), leftHand.y-(0.7*mug.height));
 
-    world = new FWorld();
-    world.setGravity(0, 300);
-  }
-  void setupPhysicsObjects() {
-    //  PVector startPos =new PVector(500,500);// skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);//
-    // startPos = skeleton.getJointCoordsInWorld(1, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);//
-    startPos =     transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.7, 0));
-    println("startPos "+startPos);
-    float x;
-    float y;
-    int thickness=2;
-    PVector [] mug;
-    mug = new PVector[9];
-    x=startPos.x;
-    y=startPos.y-(0.5*wCup);
-    //add a u shape to contain the particles
-    //  x=0;
-    // y=0;
-
-    //original u shape = no lid
-    mug[0]=new PVector(x, y);
-    mug[1]=new PVector(x+thickness, y);
-    mug[2]=new PVector(x+thickness, y+hCup-thickness);
-    mug[3]=new PVector(x+wCup-thickness, y+hCup-thickness);
-    mug[4]=new PVector(x+wCup-thickness, y);
-    mug[5]=new PVector(x+wCup, y);
-    mug[6]=new PVector(x+wCup, y+hCup);
-    mug[7]=new PVector(x, y+hCup);
-    mug[8]=new PVector(x, y);
-
-    /* mug[0]=new PVector(x, y);
-     mug[1]=new PVector(x+thickness, y);
-     mug[2]=new PVector(x+thickness, y+hCup-thickness);
-     mug[3]=new PVector(x+wCup-thickness, y+hCup-thickness);
-     mug[4]=new PVector(x+wCup-thickness, y);
-     mug[5]=new PVector(x, y);
-     mug[6]=new PVector(x, y-thickness);
-     mug[7]=new PVector(x+wCup, y-thickness);
-     mug[8]=new PVector(x+wCup, y+hCup);
-     mug[9]=new PVector(x, y+hCup);
-     mug[10]=new PVector(x, y);*/
-
-    //make a poly and add to world
-    addShape(mug, startPos);
-
-    println(x+" start pos of my "+y);
-    for (int i=0;i<numBlobs;i++) {
-      FBlob b = new FBlob();
-      float bSize = random(10, 40);
-
-      b.setAsCircle(x+ random(30, wCup-30), y+ random(30, hCup-30 ), bSize, 20);
-      b.setNoStroke();
-      b.setDensity(1);
-      b.setFriction(0);
-      b.setGrabbable(false);
-      b.setName("coffee_"+str(i));
-      //   b.setStrokeWeight(0);
-      b.setFill(166, 129, 54);
-      world.add(b);
-    }
+    popMatrix();
+    text(str(isThrown), 100, 100);
   }
 };
 
@@ -273,6 +191,10 @@ class Scene_vote_in_box extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("Charlene::Scene_vote_in_box::onStart");
+    wBallotBox=200;
+    hBallotBox=200;
+    wVote=120;
+    hVote=120;
     ballotBoxFront.resize(wBallotBox, hBallotBox);
     ballotBoxBack.resize(wBallotBox, hBallotBox);
     vote.resize(wVote, hVote);
@@ -283,11 +205,8 @@ class Scene_vote_in_box extends TSSceneBase {
     lock=false;
 
     //scale for imagee
-    wBallotBox=200;
-    hBallotBox=200;
-    wVote=120;
-    hVote=120;
-    yInc=0;
+
+      yInc=0;
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -344,13 +263,13 @@ class Scene_zoom_from_space extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("Charlene::Scene_zoom_from_space::onStart");
+
+    imageWidth = 200;
+    imageHeight = 200;
     country.resize(imageWidth, imageHeight);
     world.resize(imageWidth, imageHeight);
     city.resize(imageWidth, imageHeight);
     blended.resize(imageWidth, imageHeight);
-
-    imageWidth = 200;
-    imageHeight = 200;
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -659,7 +578,7 @@ class Scene_drop_set extends TSSceneBase {
   PImage theatre=loadImage("charlene/theatre.png");
   boolean startDrop;
   boolean endDrop;
-  
+
   Scene_drop_set() {
     println("Charlene::Scene_drop_set");
     theatre.resize(imageWidth, imageHeight);

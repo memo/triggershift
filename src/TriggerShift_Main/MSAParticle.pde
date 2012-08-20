@@ -2,7 +2,7 @@
 class MSAParticle {
   PVector pos, posVel;
   float rot, rotVel, radius, alpha, drag, fade;
-
+  
   MSAParticle(PVector _pos, PVector _posVel, float _rot, float _rotVel, float _radius, float _alpha, float _drag, float _fade) {
     pos = _pos.get();
     posVel = _posVel.get();
