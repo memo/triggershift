@@ -37,7 +37,7 @@ class StoryTest extends TSStoryBase {
     // this is the scenes draw function
     // use getElapsedSeconds() to see how long the scene has been running (useful for transitions)
     void onDraw(PImage userImage, TSSkeleton skeleton) {
-      transform2D.drawImage( userImage );
+      drawMaskedUser();
       fill(255, 0, 0);
       ellipse(50, 200, 300, 200);
     }
@@ -64,7 +64,7 @@ class StoryTest extends TSStoryBase {
     // use getElapsedSeconds() to see how long the scene has been running (useful for transitions)
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       //      println(storyName + "::Scene2::onDraw");
-      transform2D.drawImage( userImage );
+      drawMaskedUser();
       fill(0, 255, 0);
       ellipse(250, 200, 300, 200);
     }
@@ -91,7 +91,7 @@ class StoryTest extends TSStoryBase {
     // use getElapsedSeconds() to see how long the scene has been running (useful for transitions)
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       //      println(storyName + "::Scene2::onDraw");
-      transform2D.drawImage( userImage );
+      drawMaskedUser();
       fill(0, 0, 255);
       ellipse(450, 200, 300, 200);
     }

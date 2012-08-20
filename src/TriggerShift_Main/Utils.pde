@@ -40,3 +40,7 @@ PVector getHip() {
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HIP, transform2D, openNIContext);
 }
 
+
+void drawMaskedUser() {
+   transform2D.drawImage( masker.getImage() );
+}
