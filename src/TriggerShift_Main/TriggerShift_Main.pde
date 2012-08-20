@@ -1,3 +1,8 @@
+import ddf.minim.*;
+import ddf.minim.signals.*;
+import ddf.minim.analysis.*;
+import ddf.minim.effects.*;
+
 import processing.opengl.*;
 import fisica.*;
 
@@ -30,6 +35,9 @@ SimpleOpenNI  openNIContext = null;
 TSSkeleton skeleton = null;
 TSTransform2D transform2D = null;
 TSMasker masker = null;
+Minim minim;
+AudioPlayer player;
+
 int lastUserId = 1;
 //for printing debug info to screen
 PFont debugFont;
@@ -39,6 +47,11 @@ TSStoryBase currentStory = null;
 int numStorys = 6; // including test story
 //ArrayList stories = new ArrayList();
 
+void setupAudio() {
+  minim = new Minim(this);
+  //a default song to load - if we don't have this calling .close() gives null pointer
+  player = minim.loadFile("song1.mp3");
+}
 //----------------------------------
 void setupUI() {
   cp5 = new ControlP5(this);
@@ -47,7 +60,7 @@ void setupUI() {
   cp5.addTextlabel("FPS").setText("calculating...").linebreak();
   cp5.addTextlabel("STORY").setText("loading...").linebreak();
 
-                    
+
   cp5.addTab("Display");
   cp5.addToggle("doDrawKinectRGB").linebreak().moveTo("Display");
   cp5.addToggle("doDrawKinectDepth").linebreak().moveTo("Display");
@@ -64,35 +77,46 @@ void setupUI() {
   cp5.addSlider("imageRotateAngle", 0, TWO_PI).linebreak().moveTo("Display");
   cp5.addSlider("leftShift", 0, 1).linebreak().moveTo("Display");
   cp5.addSlider("upShift", 0, 1).linebreak().moveTo("Display");
-
 }
 
 
 //----------------------------------
 void setStory(int i) {
-  if(currentStory != null) currentStory.endStory();
-  
+  if (currentStory != null) currentStory.endStory();
+
   switch(i) {
-    case 0: currentStory = new StoryTest(); break;
-    case 1: currentStory = new ManiStory(); break;
-    case 2: currentStory = new LornaStory(); break;
-    case 3: currentStory = new JamelStory(); break;
-    case 4: currentStory = new CelineStory(); break;
-    case 5: currentStory = new CharleneStory(this); break;
+  case 0: 
+    currentStory = new StoryTest(); 
+    break;
+  case 1: 
+    currentStory = new ManiStory(); 
+    break;
+  case 2: 
+    currentStory = new LornaStory(); 
+    break;
+  case 3: 
+    currentStory = new JamelStory(); 
+    break;
+  case 4: 
+    currentStory = new CelineStory(); 
+    break;
+  case 5: 
+    currentStory = new CharleneStory(this); 
+    break;
   }
-    
+
   currentStory.startStory();
 }
 
 //----------------------------------
 void setupStories() {
-//  stories.add(new StoryTest());  // 0
-//  stories.add(new ManiStory());  // 1
-//  stories.add(new LornaStory());  // 2
-//  stories.add(new JamelStory());  // 3
-//  stories.add(new CelineStory());  // 4
-//  stories.add(new CharleneStory(this));  // 5
-//  
+  //  stories.add(new StoryTest());  // 0
+  //  stories.add(new ManiStory());  // 1
+  //  stories.add(new LornaStory());  // 2
+  //  stories.add(new JamelStory());  // 3
+  //  stories.add(new CelineStory());  // 4
+  //  stories.add(new CharleneStory(this));  // 5
+  //  
   setStory(0);  // use keyboard 0-5 to choose story
 }
 
@@ -125,8 +149,9 @@ void setup() {
   debugFont=loadFont("AlBayan-48.vlw");
   textFont(debugFont, 48);
 
+  setupAudio();
   stroke(255, 255, 255);
- // smooth();
+  // smooth();
 }
 
 
@@ -170,7 +195,7 @@ void draw() {
    */
 
   currentStory.draw(masker.getImage(), skeleton);
-    
+
   if (openNIContext != null) {
     if (doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
     if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
@@ -178,7 +203,7 @@ void draw() {
     if (doDrawSkeletons) skeleton.drawAllSkeletons( openNIContext, transform2D);
     if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
   }
-  
+
   cp5.getController("fps").setValue(frameRate);
   ((Textlabel)cp5.getController("FPS")).setText(str(frameRate));
   ((Textlabel)cp5.getController("STORY")).setText(currentStory.storyName);
@@ -190,20 +215,43 @@ void draw() {
 //----------------------------------
 void keyPressed() {
   switch(key) {
-    case '0': setStory(0); break;
-    case '1': setStory(1); break;
-    case '2': setStory(2); break;
-    case '3': setStory(3); break;
-    case '4': setStory(4); break;
-    case '5': setStory(5); break;
-    case '.': currentStory.nextScene(); break;
-    case ',': currentStory.prevScene(); break;
-    case 'r': currentStory.startStory(); break;
-    
-    case 'c': doDrawKinectRGB ^= true; break;
-    case 's': doDrawSkeletons ^= true; break;
-    case 'd': doDrawDebugInfo ^= true; break;
-    
+  case '0': 
+    setStory(0); 
+    break;
+  case '1': 
+    setStory(1); 
+    break;
+  case '2': 
+    setStory(2); 
+    break;
+  case '3': 
+    setStory(3); 
+    break;
+  case '4': 
+    setStory(4); 
+    break;
+  case '5': 
+    setStory(5); 
+    break;
+  case '.': 
+    currentStory.nextScene(); 
+    break;
+  case ',': 
+    currentStory.prevScene(); 
+    break;
+  case 'r': 
+    currentStory.startStory(); 
+    break;
+
+  case 'c': 
+    doDrawKinectRGB ^= true; 
+    break;
+  case 's': 
+    doDrawSkeletons ^= true; 
+    break;
+  case 'd': 
+    doDrawDebugInfo ^= true; 
+    break;
   }
 }
 
@@ -238,7 +286,7 @@ void onExitUser(int userId)
 
 void onReEnterUser(int userId)
 {
-   lastUserId = userId;
+  lastUserId = userId;
   println("onReEnterUser - userId: " + userId);
   resetSkeletonStats();
 }
@@ -280,5 +328,17 @@ void onStartPose(String pose, int userId)
 void onEndPose(String pose, int userId)
 {
   println("onEndPose - userId: " + userId + ", pose: " + pose);
+}
+void stop()
+{
+  // the AudioPlayer you got from Minim.loadFile()
+  player.close();
+  // the AudioInput you got from Minim.getLineIn()
+  minim.stop();
+  // this calls the stop method that
+  // you are overriding by defining your own
+  // it must be called so that your application
+  // can do all the cleanup it would normally do
+  super.stop();
 }
 

@@ -518,9 +518,11 @@ class Scene_shatter_image extends TSSceneBase {
   void onStart() {
     println("Charlene::Scene_shatter_image::onStart");
     handOver=false;
+    player.close();
+    player = minim.loadFile("song2.mp3");
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-
+    player.play();
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     if (leftHand.x>picturePos.x && leftHand.x<picturePos.x+imageWidth && leftHand.y>picturePos.y && leftHand.y<picturePos.y+imageHeight) {
       handOver=true;
@@ -670,8 +672,11 @@ class Scene_drop_set extends TSSceneBase {
     println("Charlene::Scene_drop_set::onStart");
     startDrop=false;
     endDrop=false;
+    player.close();
+    player = minim.loadFile("song1.mp3");
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
+    player.play();
     pushStyle();
     pushMatrix();
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
@@ -679,24 +684,24 @@ class Scene_drop_set extends TSSceneBase {
     PVector head = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
     //SKEL_WAIST is not working! 
     PVector waist = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HIP, transform2D, openNIContext);
-    
-   float maxRange = waist.y-head.y;
-println(maxRange+" "+waist.y+" "+head.y);
+
+    float maxRange = waist.y-head.y;
+    println(maxRange+" "+waist.y+" "+head.y);
     //if both arms go above the head start linking the image pos to hands
-    
+
     if (leftHand.y<head.y && rightHand.y<head.y) startDrop = true;
-    
+
     if (startDrop) {
-      if(!endDrop){
-        float mappedY = map (leftHand.y-head.y, 0, maxRange,0, height+50);
-        picturePos= new PVector(0,mappedY);
+      if (!endDrop) {
+        float mappedY = map (leftHand.y-head.y, 0, maxRange, 0, height+50);
+        picturePos= new PVector(0, mappedY);
       }
-       if(picturePos.y>height){
-        endDrop=true; 
-       }
+      if (picturePos.y>height) {
+        endDrop=true;
+      }
     }
     else {
-       picturePos= new PVector(0,0);
+      picturePos= new PVector(0, 0);
     }
     image(theatre, picturePos.x, picturePos.y);
 
@@ -704,5 +709,4 @@ println(maxRange+" "+waist.y+" "+head.y);
     popStyle();
   }
 };
-
 
