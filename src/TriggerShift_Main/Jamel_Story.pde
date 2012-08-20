@@ -209,7 +209,8 @@ class JamelStory extends TSStoryBase {
 
   // params
   int numTrees = 8;
-  float catSpeed = 0.1;
+  float catSpeedDown = 0.4;
+  float catSpeedUp = 0.3;
 
   class Cat {
     Tree tree;
@@ -304,7 +305,7 @@ class JamelStory extends TSStoryBase {
 
           // lerp to closest hand
           PVector diff = PVector.sub(closestHand, t.cat.pos);
-          diff.mult(catSpeed);
+          diff.mult(catSpeedDown);
           t.cat.pos.add(diff);
 
           pushMatrix();
@@ -368,7 +369,7 @@ class JamelStory extends TSStoryBase {
 
           // lerp to tree
           PVector diff = PVector.sub(t.pos, t.cat.pos);
-          diff.mult(catSpeed);
+          diff.mult(catSpeedUp);
           t.cat.pos.add(diff);
 
           pushMatrix();
