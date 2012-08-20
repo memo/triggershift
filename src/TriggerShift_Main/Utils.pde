@@ -8,6 +8,16 @@ PVector getRightHand() {
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
 }
 
+PVector getLeftElbow() {
+  return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_ELBOW, transform2D, openNIContext);
+}
+
+PVector getRightElbow() {
+  return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_ELBOW, transform2D, openNIContext);
+}
+
+
+
 PVector getHighestHand() {
   PVector rightHand = getRightHand();
   PVector leftHand = getLeftHand();
