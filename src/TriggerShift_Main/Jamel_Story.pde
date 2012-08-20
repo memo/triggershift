@@ -31,7 +31,7 @@ class JamelStory extends TSStoryBase {
     PImage imgFlagRip1 = loadImage("jamel/flagrip1.png");
     PImage imgFlagRip2 = loadImage("jamel/flagrip2.png");
     boolean isRipped;
-    
+
     Scene1() {
       sceneName = "Scene1 FLAG INTRO";
       println(storyName + "::" + sceneName);
@@ -47,10 +47,11 @@ class JamelStory extends TSStoryBase {
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       drawMaskedUser();
       pushStyle();
-      if(isRipped == false) {
+      if (isRipped == false) {
         image(imgFlag, 0, 0, width, height);
-      } else {
-//        image(
+      } 
+      else {
+        //        image(
       }
 
       // play BEEP sound
@@ -59,8 +60,8 @@ class JamelStory extends TSStoryBase {
       }
 
       popStyle();
-      
-      if(getLeftHand().y < getLeftElbow().y && getRightHand().y < getRightElbow().y) isRipped = true;
+
+      if (getLeftHand().y < getLeftElbow().y && getRightHand().y < getRightElbow().y) isRipped = true;
     }
   };
 
@@ -321,7 +322,6 @@ class JamelStory extends TSStoryBase {
   //------------------------------------------------------------------------------------------------------
   // lied
   class Scene5 extends TSSceneBase {
-    // create triggers and other init in constructor
     PImage imgTramp1 = loadImage("jamel/tramp1.png");
     PImage imgTramp2 = loadImage("jamel/tramp2.png");
     PImage imgTrampMasked1 = createImage(imgTramp1.width, imgTramp1.height, ARGB);
@@ -422,9 +422,8 @@ class JamelStory extends TSStoryBase {
   //------------------------------------------------------------------------------------------------------
   // my country
   class Scene6 extends TSSceneBase {
-     PImage imgFlag = loadImage("jamel/flagjamel.png");
+    PImage imgFlag = loadImage("jamel/flagjamel.png");
 
-    // create triggers and other init in constructor
     Scene6() {
       sceneName = "Scene6 MYCOUNTRY";
       println(storyName + "::" + sceneName);
@@ -442,16 +441,16 @@ class JamelStory extends TSStoryBase {
       imageMode(CENTER);
       image(imgFlag, width/2, height/2, width * s, height * s);
       popStyle();
-      
+
       drawMaskedUser();
     }
   };
 
   //------------------------------------------------------------------------------------------------------
   class Scene7 extends TSSceneBase {
-    // create triggers and other init in constructor
     PImage imgHair1 = loadImage("jamel/interestinghair.png");
     PImage imgHair2 = loadImage("jamel/boringhair.png");
+    boolean isTriggered;
 
     Scene7() {
       sceneName = "Scene7 HAIR";
@@ -461,31 +460,41 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
+      isTriggered = false;
     }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       drawMaskedUser();
+      
       pushStyle();
       imageMode(CENTER);
+      PVector headPos = getHead();
+      
+      if (isTriggered == false) {
         float w = width * 0.3;
         float h = w * imgHair1.height / imgHair1.width;
-        PVector headPos = getHead();
-      if(getElapsedSeconds() < 0.5) {
-        float s = getElapsedSeconds() * 2;
-        image(imgHair1, headPos.x, headPos.y, s * w, s * h);
-      } else if(getElapsedSeconds() < 3) {
-        image(imgHair1, headPos.x, headPos.y, w, h);
-      } else {
+        if (getElapsedSeconds() < 0.2) {
+          float s = getElapsedSeconds()/0.2;
+          image(imgHair1, headPos.x, headPos.y, s * w, s * h);
+        } 
+        else {
+          image(imgHair1, headPos.x, headPos.y, w, h);
+        }
+      } 
+      else {
+        float w = width * 0.15;
+        float h = w * imgHair1.height / imgHair1.width;
         image(imgHair2, headPos.x, headPos.y, w, h);
       }
       popStyle();
+
+      if (getHighestHand().y < getHead().y) isTriggered = true;
     }
   };
 
   //------------------------------------------------------------------------------------------------------
   class Scene8 extends TSSceneBase {
-    // create triggers and other init in constructor
     Scene8() {
       sceneName = "Scene8";
       println(storyName + "::" + sceneName);
@@ -503,7 +512,6 @@ class JamelStory extends TSStoryBase {
 
   //------------------------------------------------------------------------------------------------------
   class Scene9 extends TSSceneBase {
-    // create triggers and other init in constructor
     Scene9() {
       sceneName = "Scene9";
       println(storyName + "::" + sceneName);
@@ -521,7 +529,6 @@ class JamelStory extends TSStoryBase {
 
   //------------------------------------------------------------------------------------------------------
   class Scene10 extends TSSceneBase {
-    // create triggers and other init in constructor
     Scene10() {
       sceneName = "Scene10";
       println(storyName + "::" + sceneName);
@@ -539,7 +546,6 @@ class JamelStory extends TSStoryBase {
 
   //------------------------------------------------------------------------------------------------------
   class Scene11 extends TSSceneBase {
-    // create triggers and other init in constructor
     Scene11() {
       sceneName = "Scene11";
       println(storyName + "::" + sceneName);
