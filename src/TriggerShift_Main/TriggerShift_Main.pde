@@ -11,7 +11,7 @@ boolean useOpenNI = true;
 boolean doDrawKinectRGB = false;
 boolean doDrawKinectDepth = false;
 boolean doDrawKinectMasked = false;
-boolean doDrawSkeletons = false;
+boolean doDrawSkeletons = true;
 boolean doDrawDebugInfo = false;
 
 int maskBlurAmount = 0;
