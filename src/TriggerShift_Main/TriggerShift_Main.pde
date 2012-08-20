@@ -143,6 +143,7 @@ void draw() {
 
     // update skeleton
     skeleton.update(openNIContext);
+    updateSkeletonStats();
 
     // update transform2d
     transform2D.inputSizePixels = new PVector(openNIContext.depthImage().width, openNIContext.depthImage().height);
@@ -220,28 +221,33 @@ void onNewUser(int userId)
 
   lastUserId = userId;
   openNIContext.requestCalibrationSkeleton(userId, true);
+  resetSkeletonStats();
 }
 
 void onLostUser(int userId)
 {
   println("onLostUser - userId: " + userId);
+  resetSkeletonStats();
 }
 
 void onExitUser(int userId)
 {
   println("onExitUser - userId: " + userId);
+  resetSkeletonStats();
 }
 
 void onReEnterUser(int userId)
 {
    lastUserId = userId;
   println("onReEnterUser - userId: " + userId);
+  resetSkeletonStats();
 }
 
 
 void onStartCalibration(int userId)
 {
   println("onStartCalibration - userId: " + userId);
+  resetSkeletonStats();
 }
 
 void onEndCalibration(int userId, boolean successfull)
@@ -259,6 +265,7 @@ void onEndCalibration(int userId, boolean successfull)
     println("  Start pose detection");
     openNIContext.startPoseDetection("Psi", userId);
   }
+  resetSkeletonStats();
 }
 
 void onStartPose(String pose, int userId)

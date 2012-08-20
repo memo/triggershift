@@ -40,6 +40,7 @@ class TSStoryBase {
     println("-------------------------------------------------");
     println(storyName + "::startStory");
     setSceneIndex(0);
+    resetSkeletonStats();
   }
 
   //----------------------------------

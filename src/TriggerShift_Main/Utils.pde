@@ -16,6 +16,22 @@ PVector getRightElbow() {
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_ELBOW, transform2D, openNIContext);
 }
 
+PVector getLeftShoulder() {
+  return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_SHOULDER, transform2D, openNIContext);
+}
+
+PVector getRightShoulder() {
+  return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, transform2D, openNIContext);
+}
+
+PVector getLeftArm() {
+  return PVector.sub(getLeftHand(), getLeftShoulder());
+}
+
+PVector getRightArm() {
+  return PVector.sub(getRightHand(), getRightShoulder());
+}
+
 
 
 PVector getHighestHand() {
@@ -37,7 +53,27 @@ PVector getHead() {
 }
 
 PVector getHip() {
-  return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HIP, transform2D, openNIContext);
+  return PVector.mult( PVector.add(skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HIP, transform2D, openNIContext), skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HIP, transform2D, openNIContext)), 0.5);
+}
+
+
+float maxArmLength = 0;
+
+void resetSkeletonStats() {
+  maxArmLength = 0;
+}
+
+void updateSkeletonStats() {
+  float leftArmLen = getLeftArm().mag();
+  if(leftArmLen > maxArmLength) maxArmLength = leftArmLen;
+
+  float rightArmLen = getRightArm().mag();
+  if(rightArmLen > maxArmLength) maxArmLength = rightArmLen;
+}
+
+
+float getMaxArmLength() {
+  return maxArmLength;
 }
 
 
