@@ -3,15 +3,50 @@ class CelineStory extends TSStoryBase {
   CelineStory() {
     storyName = "CelineStory";
     println(storyName + "::" + storyName);
-    addScene(new Scene_flick_through_images());
-    addScene(new Scene_shrink_grow_image());
+    addScene(new Scene_big_buildings());
     addScene(new Scene_ripPaper());
     addScene(new Scene_fade_in_colour());
+    addScene(new Scene_shrink_grow_image());
     addScene(new Scene_turn_cards());
+    addScene(new Scene_flick_through_images());
   }
 }
+///SCENE 1
+class Scene_big_buildings extends TSSceneBase {
+  PImage easel = loadImage("celine/easel.png");
+  PImage picture = loadImage("celine/skyscraper1.png");
+  int imageWidth=120;
+  int imageHeight=200;
+  PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.4, 0));
 
-//
+  Scene_big_buildings() {
+    sceneName = "Scene1 BIG BUILDINGS";
+    println("CelineStory::Scene_big_buildings");
+    setTrigger(new MouseClickTrigger());
+    picture.resize(imageWidth, imageHeight);
+    easel.resize(int(2.2*imageWidth), int(2.8*imageHeight));
+  }
+
+  // this is called when the scene starts (i.e. is triggered)
+  void onStart() {
+    println("CelineStory::Scene_big_buildings::onStart");
+
+    imageWidth = 120;
+    imageHeight = 200;
+  }
+
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+
+    image(easel, picturePos.x- (easel.width*0.7575), picturePos.y-(easel.height*0.6868));
+    pushMatrix();
+    translate(picturePos.x-picture.width, picturePos.y-picture.height);
+    rotate(imageRotateAngle);
+    image(picture, 0, 0);
+    popMatrix();
+  }
+};
+
+//SCENE 2
 class Scene_ripPaper extends TSSceneBase {
   PImage easel = loadImage("celine/easel.png");
   PImage leftHalf = loadImage("celine/left.png");
@@ -37,8 +72,9 @@ class Scene_ripPaper extends TSSceneBase {
   PVector  leftHalfPos= new PVector(rightHalfPos.x, rightHalfPos.y, rightHalfPos.z) ;
   PVector axis;
   PVector axis1;
-  
+
   Scene_ripPaper() {
+    sceneName = "Scene2 RIP PAPER";
     println("CelineStory::Scene_ripPaper");
     setTrigger(new KeyPressTrigger('q'));
     leftHalf.resize(imageWidth/2, imageHeight);
@@ -72,17 +108,17 @@ class Scene_ripPaper extends TSSceneBase {
     PVector rightElbow = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_ELBOW, transform2D, openNIContext);
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector leftElbow = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_ELBOW, transform2D, openNIContext);
-   
+
     //draw the easel behind the 2 halves of the image
     pushMatrix();
     image(easel, picturePos.x- (easel.width*0.7575), picturePos.y-(easel.height*0.6868));
     popMatrix();
- 
+
     if (getElapsedSeconds()>4) {
       ///get the angle between hand and elbow
       leftHand.sub(leftElbow);
       leftHand.normalize();
-   
+
       PVector imageOrientation = new PVector(1, 0, 0);
 
 
@@ -139,9 +175,8 @@ class Scene_ripPaper extends TSSceneBase {
           startToFlyAway=true;
           rightP.setRotVel(3);
           leftP.setRotVel(-3);
-          rightP.setPosVel(new PVector(-5,5,0));
-          leftP.setPosVel(new PVector(5,5,0));
-          
+          rightP.setPosVel(new PVector(-5, 5, 0));
+          leftP.setPosVel(new PVector(5, 5, 0));
         }
         else {
           startToFlyAway=false;
@@ -149,13 +184,13 @@ class Scene_ripPaper extends TSSceneBase {
       }
       //if we are flying away then...
       else {
-        
-        
-         //RIGHT HALF
+
+
+        //RIGHT HALF
         pushMatrix();
         //get the dot and cross products
         //angle = acos(imageOrientation.dot(leftHand));
-      // axis = imageOrientation.cross(leftHand);
+        // axis = imageOrientation.cross(leftHand);
         //translate to the place we want to draw the image
         translate(rightHalfPos.x+rightP.pos.x, rightHalfPos.y+rightP.pos.y, rightHalfPos.z);
         translate(-rightHalf.width*0.5, -rightHalf.height, 0);
@@ -192,14 +227,13 @@ class Scene_ripPaper extends TSSceneBase {
         translate(-leftHalf.width, -leftHalf.height, 0);
         leftP.drawWithoutTranslation(leftHalf);
         popMatrix();
-
       }
     }
   }
 };
 
 
-//fades an image from 'sepia' to colour with distance between hands //TODO cut around sepia image!
+//SCENE 3 IS IT OLD IS IT NEW? fades an image from 'sepia' to colour with distance between hands //TODO cut around sepia image!
 class Scene_fade_in_colour extends TSSceneBase {
   PImage easel = loadImage("celine/easel.png");
   PImage picture = loadImage("celine/skyscraper1.png");
@@ -208,6 +242,7 @@ class Scene_fade_in_colour extends TSSceneBase {
   int imageHeight=200;
   float angle;
   Scene_fade_in_colour() {
+    sceneName = "Scene3 FADE IN COLOUR";
     println("CelineStory::Scene_fade_in_colour");
     setTrigger(new KeyPressTrigger('w'));
     sepia.filter(GRAY);
@@ -261,7 +296,7 @@ class Scene_fade_in_colour extends TSSceneBase {
   }
 };
 
-//controls size of image with distance between hands
+//SCENE 4controls size of image with distance between hands
 class Scene_shrink_grow_image extends TSSceneBase {
   PImage easel = loadImage("celine/easel.png");
   PImage picture = loadImage("celine/skyscraper1.png");
@@ -269,6 +304,8 @@ class Scene_shrink_grow_image extends TSSceneBase {
   int imageHeight=200;
 
   Scene_shrink_grow_image() {
+    sceneName = "Scene4 SHRINK AND GROW IMAGE";
+
     println("CelineStory::Scene_shrink_grow_image");
     setTrigger(new MouseClickTrigger());
     picture.resize(imageWidth, imageHeight);
@@ -305,7 +342,7 @@ class Scene_shrink_grow_image extends TSSceneBase {
 };
 
 
-//controls size of image with distance between hands
+//SCENE 5 TURN CARDS controls size of image with distance between hands
 class Scene_turn_cards extends TSSceneBase {
 
   Card [] cards;
@@ -314,6 +351,8 @@ class Scene_turn_cards extends TSSceneBase {
 
 
   Scene_turn_cards() {
+    sceneName = "Scene5 TURN CARDS";
+
     println("CelineStory::Scene_turn_cards");
     setTrigger(new MouseClickTrigger());
     cards= new Card[numCards];
@@ -412,7 +451,7 @@ class Card {
   }
 };
 
-//A mortar board flies from the sky and lands ont he head
+//SCENE 6 flick through images with left hand
 class Scene_flick_through_images extends TSSceneBase {
   int numImages=8;
   PImage [] images = new PImage[numImages];
@@ -435,6 +474,8 @@ class Scene_flick_through_images extends TSSceneBase {
 
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
+    sceneName = "Scene6 FLICK THROUGH IMAGES";
+
     println("Celine::Scene_flickBook::onStart");
     for (int i=0;i<numImages;i++) {
       images[i].resize(imageWidth, imageHeight);
