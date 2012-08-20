@@ -9,6 +9,7 @@ class TSStoryBase {
   protected ArrayList scenes = new ArrayList();
   protected int currentSceneIndex = 0;
   protected TSSceneBase currentScene = null;
+  protected boolean reachedEnd = false;
   
   public String storyName = "TSStoryBase";  // fill this in with correct name in subclass
 
@@ -39,6 +40,7 @@ class TSStoryBase {
     println("-------------------------------------------------");
     println("-------------------------------------------------");
     println(storyName + "::startStory");
+    reachedEnd = false;
     setSceneIndex(0);
     resetSkeletonStats();
   }
@@ -46,9 +48,11 @@ class TSStoryBase {
   //----------------------------------
   void setSceneIndex(int i) {
     println(storyName + "::setSceneIndex: " + i);
+    reachedEnd = false;
     if (i >= scenes.size()) {
       // reached end, do something
       println(storyName + "::setSceneIndex: reached end");
+      reachedEnd = true;
       return;
     } else if(i<0) {
       println(storyName + "::setSceneIndex: reached start");
@@ -64,6 +68,14 @@ class TSStoryBase {
   //----------------------------------
   int getSceneIndex() {
     return currentSceneIndex;
+  }
+  
+  
+  String getString() {
+    String s = "STORY:  " + storyName;
+    if (currentScene != null) s += "\nSCENE: " + str(currentSceneIndex+1) + "/" + str(scenes.size()) + " (" + currentScene.sceneName + ")";
+    if(reachedEnd) s += " FINISHED!";
+    return s;
   }
 
 

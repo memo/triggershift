@@ -17,7 +17,7 @@ boolean doDrawKinectRGB = false;
 boolean doDrawKinectDepth = false;
 boolean doDrawKinectMasked = false;
 boolean doDrawSkeletons = true;
-boolean doDrawDebugInfo = false;
+boolean doDrawDebugInfo = true;
 
 int maskBlurAmount = 0;
 float videoSizeX = 1;
@@ -41,6 +41,7 @@ AudioPlayer player;
 int lastUserId = 1;
 //for printing debug info to screen
 PFont debugFont;
+PFont smallFont;
 
 // Stories
 TSStoryBase currentStory = null;
@@ -55,11 +56,6 @@ void setupAudio() {
 //----------------------------------
 void setupUI() {
   cp5 = new ControlP5(this);
-
-  cp5.addSlider("fps", 0, 60).linebreak();
-  cp5.addTextlabel("FPS").setText("calculating...").linebreak();
-  cp5.addTextlabel("STORY").setText("loading...").linebreak();
-
 
   cp5.addTab("Display");
   cp5.addToggle("doDrawKinectRGB").linebreak().moveTo("Display");
@@ -147,7 +143,8 @@ void setup() {
 
   setupUI();
   debugFont=loadFont("AlBayan-48.vlw");
-  textFont(debugFont, 48);
+  smallFont = loadFont("AdobeGothicStd-Bold-14.vlw");
+  textFont(smallFont);
 
   setupAudio();
   stroke(255, 255, 255);
@@ -204,11 +201,19 @@ void draw() {
     if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
   }
 
-  cp5.getController("fps").setValue(frameRate);
-  ((Textlabel)cp5.getController("FPS")).setText(str(frameRate));
-  ((Textlabel)cp5.getController("STORY")).setText(currentStory.storyName);
-
   cp5.draw();
+
+  if (doDrawDebugInfo) {
+    pushStyle();
+    textFont(smallFont);
+    fill(255);
+    int x = 20, yinc = 25, y = height - yinc * 3; 
+    text("fps: " + str(frameRate), x, y); 
+    y += yinc;
+    text(currentStory.getString(), x, y); 
+    y += yinc;
+    popStyle();
+  }
 }
 
 
