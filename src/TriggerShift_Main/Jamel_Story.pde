@@ -45,7 +45,7 @@ class JamelStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
-      transform2D.drawImage( userImage );
+      drawMaskedUser();
       pushStyle();
       if(isRipped == false) {
         image(imgFlag, 0, 0, width, height);
@@ -88,7 +88,7 @@ class JamelStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
-      transform2D.drawImage( userImage );
+      drawMaskedUser();
       pushStyle();
       PVector activeHand = getHighestHand();
 
@@ -168,7 +168,7 @@ class JamelStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
-      transform2D.drawImage( userImage );
+      drawMaskedUser();
 
       pushStyle();
 
@@ -284,7 +284,7 @@ class JamelStory extends TSStoryBase {
       }
       popStyle();
 
-      transform2D.drawImage( userImage );
+      drawMaskedUser();
 
       PVector rightHand = getRightHand();
       PVector leftHand = getLeftHand();
@@ -330,7 +330,7 @@ class JamelStory extends TSStoryBase {
 
 
     Scene5() {
-      sceneName = "Scene5";
+      sceneName = "Scene5 LIED";
       println(storyName + "::" + sceneName);
     }
 
@@ -353,7 +353,7 @@ class JamelStory extends TSStoryBase {
         }
         popStyle();
 
-        transform2D.drawImage( userImage );
+        drawMaskedUser();
 
         PVector rightHand = getRightHand();
         PVector leftHand = getLeftHand();
@@ -382,7 +382,7 @@ class JamelStory extends TSStoryBase {
       } 
       else {
         // do tramp
-        transform2D.drawImage( userImage );
+        drawMaskedUser();
 
         pushStyle();
 
@@ -426,7 +426,7 @@ class JamelStory extends TSStoryBase {
 
     // create triggers and other init in constructor
     Scene6() {
-      sceneName = "Scene6";
+      sceneName = "Scene6 MYCOUNTRY";
       println(storyName + "::" + sceneName);
     }
 
@@ -443,15 +443,18 @@ class JamelStory extends TSStoryBase {
       image(imgFlag, width/2, height/2, width * s, height * s);
       popStyle();
       
-      transform2D.drawImage( userImage );
+      drawMaskedUser();
     }
   };
 
   //------------------------------------------------------------------------------------------------------
   class Scene7 extends TSSceneBase {
     // create triggers and other init in constructor
+    PImage imgHair1 = loadImage("jamel/interestinghair.png");
+    PImage imgHair2 = loadImage("jamel/boringhair.png");
+
     Scene7() {
-      sceneName = "Scene7";
+      sceneName = "Scene7 HAIR";
       println(storyName + "::" + sceneName);
     }
 
@@ -462,6 +465,21 @@ class JamelStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      drawMaskedUser();
+      pushStyle();
+      imageMode(CENTER);
+        float w = width * 0.3;
+        float h = w * imgHair1.height / imgHair1.width;
+        PVector headPos = getHead();
+      if(getElapsedSeconds() < 0.5) {
+        float s = getElapsedSeconds() * 2;
+        image(imgHair1, headPos.x, headPos.y, s * w, s * h);
+      } else if(getElapsedSeconds() < 3) {
+        image(imgHair1, headPos.x, headPos.y, w, h);
+      } else {
+        image(imgHair2, headPos.x, headPos.y, w, h);
+      }
+      popStyle();
     }
   };
 
