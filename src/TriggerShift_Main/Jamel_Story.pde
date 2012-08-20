@@ -30,7 +30,7 @@ class JamelStory extends TSStoryBase {
     PImage imgFlag = loadImage("jamel/flag.png");
     PImage imgFlagRip1 = loadImage("jamel/flagrip1.png");
     PImage imgFlagRip2 = loadImage("jamel/flagrip2.png");
-    boolean isRipped;
+    int ripStartMillis = 0;
 
     Scene1() {
       sceneName = "Scene1 FLAG INTRO";
@@ -40,7 +40,7 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
-      isRipped = false;
+      ripStartMillis = 0;
     }
 
     //----------------
@@ -49,11 +49,25 @@ class JamelStory extends TSStoryBase {
       pushStyle();
       imageMode(CORNER);
 
-      if (isRipped == false) {
+      if (ripStartMillis == 0) {
         image(imgFlag, 0, 0, width, height);
       } 
       else {
-        //        image(
+        float rot = (millis() - ripStartMillis) * 0.001 * 90;
+        if(rot < 180) {
+          int xpos = (int)(width * 0.25);
+          pushMatrix();
+          translate(xpos, height);
+          rotate( -radians(rot) );
+          image(imgFlagRip1, -xpos, -height, width, height);
+          popMatrix();
+          
+          pushMatrix();
+          translate(width-xpos, height);
+          rotate( radians(rot) );
+          image(imgFlagRip2, xpos-width, -height, width, height);
+          popMatrix();
+        }
       }
 
       // play BEEP sound
@@ -63,7 +77,7 @@ class JamelStory extends TSStoryBase {
 
       popStyle();
 
-      if (getLeftHand().y < getLeftElbow().y && getRightHand().y < getRightElbow().y) isRipped = true;
+      if (getLeftHand().y < getLeftElbow().y && getRightHand().y < getRightElbow().y && ripStartMillis == 0 ) ripStartMillis = millis();
     }
   };
 
