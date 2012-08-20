@@ -11,14 +11,14 @@ class StoryTest extends TSStoryBase {
     addScene(new Scene3());
   }
 
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   void onEnd() {
     println(storyName + "::onEnd");
   }
 
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   // SCENES:
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   class Scene1 extends TSSceneBase {
     // create triggers and other init in constructor
     Scene1() {
@@ -44,7 +44,7 @@ class StoryTest extends TSStoryBase {
   };
 
 
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   class Scene2 extends TSSceneBase {
     // create triggers and other init in constructor
     Scene2() {
@@ -71,7 +71,7 @@ class StoryTest extends TSStoryBase {
   };
   
   
-    //----------------------------------
+    //------------------------------------------------------------------------------------------------------
   class Scene3 extends TSSceneBase {
     // create triggers and other init in constructor
     Scene3() {

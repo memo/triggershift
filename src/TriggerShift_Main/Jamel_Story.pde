@@ -16,15 +16,15 @@ class JamelStory extends TSStoryBase {
     addScene(new Scene11());
   }
 
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   void onEnd() {
     println(storyName + "::onEnd");
   }
 
 
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   // SCENES:
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   // jump through flag
   class Scene1 extends TSSceneBase {
     PImage imgFlag = loadImage("jamel/flag.png");
@@ -55,7 +55,7 @@ class JamelStory extends TSStoryBase {
 
 
 
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   // draw graph and pound signs
   class Scene2 extends TSSceneBase {
     PImage imgPound = loadImage("jamel/pound.png");
@@ -135,7 +135,7 @@ class JamelStory extends TSStoryBase {
   };
 
 
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   // Tramp
   class Scene3 extends TSSceneBase {
     PImage imgTramp1 = loadImage("jamel/tramp1.png");
@@ -192,7 +192,7 @@ class JamelStory extends TSStoryBase {
     }
   };
 
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   // cats in trees
   class Scene4 extends TSSceneBase {
 
@@ -303,7 +303,7 @@ class JamelStory extends TSStoryBase {
     }
   };
 
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   class Scene5 extends TSSceneBase {
     // create triggers and other init in constructor
     Scene5() {
@@ -321,7 +321,7 @@ class JamelStory extends TSStoryBase {
     }
   };
 
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   class Scene6 extends TSSceneBase {
     // create triggers and other init in constructor
     Scene6() {
@@ -339,7 +339,7 @@ class JamelStory extends TSStoryBase {
     }
   };
 
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   class Scene7 extends TSSceneBase {
     // create triggers and other init in constructor
     Scene7() {
@@ -357,7 +357,7 @@ class JamelStory extends TSStoryBase {
     }
   };
 
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   class Scene8 extends TSSceneBase {
     // create triggers and other init in constructor
     Scene8() {
@@ -375,7 +375,7 @@ class JamelStory extends TSStoryBase {
     }
   };
 
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   class Scene9 extends TSSceneBase {
     // create triggers and other init in constructor
     Scene9() {
@@ -393,7 +393,7 @@ class JamelStory extends TSStoryBase {
     }
   };
 
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   class Scene10 extends TSSceneBase {
     // create triggers and other init in constructor
     Scene10() {
@@ -411,7 +411,7 @@ class JamelStory extends TSStoryBase {
     }
   };
 
-  //----------------------------------
+  //------------------------------------------------------------------------------------------------------
   class Scene11 extends TSSceneBase {
     // create triggers and other init in constructor
     Scene11() {
