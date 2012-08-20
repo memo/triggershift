@@ -86,7 +86,13 @@ class TSTransform2D {
   //----------------------------------
   // draws an image with the transformation
   void drawImage(PImage img) {
-    if (img != null) image(img, targetTopLeftPixels.x, targetTopLeftPixels.y, targetSizePixels.x, targetSizePixels.y);
+    if (img != null) {
+      pushStyle();
+      imageMode(CORNER);
+      tint(255);
+      image(img, targetTopLeftPixels.x, targetTopLeftPixels.y, targetSizePixels.x, targetSizePixels.y);
+      popStyle();
+    }
   }
 };
 
