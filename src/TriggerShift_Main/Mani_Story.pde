@@ -128,6 +128,21 @@ class ManiStory extends TSStoryBase {
   //----------------
   class ColorWheel {
     PImage img = loadImage("mani/colourwheel.png");
+    float rot = 0;
+    float s = 0;
+    
+    void draw() {
+      pushStyle();
+      pushMatrix();
+      imageMode(CENTER);
+      translate(width * 0.25, height * 0.25);
+      rotate(radians(rot);
+      scale(s);
+      image(img, 0, 
+      rot += 1;
+      popMatrix();
+      popStyle();
+    }
   };
 
 
