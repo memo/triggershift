@@ -21,7 +21,7 @@ class Scene_big_buildings extends TSSceneBase {
 
   Scene_big_buildings() {
     sceneName = "Scene1 BIG BUILDINGS";
-    println("CelineStory::Scene_big_buildings");
+    //println(storyName + "::" + sceneName + "::onStart");
     setTrigger(new MouseClickTrigger());
     picture.resize(imageWidth, imageHeight);
     easel.resize(int(2.2*imageWidth), int(2.8*imageHeight));
@@ -76,7 +76,7 @@ class Scene_ripPaper extends TSSceneBase {
 
   Scene_ripPaper() {
     sceneName = "Scene2 RIP PAPER";
-    println("CelineStory::Scene_ripPaper");
+    //println(storyName + "::" + sceneName + "::onStart");
     setTrigger(new KeyPressTrigger('q'));
     leftHalf.resize(imageWidth/2, imageHeight);
     rightHalf.resize(imageWidth/2, imageHeight);
@@ -245,7 +245,7 @@ class Scene_fade_in_colour extends TSSceneBase {
   float angle;
   Scene_fade_in_colour() {
     sceneName = "Scene3 FADE IN COLOUR";
-    println("CelineStory::Scene_fade_in_colour");
+    //println(storyName + "::" + sceneName + "::onStart");
     setTrigger(new KeyPressTrigger('w'));
     sepia.filter(GRAY);
     picture.resize(imageWidth, imageHeight);
@@ -308,7 +308,7 @@ class Scene_shrink_grow_image extends TSSceneBase {
   Scene_shrink_grow_image() {
     sceneName = "Scene4 SHRINK AND GROW IMAGE";
 
-    println("CelineStory::Scene_shrink_grow_image");
+    //println(storyName + "::" + sceneName + "::onStart");
     setTrigger(new MouseClickTrigger());
     picture.resize(imageWidth, imageHeight);
     easel.resize(int(2.2*imageWidth), int(2.8*imageHeight));
@@ -355,7 +355,7 @@ class Scene_turn_cards extends TSSceneBase {
   Scene_turn_cards() {
     sceneName = "Scene5 TURN CARDS";
 
-    println("CelineStory::Scene_turn_cards");
+    //println(storyName + "::" + sceneName + "::onStart");
     setTrigger(new MouseClickTrigger());
     cards= new Card[numCards];
     //TODO -replace with card images
@@ -466,7 +466,7 @@ class Scene_flick_through_images extends TSSceneBase {
   int counter=timeOutThresh+1;
   boolean firstTime=true;
   Scene_flick_through_images() {
-    println("Celine::Scene_flickBook");
+    //println(storyName + "::" + sceneName + "::onStart");
     for (int i=0;i<numImages;i++) {
       //TODO replace with correct image url
       images[i]=loadImage("charlene/bookPage_"+str(i)+".png");

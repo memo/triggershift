@@ -28,7 +28,7 @@ class Scene_flickBook extends TSSceneBase {
 
   Scene_flickBook() {
     sceneName = "scene1 FLICK THROUGH PAGES";
-    println("Charlene::Scene_flickBook");
+    //println(storyName + "::" + sceneName + "::onStart");
     for (int i=0;i<numPageCells;i++) {
       book[i]=loadImage("charlene/bookPage_"+str(i)+".png");
     }
@@ -89,7 +89,7 @@ class Scene_clock_hands extends TSSceneBase {
 
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
-    println("Charlene::Scene_flickBook::onStart");
+    //println(storyName + "::" + sceneName + "::onStart");
     player.close();
     player = minim.loadFile("charlene/clock.mp3");
     player.loop();
@@ -136,7 +136,7 @@ class Scene_throw_coffee extends TSSceneBase {
   boolean lock;
   Scene_throw_coffee(PApplet _ref) {
     sceneName="scene3 THROW COFFEE";
-    println("Charlene::Scene_throw_coffee");
+    //println(storyName + "::" + sceneName + "::onStart");
     ref =_ref;
   }
 
@@ -238,7 +238,7 @@ class Scene_mortar_board_on_head extends TSSceneBase {
   float h;
   Scene_mortar_board_on_head() {
     sceneName="scene4 MORTAR BOARD ON HEAD";
-    println("Charlene::Scene_mortar_board_on_head");
+    //println(storyName + "::" + sceneName + "::onStart");
     setTrigger(new KeyPressTrigger('w'));
     startPos=transform2D.getWorldCoordsForInputNorm(new PVector(0.5, 0.0, 0));
   }
@@ -286,7 +286,7 @@ class Scene_zoom_from_space extends TSSceneBase {
   Scene_zoom_from_space() {
     sceneName="scene5 ZOOM FROM SPACE";
 
-    println("CelineStory::Scene_zoom_from_space");
+    //println(storyName + "::" + sceneName + "::onStart");
 
     setTrigger(new KeyPressTrigger('w'));
   }
@@ -370,7 +370,7 @@ class Scene_vote_in_box extends TSSceneBase {
     sceneName="scene6 VOTE IN BOX";
 
     setTrigger(new KeyPressTrigger('e'));
-    println("Charlene::Scene_vote_in_box");
+    //println(storyName + "::" + sceneName + "::onStart");
   }
 
   // this is called when the scene starts (i.e. is triggered)
@@ -447,7 +447,7 @@ class Scene_power_hands extends TSSceneBase {
   Scene_power_hands() {
     sceneName="scene7 POWER HANDS";
 
-    println("Charlene::Scene_power_hands");
+    //println(storyName + "::" + sceneName + "::onStart");
     orb.resize(imageWidth, imageHeight);
 
     setTrigger(new KeyPressTrigger('w'));
@@ -509,7 +509,7 @@ class Scene_spin_right_wrong extends TSSceneBase {
   Scene_spin_right_wrong() {
     sceneName="scene8 SPING RIGHT OR WRONG";
 
-    println("Charlene::Scene_spin_right_wrong");
+    //println(storyName + "::" + sceneName + "::onStart");
     right.resize(imageWidth, imageHeight);
     wrong.resize(imageWidth, imageHeight);
 
@@ -571,7 +571,7 @@ class Scene_shatter_image extends TSSceneBase {
   Scene_shatter_image() {
     sceneName="scene9 SHATTER IMAGE";
 
-    println("Charlene::Scene_shatter_image");
+    //println(storyName + "::" + sceneName + "::onStart");
     int x=0;
     int y=0;
     float rowLength=4.0;
@@ -643,7 +643,7 @@ class Scene_drop_set extends TSSceneBase {
 
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
-    println("Charlene::Scene_drop_set::onStart");
+    //println(storyName + "::" + sceneName + "::onStart");
     startDrop=false;
     endDrop=false;
     player.close();
