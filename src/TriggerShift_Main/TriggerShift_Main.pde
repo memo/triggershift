@@ -128,13 +128,14 @@ void setupOpenNI() {
 
   openNIContext.setMirror(true);
   openNIContext.alternativeViewPointDepthToImage();
+  
+  skeleton = new TSSkeleton();
 }
 
 
 //----------------------------------
 void setup() {
   size(1280, 800, P3D);
-  skeleton = new TSSkeleton();
   masker = new TSMasker();
   transform2D = new TSTransform2D();
 
@@ -198,7 +199,7 @@ void draw() {
     if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
     if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
     if (doDrawSkeletons) skeleton.drawAllSkeletons( openNIContext, transform2D);
-    if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
+//    if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
   }
 
   cp5.draw();
