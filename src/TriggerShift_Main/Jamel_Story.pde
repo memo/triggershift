@@ -147,7 +147,19 @@ class JamelStory extends TSStoryBase {
           now.y += random(-r, r);
           now.z += random(-r, r);
           vel.mult(-0.2);
-          particles.add(new MSAParticle(now, vel, random(-30, 30), random(-3, 3), random(height/80, height/40), 1.0, 1.0, 0.98));
+//          particles.add(new MSAParticle(now, vel, random(-30, 30), random(-3, 3), random(height/80, height/40), 1.0, 1.0, 0.98));
+          MSAParticle p = new MSAParticle();//now, vel, random(-30, 30), random(-3, 3), random(height/80, height/40), 1.0, 1.0, 0.98);
+          p.pos = now;
+          p.posVel = vel;
+          p.rot = random(-30, 30);
+          p.rotVel = random(-3, 3);
+          p.radius = random(height/80, height/40);
+          p.alpha = 1;
+          p.drag = 1;
+          p.fade = 0.98;
+          p.posAcc = new PVector(0, 1, 0);
+          p.img = imgPound;
+          particles.add(p);
         }
       }
 
@@ -155,7 +167,7 @@ class JamelStory extends TSStoryBase {
       // draw particles
       for (int i=0; i<particles.size(); i++) {
         MSAParticle p = (MSAParticle) particles.get(i);
-        p.draw(imgPound);
+        p.draw();
       }
 
       popStyle();
