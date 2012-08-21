@@ -41,8 +41,12 @@ class Scene_flickBook extends TSSceneBase {
     for (int i=0;i<numPageCells;i++) {
       book[i].resize(imageWidth, imageHeight);
     }
+    player.close();
+    player = minim.loadFile("charlene/pages.mp3");
+    player.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
+    drawMaskedUser();
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
     image(book[frameIndex], picturePos.x, picturePos.y);
@@ -86,8 +90,12 @@ class Scene_clock_hands extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("Charlene::Scene_flickBook::onStart");
+    player.close();
+    player = minim.loadFile("charlene/clock.mp3");
+    player.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
+    drawMaskedUser();
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
     image(book, picturePos.x, picturePos.y);
     pushMatrix();
@@ -165,9 +173,15 @@ class Scene_throw_coffee extends TSSceneBase {
         index=0;
       }
     }
+
+    player.close();
+    player = minim.loadFile("charlene/coffee.mp3");
+    //no loop for this one
+    player.play();
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
+    drawMaskedUser();
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     //PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
 
@@ -208,7 +222,6 @@ class Scene_throw_coffee extends TSSceneBase {
     image(mug, leftHand.x-(0.7*mug.width), leftHand.y-(0.7*mug.height));
 
     popMatrix();
-    text(str(isThrown), 100, 100);
   }
 };
 
@@ -240,10 +253,13 @@ class Scene_mortar_board_on_head extends TSSceneBase {
     //scale for imagee
     w=120;
     h=120;
+    player.close();
+    player = minim.loadFile("charlene/mortarboard.mp3");
+    player.play();
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-
+    drawMaskedUser();
     PVector endPos= skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
 
     float currentX = lerp(startPos.x, endPos.x, inc);
@@ -285,9 +301,13 @@ class Scene_zoom_from_space extends TSSceneBase {
     world.resize(imageWidth, imageHeight);
     city.resize(imageWidth, imageHeight);
     blended.resize(imageWidth, imageHeight);
+    player.close();
+    player = minim.loadFile("charlene/zoom.mp3");
+    player.loop();
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
+    drawMaskedUser();
     PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
@@ -372,10 +392,15 @@ class Scene_vote_in_box extends TSSceneBase {
     //scale for imagee
 
       yInc=0;
+    player.close();
+    player = minim.loadFile("charlene/paper.mp3");
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-
+    if (inBox) {
+      player.play();
+    }
+    drawMaskedUser();
     PVector leftHand= skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.01, 0.5, 0));
 
@@ -434,8 +459,12 @@ class Scene_power_hands extends TSSceneBase {
     alpha=0;
     inc=2;
     rot=0;
+    player.close();
+    player = minim.loadFile("charlene/orb.mp3");
+    player.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
+    drawMaskedUser();
     pushStyle();
     pushMatrix();
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
@@ -490,8 +519,12 @@ class Scene_spin_right_wrong extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("Charlene::Scene_spin_right_wrong::onStart");
+    player.close();
+    player = minim.loadFile("charlene/turnwrong.mp3");
+    player.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
+    drawMaskedUser();
     pushMatrix();
     PVector leftHand = skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_HAND);
     PVector leftShoulder = skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_SHOULDER);
@@ -561,10 +594,13 @@ class Scene_shatter_image extends TSSceneBase {
     println("Charlene::Scene_shatter_image::onStart");
     handOver=false;
     player.close();
-    player = minim.loadFile("song2.mp3");
+    player = minim.loadFile("charlene/donttouch.mp3");
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    player.play();
+    drawMaskedUser();
+    if (handOver) {
+      player.play();
+    }
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     if (leftHand.x>picturePos.x && leftHand.x<picturePos.x+imageWidth && leftHand.y>picturePos.y && leftHand.y<picturePos.y+imageHeight) {
       handOver=true;
@@ -598,52 +634,53 @@ class Scene_drop_set extends TSSceneBase {
 
   Scene_drop_set() {
     sceneName="scene10 DROP SET";
-    
-        println("Charlene::Scene_drop_set");
-        theatre.resize(imageWidth, imageHeight);
-    
-        setTrigger(new KeyPressTrigger('w'));
+
+    println("Charlene::Scene_drop_set");
+    theatre.resize(imageWidth, imageHeight);
+
+    setTrigger(new KeyPressTrigger('w'));
+  }
+
+  // this is called when the scene starts (i.e. is triggered)
+  void onStart() {
+    println("Charlene::Scene_drop_set::onStart");
+    startDrop=false;
+    endDrop=false;
+    player.close();
+    player = minim.loadFile("charlene/question.mp3");
+    player.loop();
+  }
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+    drawMaskedUser();
+    pushStyle();
+    pushMatrix();
+    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
+    PVector head = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
+    //SKEL_WAIST is not working! 
+    PVector waist = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HIP, transform2D, openNIContext);
+
+    float maxRange = waist.y-head.y;
+    //if both arms go above the head start linking the image pos to hands
+
+    if (leftHand.y<head.y && rightHand.y<head.y) startDrop = true;
+
+    if (startDrop) {
+      if (!endDrop) {
+        float mappedY = map (leftHand.y-head.y, 0, maxRange, 0, height+50);
+        picturePos= new PVector(0, mappedY);
       }
-    
-      // this is called when the scene starts (i.e. is triggered)
-      void onStart() {
-        println("Charlene::Scene_drop_set::onStart");
-        startDrop=false;
-        endDrop=false;
-        player.close();
-        player = minim.loadFile("song1.mp3");
+      if (picturePos.y>height) {
+        endDrop=true;
       }
-      void onDraw(PImage userImage, TSSkeleton skeleton) {
-        player.play();
-        pushStyle();
-        pushMatrix();
-        PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
-        PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
-        PVector head = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
-        //SKEL_WAIST is not working! 
-        PVector waist = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HIP, transform2D, openNIContext);
-    
-        float maxRange = waist.y-head.y;
-        println(maxRange+" "+waist.y+" "+head.y);
-        //if both arms go above the head start linking the image pos to hands
-    
-        if (leftHand.y<head.y && rightHand.y<head.y) startDrop = true;
-    
-        if (startDrop) {
-          if (!endDrop) {
-            float mappedY = map (leftHand.y-head.y, 0, maxRange, 0, height+50);
-            picturePos= new PVector(0, mappedY);
-          }
-          if (picturePos.y>height) {
-            endDrop=true;
-          }
-        }
-        else {
-          picturePos= new PVector(0, 0);
-        }
-        image(theatre, picturePos.x, picturePos.y);
-    
-        popMatrix();
-        popStyle();
-      }
+    }
+    else {
+      picturePos= new PVector(0, 0);
+    }
+    image(theatre, picturePos.x, picturePos.y);
+
+    popMatrix();
+    popStyle();
+  }
 }
+

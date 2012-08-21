@@ -36,8 +36,9 @@ class Scene_big_buildings extends TSSceneBase {
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-
+    drawMaskedUser();
     image(easel, picturePos.x- (easel.width*0.7575), picturePos.y-(easel.height*0.6868));
+    
     pushMatrix();
     translate(picturePos.x-picture.width, picturePos.y-picture.height);
     rotate(imageRotateAngle);
@@ -102,6 +103,7 @@ class Scene_ripPaper extends TSSceneBase {
   // this is the scenes draw function
   // use getElapsedSeconds() to see how long the scene has been running (useful for transitions)
   void onDraw(PImage userImage, TSSkeleton skeleton) {
+    drawMaskedUser();
     //      println("StoryTest::Scene1::onDraw");      
     //   pushMatrix();
     PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
@@ -260,7 +262,7 @@ class Scene_fade_in_colour extends TSSceneBase {
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-
+    drawMaskedUser();
     PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.4, 0));
@@ -321,7 +323,7 @@ class Scene_shrink_grow_image extends TSSceneBase {
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-
+    drawMaskedUser();
     PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.4, 0));
@@ -374,7 +376,7 @@ class Scene_turn_cards extends TSSceneBase {
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-
+    drawMaskedUser();
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
 
     int x=0;
@@ -483,6 +485,8 @@ class Scene_flick_through_images extends TSSceneBase {
     topImageXShift=0;
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
+    drawMaskedUser();
+    
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.4, 0));
     image(images[frameIndex], picturePos.x, picturePos.y);
@@ -491,7 +495,7 @@ class Scene_flick_through_images extends TSSceneBase {
     image(section, picturePos.x+images[frameIndex+1].width-topImageXShift, picturePos.y);
 
     float thresh=0.01;
-    //if(timeOut>
+    
     //if the left hand is moving to the right and its a little while since we did this...
     if (skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext).x >0+thresh && counter>timeOutThresh) {
       float numSteps= 5.0;
