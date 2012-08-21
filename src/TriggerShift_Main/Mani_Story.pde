@@ -134,6 +134,7 @@ class ManiStory extends TSStoryBase {
             p.drag = 1;
             p.fade = 0.99;
             p.posAcc = new PVector(0, 10, 0);
+            p.img = imgRain;
             particles.add(p);
 //          }
         }
@@ -145,7 +146,7 @@ class ManiStory extends TSStoryBase {
       // draw particles
       for (int i=0; i<particles.size(); i++) {
         MSAParticle p = (MSAParticle) particles.get(i);
-        p.draw(imgRain);
+        p.draw();
       }
 
       popStyle();

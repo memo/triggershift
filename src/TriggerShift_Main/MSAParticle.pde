@@ -2,20 +2,21 @@
 class MSAParticle {
   PVector pos, posVel, posAcc;
   float rot, rotVel, radius, alpha, drag, fade;
+  PImage img;
   
-  MSAParticle(PVector _pos, PVector _posVel, float _rot, float _rotVel, float _radius, float _alpha, float _drag, float _fade) {
-    pos = _pos.get();
-    posVel = _posVel.get();
-    posAcc = new PVector(0, 0, 0);
-    rot = _rot;
-    rotVel = _rotVel;
-    radius = _radius;
-    alpha = _alpha;
-    drag = _drag;
-    fade = _fade;
-  }
+//  MSAParticle(PVector _pos, PVector _posVel, float _rot, float _rotVel, float _radius, float _alpha, float _drag, float _fade) {
+//    pos = _pos.get();
+//    posVel = _posVel.get();
+//    posAcc = new PVector(0, 0, 0);
+//    rot = _rot;
+//    rotVel = _rotVel;
+//    radius = _radius;
+//    alpha = _alpha;
+//    drag = _drag;
+//    fade = _fade;
+//  }
 
-  void draw(PImage img) {
+  void draw() {
     pushStyle();
     pushMatrix();
     translate(pos.x, pos.y);

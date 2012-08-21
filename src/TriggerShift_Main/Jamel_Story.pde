@@ -158,6 +158,7 @@ class JamelStory extends TSStoryBase {
           p.drag = 1;
           p.fade = 0.98;
           p.posAcc = new PVector(0, 1, 0);
+          p.img = imgPound;
           particles.add(p);
         }
       }
@@ -166,7 +167,7 @@ class JamelStory extends TSStoryBase {
       // draw particles
       for (int i=0; i<particles.size(); i++) {
         MSAParticle p = (MSAParticle) particles.get(i);
-        p.draw(imgPound);
+        p.draw();
       }
 
       popStyle();
