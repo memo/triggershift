@@ -58,9 +58,7 @@ class ManiStory extends TSStoryBase {
     }
   };
   City cityGrey = new City("mani/citygrey.png");
-  ;
   City cityColor = new City("mani/citycolor.png");
-  ;
 
 
   //----------------
@@ -70,9 +68,9 @@ class ManiStory extends TSStoryBase {
       float s;
       float r;
       PImage img;
-      
+
       void draw() {
-        if(img == null) {
+        if (img == null) {
           println("Mani::Flower.img == null");
           return;
         }
@@ -86,41 +84,40 @@ class ManiStory extends TSStoryBase {
         popMatrix();
       }
     };
-    
+
     PImage[] images = { 
       loadImage("mani/flower1.png"), loadImage("mani/flower2.png"), loadImage("mani/flower3.png"), loadImage("mani/flower4.png"), loadImage("mani/flower5.png")
-    };
+      };
 
-    ArrayList flowersArray;
-    
+      ArrayList flowersArray;
+
     void reset() {
       flowersArray = new ArrayList();
     }
-    
+
     void add(PVector _pos) {
       // look to see if there is a flower nearby
       boolean flowerFound = false;
-      for(int i=0; i<flowersArray.size(); i++) {
+      for (int i=0; i<flowersArray.size(); i++) {
         Flower f = (Flower)flowersArray.get(i);
-        if(abs(f.pos.y-_pos.y) < height * 0.05) flowerFound = true;
+        if (abs(f.pos.y-_pos.y) < height * 0.05) flowerFound = true;
       }
-      if(flowerFound) return;
-      
+      if (flowerFound) return;
+
       Flower f = new Flower();
       f.pos = _pos;
       f.s = 0;
       f.r = random(-30, 30);
-      f.img = images[(int)floor(random(0,5))];
+      f.img = images[(int)floor(random(0, 5))];
       flowersArray.add(f);
     }
-    
+
     void draw() {
-      for(int i=0; i<flowersArray.size(); i++) {
+      for (int i=0; i<flowersArray.size(); i++) {
         Flower f = (Flower)flowersArray.get(i);
         f.draw();
       }
     }
-    
   };
   Flowers flowers = new Flowers();
 
@@ -130,15 +127,15 @@ class ManiStory extends TSStoryBase {
     PImage img = loadImage("mani/colourwheel.png");
     float rot = 0;
     float s = 0;
-    
+
     void draw() {
       pushStyle();
       pushMatrix();
       imageMode(CENTER);
       translate(width * 0.25, height * 0.25);
-      rotate(radians(rot);
+      rotate(radians(rot));
       scale(s);
-      image(img, 0, 
+      image(img, width*0.25, height*0.25);
       rot += 1;
       popMatrix();
       popStyle();
@@ -176,10 +173,10 @@ class ManiStory extends TSStoryBase {
 
       PVector[] handPos = { 
         getLeftHand().get(), getRightHand().get()
-        };
+      };
 
 
-        pushStyle();
+      pushStyle();
       // add particle if velocity is above threshold
       for (int i=0; i<2; i++) {
         if (prevHandPos[i] != null) {
@@ -269,7 +266,7 @@ class ManiStory extends TSStoryBase {
       PVector rightHand = getRightHand().get();
       pushStyle();
       flowers.add(new PVector(width * 0.2, leftHand.y));
-//      flowers.add(rightHand);
+      //      flowers.add(rightHand);
       flowers.draw();
       popStyle();
     }
