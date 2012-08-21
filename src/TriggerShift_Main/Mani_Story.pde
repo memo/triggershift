@@ -65,11 +65,64 @@ class ManiStory extends TSStoryBase {
 
   //----------------
   class Flowers {
-    PImage[] img = { 
-      loadImage("main/flower1.png"), loadImage("main/flower2.png"), loadImage("main/flower3.png"), loadImage("main/flower4.png"), loadImage("main/flower5.png")
-      };
+    class Flower {
+      PVector pos = new PVector();
+      float s;
+      float r;
+      PImage img;
+      
+      void draw() {
+        if(img == null) {
+          println("Mani::Flower.img == null");
+          return;
+        }
+        s += (1-s) * 0.1;
+        pushMatrix();
+        translate(pos.x, pos.y);
+        rotate(radians(r));
+        scale(s / img.height * height * 0.2);
+        imageMode(CENTER);
+        image(img, 0, 0);
+        popMatrix();
+      }
     };
-    Flowers flowers;
+    
+    PImage[] images = { 
+      loadImage("mani/flower1.png"), loadImage("mani/flower2.png"), loadImage("mani/flower3.png"), loadImage("mani/flower4.png"), loadImage("mani/flower5.png")
+    };
+
+    ArrayList flowersArray;
+    
+    void reset() {
+      flowersArray = new ArrayList();
+    }
+    
+    void add(PVector _pos) {
+      // look to see if there is a flower nearby
+      boolean flowerFound = false;
+      for(int i=0; i<flowersArray.size(); i++) {
+        Flower f = (Flower)flowersArray.get(i);
+        if(abs(f.pos.y-_pos.y) < height * 0.05) flowerFound = true;
+      }
+      if(flowerFound) return;
+      
+      Flower f = new Flower();
+      f.pos = _pos;
+      f.s = 0;
+      f.r = random(-30, 30);
+      f.img = images[(int)floor(random(0,5))];
+      flowersArray.add(f);
+    }
+    
+    void draw() {
+      for(int i=0; i<flowersArray.size(); i++) {
+        Flower f = (Flower)flowersArray.get(i);
+        f.draw();
+      }
+    }
+    
+  };
+  Flowers flowers = new Flowers();
 
 
   //----------------
@@ -118,25 +171,25 @@ class ManiStory extends TSStoryBase {
           PVector prv = prevHandPos[i].get();
           PVector now = handPos[i].get();
           PVector vel = PVector.sub(prv, now);
-//          if (vel.mag() > transform2D.targetSizePixels.y * 0.03) {
-            float r = transform2D.targetSizePixels.y * 0.1;
-            now.x += random(-r, r);
-            now.y += random(-r, r);
-            now.z += random(-r, r);
-            vel.mult(-0.1);
-            MSAParticle p = new MSAParticle();//now, vel, random(-30, 30), random(-3, 3), random(height/80, height/40), 1.0, 1.0, 0.98);
-            p.pos = now;
-            p.posVel = vel;
-            p.rot = random(-30, 30);
-            p.rotVel = random(-3, 3);
-            p.radius = random(height/80, height/40);
-            p.alpha = 1;
-            p.drag = 1;
-            p.fade = 0.99;
-            p.posAcc = new PVector(0, 10, 0);
-            p.img = imgRain;
-            particles.add(p);
-//          }
+          //          if (vel.mag() > transform2D.targetSizePixels.y * 0.03) {
+          float r = transform2D.targetSizePixels.y * 0.1;
+          now.x += random(-r, r);
+          now.y += random(-r, r);
+          now.z += random(-r, r);
+          vel.mult(-0.1);
+          MSAParticle p = new MSAParticle();//now, vel, random(-30, 30), random(-3, 3), random(height/80, height/40), 1.0, 1.0, 0.98);
+          p.pos = now;
+          p.posVel = vel;
+          p.rot = random(-30, 30);
+          p.rotVel = random(-3, 3);
+          p.radius = random(height/80, height/40);
+          p.alpha = 1;
+          p.drag = 1;
+          p.fade = 0.99;
+          p.posAcc = new PVector(0, 10, 0);
+          p.img = imgRain;
+          particles.add(p);
+          //          }
         }
 
         prevHandPos[i] = handPos[i].get();
@@ -190,11 +243,20 @@ class ManiStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
+      flowers.reset();
     }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       drawMaskedUser();
+      cityColor.draw();
+      PVector leftHand = getLeftHand().get();
+      PVector rightHand = getRightHand().get();
+      pushStyle();
+      flowers.add(new PVector(width * 0.2, leftHand.y));
+//      flowers.add(rightHand);
+      flowers.draw();
+      popStyle();
     }
   };
 
