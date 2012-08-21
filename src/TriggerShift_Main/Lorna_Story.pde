@@ -3,6 +3,8 @@ class LornaStory extends TSStoryBase {
   LornaStory() {
     storyName = "LornaStory";
     println(storyName + "::" + storyName);
+    addScene(new Scene_colour_trees());
+
     addScene(new Scene_paper_chain());
     addScene(new Scene_Black_White());
     addScene(new Scene_reach_for_stars());
@@ -165,9 +167,8 @@ class Scene_paper_chain extends TSSceneBase {
     if (fall) {
       for (int i=0;i<pChain.size();i++) {
         ShardParticle pchain=(ShardParticle) pChain.get(i);
-        pchain.setPosVel(new PVector (random(-3,3), 5,0));
-        pchain.setRotVel(random(-3,3));
-        
+        pchain.setPosVel(new PVector (random(-3, 3), 5, 0));
+        pchain.setRotVel(random(-3, 3));
       }
       fall=false;
     }
@@ -197,6 +198,62 @@ class Scene_paper_chain extends TSSceneBase {
       }
     }
     popStyle();
+  }
+};
+
+// Scene 5 hand (or maybe later crayon) colours background from b and white to colour
+class Scene_colour_trees extends TSSceneBase {
+
+  PImage colourTrees = loadImage("lorna/treescolour.png");
+  PImage bandwTrees = loadImage("lorna/treesbw.png");
+
+  int imageWidth=width;
+  int imageHeight=height;
+
+  Scene_colour_trees() {
+    sceneName = "Scene5 colour trees";
+    //println(storyName + "::" + sceneName);
+    colourTrees.resize(imageWidth, imageHeight);
+    bandwTrees.resize(imageWidth, imageHeight);
+  }
+
+  //----------------
+  void onStart() {
+    //println(storyName + "::" + sceneName + "::onStart");
+  }
+
+  //----------------
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+
+    pushStyle();
+
+    //if hand is over one image
+    PVector leftHand=getLeftHand();
+    PVector rightHand=getRightHand();
+
+    colourTrees.loadPixels();
+    bandwTrees.loadPixels();
+    int radius=40;
+    int x=0;
+    int y=0;
+    for (int i=0;i<colourTrees.pixels.length;i++) {
+      //get pixels around it in a radius from colour image
+      if (dist(x, y, leftHand.x, leftHand.y  )<radius || dist(x, y, rightHand.x, rightHand.y  )<radius) {
+        //write into bandw image with colour data 
+        bandwTrees.pixels[i] = colourTrees.pixels[i];
+      }
+      x++;
+      if (x>=colourTrees.width) {
+        x=0;
+        y++;
+      }
+    }
+    colourTrees.updatePixels();
+    bandwTrees.updatePixels();
+
+    image(bandwTrees, 0, 0);
+    popStyle();
+    drawMaskedUser();
   }
 };
 
