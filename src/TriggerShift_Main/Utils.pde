@@ -1,54 +1,64 @@
 
 
 PVector getHead() {
-  if(skeleton == null) return new PVector(width/2, height/2, 0);
+  if (skeleton == null) return new PVector(width/2, height/2, 0);
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
 }
 
 PVector getHip() {
-  if(skeleton == null) return new PVector(width/2, height/2, 0);
+  if (skeleton == null) return new PVector(width/2, height/2, 0);
   return PVector.mult( PVector.add(skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HIP, transform2D, openNIContext), skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HIP, transform2D, openNIContext)), 0.5);
 }
 
 
 PVector getLeftHand() {
-  if(skeleton == null) return new PVector(width/2, height/2, 0);
+  if (skeleton == null) return new PVector(width/2, height/2, 0);
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
 }
 
 PVector getLeftHandVelocity() {
-  if(skeleton == null) return new PVector(0, 0, 0);
+  if (skeleton == null) return new PVector(0, 0, 0);
   return skeleton.getJointSmoothedVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
 }
 
 PVector getRightHand() {
-  if(skeleton == null) return new PVector(width/2, height/2, 0);
+  if (skeleton == null) return new PVector(width/2, height/2, 0);
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
 }
 
 PVector getRightHandVelocity() {
-  if(skeleton == null) return new PVector(0, 0, 0);
+  if (skeleton == null) return new PVector(0, 0, 0);
   return skeleton.getJointSmoothedVelocity(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
 }
 
 
+PVector getHand(int i) {
+  return i == 0 ? getLeftHand() : getRightHand();
+}
+
+PVector getHandVelocity(int i) {
+  return i == 0 ? getLeftHandVelocity() : getRightHandVelocity();
+}
+
+
+
 PVector getLeftElbow() {
-  if(skeleton == null) return new PVector(width/2, height/2, 0);
+  if (skeleton == null) return new PVector(width/2, height/2, 0);
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_ELBOW, transform2D, openNIContext);
 }
 
 PVector getRightElbow() {
-  if(skeleton == null) return new PVector(width/2, height/2, 0);
+  if (skeleton == null) return new PVector(width/2, height/2, 0);
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_ELBOW, transform2D, openNIContext);
 }
 
 PVector getLeftShoulder() {
-  if(skeleton == null) return new PVector(width/2, height/2, 0);
+  if (skeleton == null) return new PVector(width/2, height/2, 0);
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_SHOULDER, transform2D, openNIContext);
 }
 
 PVector getRightShoulder() {
-  if(skeleton == null) return new PVector(width/2, height/2, 0);
+  if (skeleton == null) return new PVector(width/2, height/2, 0);
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, transform2D, openNIContext);
 }
 
@@ -95,10 +105,10 @@ void resetSkeletonStats() {
 
 void updateSkeletonStats() {
   float leftArmLen = getLeftArm().mag();
-  if(leftArmLen > maxArmLength) maxArmLength = leftArmLen;
+  if (leftArmLen > maxArmLength) maxArmLength = leftArmLen;
 
   float rightArmLen = getRightArm().mag();
-  if(rightArmLen > maxArmLength) maxArmLength = rightArmLen;
+  if (rightArmLen > maxArmLength) maxArmLength = rightArmLen;
 }
 
 
@@ -108,5 +118,6 @@ float getMaxArmLength() {
 
 
 void drawMaskedUser() {
-   transform2D.drawImage( masker.getImage() );
+  transform2D.drawImage( masker.getImage() );
 }
+
