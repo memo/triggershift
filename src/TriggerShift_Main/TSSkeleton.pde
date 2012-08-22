@@ -236,7 +236,7 @@ class TSSkeleton {
 
       PVector transformedCoords = transform2D.getWorldCoordsForInputPixels(jointPos_Proj);
 
-      return transformedCoords;
+      return transformedCoords.get();
     } 
     else {
       println("NEW SDS");
@@ -246,6 +246,10 @@ class TSSkeleton {
 
   public PVector getJointVelocity(int userId, int jointType, TSTransform2D transform2D, SimpleOpenNI  context) {
     return tsjoints[userId][jointType].velocity;
+  }
+  
+ public PVector getJointSmoothedVelocity(int userId, int jointType, TSTransform2D transform2D, SimpleOpenNI  context) {
+    return tsjoints[userId][jointType].smoothedVelocity.get();
   }
 
   //----------------------------------

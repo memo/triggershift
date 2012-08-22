@@ -34,7 +34,7 @@ class TSJoint {
     //map velocity to depth image size - I can't find how to get the depth of this context
     velocity.x= map( newPos.x-prevPos.x, -context.depthWidth(), context.depthWidth(), -1, 1);
     velocity.y= map(newPos.y-prevPos.y, -context.depthHeight(), context.depthHeight(), -1, 1);
-    velocity.z= newPos.z-prevPos.z;
+    velocity.z= (newPos.z-prevPos.z)/1000;
 
     //overwrite the circular buffer
     buffer[bufferIndex]=velocity;

@@ -43,6 +43,9 @@ int lastUserId = 1;
 PFont debugFont;
 PFont smallFont;
 
+float lastFrameMillis = 0;
+float secondsSinceLastFrame = 1;
+
 // Stories
 TSStoryBase currentStory = null;
 int numStorys = 6; // including test story
@@ -128,13 +131,14 @@ void setupOpenNI() {
 
   openNIContext.setMirror(true);
   openNIContext.alternativeViewPointDepthToImage();
+  
+  skeleton = new TSSkeleton();
 }
 
 
 //----------------------------------
 void setup() {
-  size(1280, 800, P3D);
-  skeleton = new TSSkeleton();
+  size(1280, 800, OPENGL);
   masker = new TSMasker();
   transform2D = new TSTransform2D();
 
@@ -154,6 +158,10 @@ void setup() {
 
 //----------------------------------
 void draw() {
+  // update timing
+  secondsSinceLastFrame = (millis() - lastFrameMillis) * 0.001;
+  lastFrameMillis = millis();
+  
   background(80, 0, 0);
 
   // get kinect color image
@@ -198,7 +206,7 @@ void draw() {
     if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
     if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
     if (doDrawSkeletons) skeleton.drawAllSkeletons( openNIContext, transform2D);
-    if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
+//    if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
   }
 
   cp5.draw();
@@ -207,11 +215,27 @@ void draw() {
     pushStyle();
     textFont(smallFont);
     fill(255);
-    int x = 20, yinc = 25, y = height - yinc * 3; 
-    text("fps: " + str(frameRate), x, y); 
-    y += yinc;
-    text(currentStory.getString(), x, y); 
-    y += yinc;
+    String s = "";
+    s += "fps: " + str(frameRate) + "\n";
+    s += "secondsSinceLastFrame: " + str(secondsSinceLastFrame) + "\n";
+    s += currentStory.getString() + "\n";
+    s += "getHead: " + getHead() + "\n";
+    s += "getHip: " + getHip() + "\n";
+    s += "getLeftHand: " + getLeftHand() + "\n";
+    s += "getRightHand: " + getRightHand() + "\n";
+    s += "getLeftElbow: " + getLeftElbow() + "\n";
+    s += "getRightElbow: " + getRightElbow() + "\n";
+    s += "getLeftShoulder: " + getLeftShoulder() + "\n";
+    s += "getRightShoulder: " + getRightShoulder() + "\n";
+    s += "getLeftArm: " + getLeftArm() + "\n";
+    s += "getRightArm: " + getRightArm() + "\n";
+    s += "getMaxArmLength: " + str(getMaxArmLength()) + "\n";
+    s += "getLeftHandVelocity: " + PVector.mult(getLeftHandVelocity(), 100) + "%\n";
+    s += "getRightHandVelocity: " + PVector.mult(getRightHandVelocity(), 100) + "%\n";
+    s += "getLeftHandSpeed: " + str(getLeftHandVelocity().mag() * 100) + "%\n";
+    s += "getRightHandSpeed: " + str(getRightHandVelocity().mag() * 100) + "%\n";
+    text(s, 10, 40); 
+
     popStyle();
   }
 }

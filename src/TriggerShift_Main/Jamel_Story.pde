@@ -54,14 +54,14 @@ class JamelStory extends TSStoryBase {
       } 
       else {
         float rot = (millis() - ripStartMillis) * 0.001 * 90;
-        if(rot < 180) {
+        if (rot < 180) {
           int xpos = (int)(width * 0.25);
           pushMatrix();
           translate(xpos, height);
           rotate( -radians(rot) );
           image(imgFlagRip1, -xpos, -height, width, height);
           popMatrix();
-          
+
           pushMatrix();
           translate(width-xpos, height);
           rotate( radians(rot) );
@@ -86,9 +86,12 @@ class JamelStory extends TSStoryBase {
   //------------------------------------------------------------------------------------------------------
   // draw graph and pound signs
   class Scene2 extends TSSceneBase {
-    PImage imgPound = loadImage("jamel/pound.png");
+    MSAParticleSystem particleSystem = new MSAParticleSystem();
+    PImage[] imgs = { 
+      loadImage("jamel/pound.png"), loadImage("jamel/dollar.png"), loadImage("jamel/euro.png")
+      };
+
     ArrayList posArray;
-    ArrayList particles;
 
     //----------------
     Scene2() {
@@ -100,7 +103,30 @@ class JamelStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       posArray = new ArrayList();
-      particles = new ArrayList();
+      particleSystem.start();
+
+      particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(units(20), units(20), units(20)));
+      particleSystem.startVel.set(new PVector(0, 0, 0), new PVector(units(50), units(50), units(50)));
+      particleSystem.acc.set(new PVector(0, units(-20), 0), new PVector(0, units(5), 0));
+      particleSystem.inheritVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
+      particleSystem.inheritVelMult.set(new PVector(width/2, height/2, 0), new PVector(0, 0, 0));
+
+      particleSystem.startRot.set(0, 30);
+      particleSystem.rotVel.set(0, 3);
+      
+      particleSystem.startRadius.set(0, 0);
+      particleSystem.targetRadius.set(units(7), units(2));
+      particleSystem.radiusSpeed.set(0.5, 0.1);
+      
+      particleSystem.startAlpha.set(1, 0);
+      particleSystem.targetAlpha.set(0, 0);
+      particleSystem.alphaSpeed.set(0.02, 0.01);
+
+      particleSystem.drag.set(0.04, 0.005);
+      particleSystem.maxCount = 100;
+
+      particleSystem.maxCount = 20;
+      particleSystem.imgs = imgs;
     }
 
     //----------------
@@ -136,41 +162,17 @@ class JamelStory extends TSStoryBase {
       }
       endShape();
 
-      // add particle if velocity is above threshold
-      if (posArray.size() > 1) {
-        PVector prv = ((PVector)posArray.get(posArray.size()-2)).get();
-        PVector now = ((PVector)posArray.get(posArray.size()-1)).get();
-        PVector vel = PVector.sub(prv, now);
-        if (vel.mag() > transform2D.targetSizePixels.y * 0.03) {
-          float r = transform2D.targetSizePixels.y * 0.1;
-          now.x += random(-r, r);
-          now.y += random(-r, r);
-          now.z += random(-r, r);
-          vel.mult(-0.2);
-//          particles.add(new MSAParticle(now, vel, random(-30, 30), random(-3, 3), random(height/80, height/40), 1.0, 1.0, 0.98));
-          MSAParticle p = new MSAParticle();//now, vel, random(-30, 30), random(-3, 3), random(height/80, height/40), 1.0, 1.0, 0.98);
-          p.pos = now;
-          p.posVel = vel;
-          p.rot = random(-30, 30);
-          p.rotVel = random(-3, 3);
-          p.radius = random(height/80, height/40);
-          p.alpha = 1;
-          p.drag = 1;
-          p.fade = 0.98;
-          p.posAcc = new PVector(0, 1, 0);
-          p.img = imgPound;
-          particles.add(p);
-        }
-      }
-
-      if (particles.size() > 20) particles.remove(0);  // trim array
-      // draw particles
-      for (int i=0; i<particles.size(); i++) {
-        MSAParticle p = (MSAParticle) particles.get(i);
-        p.draw();
-      }
-
       popStyle();
+      
+      
+      if (getHighestHandVelocity().mag() > 0.1) {
+        particleSystem.startPos.base = getHighestHand();
+        particleSystem.inheritVel.base = getHighestHandVelocity();
+        particleSystem.add();
+      }
+
+      particleSystem.draw();
+
     }
   };
 
@@ -492,11 +494,11 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       drawMaskedUser();
-      
+
       pushStyle();
       imageMode(CENTER);
       PVector headPos = getHead();
-      
+
       if (isTriggered == false) {
         float w = width * 0.3;
         float h = w * imgHair1.height / imgHair1.width;
@@ -524,7 +526,7 @@ class JamelStory extends TSStoryBase {
   class Scene8 extends TSSceneBase {
     PImage imgBars = loadImage("jamel/prisonbars.png");
     float x1, x2;
-    
+
     Scene8() {
       sceneName = "Scene8 PRISON";
       println(storyName + "::" + sceneName);
@@ -540,15 +542,15 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       drawMaskedUser();
-      
+
       pushStyle();
       imageMode(CORNER);
       float h = height;
       float w = h / imgBars.height * width;
-      
+
       x1 += (map(getLeftHand().x, getHip().x - getMaxArmLength(), getHip().x, 0, width/2) - x1) * 0.5;
       x2 += (map(getRightHand().x, getHip().x + getMaxArmLength(), getHip().x, width, width/2) - x2) * 0.5;
-      
+
       image(imgBars, x1 - w, 0, w, h);
       image(imgBars, x2, 0, w, h);
       popStyle();
