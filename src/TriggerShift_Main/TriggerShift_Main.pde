@@ -224,7 +224,9 @@ void draw() {
     s += "getMaxArmLength: " + str(getMaxArmLength()) + "\n";
     s += "getLeftHandVelocity: " + PVector.mult(getLeftHandVelocity(), 100) + "%\n";
     s += "getRightHandVelocity: " + PVector.mult(getRightHandVelocity(), 100) + "%\n";
-    text(s, width - 300, 20); 
+    s += "getLeftHandSpeed: " + str(getLeftHandVelocity().mag() * 100) + "%\n";
+    s += "getRightHandSpeed: " + str(getRightHandVelocity().mag() * 100) + "%\n";
+    text(s, 10, 40); 
 
     popStyle();
   }
