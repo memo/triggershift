@@ -91,60 +91,44 @@ class ManiStory extends TSStoryBase {
 
   //----------------
   class Flowers {
-    class Flower {
-      PVector pos = new PVector();
-      float s;
-      float r;
-      PImage img;
+    MSAParticleSystem particleSystem = new MSAParticleSystem();
 
-      void draw() {
-        if (img == null) {
-          println("Mani::Flower.img == null");
-          return;
-        }
-        s += (1-s) * 0.1;
-        pushMatrix();
-        translate(pos.x, pos.y);
-        rotate(radians(r));
-        scale(s / img.height * height * 0.2);
-        imageMode(CENTER);
-        image(img, 0, 0);
-        popMatrix();
-      }
-    };
-
-    PImage[] images = { 
+    PImage[] imgs = { 
       loadImage("mani/flower1.png"), loadImage("mani/flower2.png"), loadImage("mani/flower3.png"), loadImage("mani/flower4.png"), loadImage("mani/flower5.png")
       };
 
-      ArrayList flowersArray;
-
     void start() {
-      flowersArray = new ArrayList();
+      particleSystem.start();
+
+      particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
+      particleSystem.startVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
+      particleSystem.acc.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
+      particleSystem.inheritVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
+      particleSystem.inheritVelMult.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
+
+      particleSystem.startRot.set(0, 30);
+      particleSystem.rotVel.set(0, 0);
+
+      particleSystem.startRadius.set(0, 0);
+      particleSystem.targetRadius.set(units(20), units(5));
+      particleSystem.radiusSpeed.set(0.1, 0.0);
+
+      particleSystem.startAlpha.set(1, 0);
+      particleSystem.targetAlpha.set(1, 0);
+      particleSystem.alphaSpeed.set(0.0, 0.0);
+
+      particleSystem.drag.set(0, 0);
+      particleSystem.maxCount = 200;
+      particleSystem.imgs = imgs;      
     }
 
     void add(PVector _pos) {
-      // look to see if there is a flower nearby
-      boolean flowerFound = false;
-      for (int i=0; i<flowersArray.size(); i++) {
-        Flower f = (Flower)flowersArray.get(i);
-        if (abs(f.pos.y-_pos.y) < height * 0.02) flowerFound = true;
-      }
-      if (flowerFound) return;
-
-      Flower f = new Flower();
-      f.pos = _pos;
-      f.s = 0;
-      f.r = random(-30, 30);
-      f.img = images[(int)floor(random(0, 5))];
-      flowersArray.add(f);
+      particleSystem.startPos.base = _pos.get();
+      particleSystem.add();
     }
 
     void draw() {
-      for (int i=0; i<flowersArray.size(); i++) {
-        Flower f = (Flower)flowersArray.get(i);
-        f.draw();
-      }
+      particleSystem.draw();
     }
   };
   Flowers flowers = new Flowers();
@@ -400,12 +384,10 @@ class ManiStory extends TSStoryBase {
       sky.draw();
       drawMaskedUser();
       cityColor.draw();
-      PVector leftHand = getLeftHand();
+//      PVector leftHand = getLeftHand();
       PVector rightHand = getRightHand();
-      pushStyle();
-      flowers.add(new PVector(width * 0.95, rightHand.y));
+      if(getRightHandVelocity().mag() > 1) flowers.add(new PVector(width * 0.95, rightHand.y));
       flowers.draw();
-      popStyle();
     }
   };
 
