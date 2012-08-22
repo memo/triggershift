@@ -100,7 +100,7 @@ class ManiStory extends TSStoryBase {
       boolean flowerFound = false;
       for (int i=0; i<flowersArray.size(); i++) {
         Flower f = (Flower)flowersArray.get(i);
-        if (abs(f.pos.y-_pos.y) < height * 0.05) flowerFound = true;
+        if (abs(f.pos.y-_pos.y) < height * 0.02) flowerFound = true;
       }
       if (flowerFound) return;
 
@@ -125,11 +125,14 @@ class ManiStory extends TSStoryBase {
   //----------------
   class ColorWheel {
     PImage img = loadImage("mani/colourwheel.png");
-    float rot = 0;
-    float s = 0;
+    float rot, rotSpeed, s;
+    PVector pos = new PVector(width * 0.2, height * 0.3);
+    float radius; 
     
     void start() {
       s = 0;
+      rot = 0;
+      rotSpeed = 0;
     }
 
     void draw() {
@@ -138,11 +141,13 @@ class ManiStory extends TSStoryBase {
       pushStyle();
       pushMatrix();
       imageMode(CENTER);
-      translate(width * 0.2, height * 0.3);
+      translate(pos.x, pos.y);
       rotate(radians(rot));
-      scale(s * width * 0.2 / img.width);
+      radius = s * width * 0.1;
+      scale(radius  * 2 / img.width);
       image(img, 0, 0);
-      rot += 1;
+      rot += rotSpeed;
+      rotSpeed *= 0.99;
       popMatrix();
       popStyle();
     }
@@ -196,10 +201,11 @@ class ManiStory extends TSStoryBase {
           //          if (vel.mag() > transform2D.targetSizePixels.y * 0.03) {
           float r = transform2D.targetSizePixels.y * 0.1;
           now.x += random(-r, r);
-          now.y += random(-r, r);
-          now.z += random(-r, r);
+//          now.y += random(-r, r);
+//          now.z += random(-r, r);
           vel.x *= width;
           vel.y *= height;
+          vel.y += height * 0.02;
           MSAParticle p = new MSAParticle();//now, vel, random(-30, 30), random(-3, 3), random(height/80, height/40), 1.0, 1.0, 0.98);
           p.pos = now;
           p.posVel = vel;
@@ -276,8 +282,7 @@ class ManiStory extends TSStoryBase {
       PVector leftHand = getLeftHand().get();
       PVector rightHand = getRightHand().get();
       pushStyle();
-      flowers.add(new PVector(width * 0.95, leftHand.y));
-      //      flowers.add(rightHand);
+      flowers.add(new PVector(width * 0.95, rightHand.y));
       flowers.draw();
       popStyle();
     }
@@ -301,8 +306,13 @@ class ManiStory extends TSStoryBase {
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       drawMaskedUser();
+      cityColor.draw();
       flowers.draw();
       colorWheel.draw();
+      if(getLeftHand().x < colorWheel.pos.x + colorWheel.radius) {
+        colorWheel.rotSpeed *= 0.9;
+        colorWheel.rotSpeed += getLeftHandVelocity().y * 50;
+      }
     }
   };
 
