@@ -21,6 +21,39 @@ class ManiStory extends TSStoryBase {
   }
 
 
+  //----------------
+  class Sky {
+    PImage img = loadImage("mani/nightandday.png");
+    float alpha;
+    float targetAlpha;
+    float rot;
+    float targetRot;
+    
+    void start() {
+      alpha = 0;
+      targetAlpha = 1;
+      rot = 0;
+      targetRot = 0;
+    }
+    
+    void draw() {
+      alpha += (targetAlpha - alpha) * 0.1;
+      rot += (targetRot - rot) * 0.1;
+      
+      pushStyle();
+      pushMatrix();
+      imageMode(CENTER);
+      translate(width/2, height);
+      rotate(radians(rot));
+      scale(width / img.width);
+      tint(255, alpha * 255);
+      image(img, 0, 0);
+      popMatrix();
+      popStyle();
+    }
+  };
+  Sky sky = new Sky();
+
 
   //----------------
   class City {
@@ -333,10 +366,12 @@ class ManiStory extends TSStoryBase {
       println(storyName + "::" + sceneName + "::onStart");
       cityGrey.set(1, 0, 1, 0);
       cityColor.set(5, 1, 0, 1);
+      sky.start();
     }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      sky.draw();
       cityGrey.draw();
       drawMaskedUser();
       cityColor.draw();
@@ -360,6 +395,7 @@ class ManiStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      sky.draw();
       drawMaskedUser();
       cityColor.draw();
       PVector leftHand = getLeftHand();
@@ -388,6 +424,7 @@ class ManiStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      sky.draw();
       drawMaskedUser();
       cityColor.draw();
       flowers.draw();
@@ -416,6 +453,7 @@ class ManiStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      sky.draw();
       drawMaskedUser();
       cityColor.draw();
       flowers.draw();
@@ -445,6 +483,7 @@ class ManiStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      sky.draw();
       drawMaskedUser();
       trafficLights.draw();
       cityColor.draw();
@@ -475,6 +514,7 @@ class ManiStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      sky.draw();
       drawMaskedUser();
     }
   };
