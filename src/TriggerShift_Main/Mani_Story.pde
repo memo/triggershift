@@ -125,34 +125,107 @@ class ManiStory extends TSStoryBase {
   //----------------
   class ColorWheel {
     PImage img = loadImage("mani/colourwheel.png");
-    float rot, rotSpeed, s;
     PVector pos = new PVector(width * 0.2, height * 0.3);
+    float rot, rotSpeed;
     float radius; 
-    
+
     void start() {
-      s = 0;
       rot = 0;
       rotSpeed = 0;
+      radius = 0;
     }
 
     void draw() {
-      s += (1-s) * 0.1;
-      
       pushStyle();
       pushMatrix();
       imageMode(CENTER);
       translate(pos.x, pos.y);
       rotate(radians(rot));
-      radius = s * width * 0.1;
-      scale(radius  * 2 / img.width);
+      radius += (width * 0.1 - radius) * 0.1;
+      scale(radius * 2 / img.width);
       image(img, 0, 0);
-      rot += rotSpeed;
-      rotSpeed *= 0.99;
       popMatrix();
       popStyle();
+
+      rot += rotSpeed;
+      rotSpeed *= 0.99;
     }
   };
   ColorWheel colorWheel = new ColorWheel();
+
+
+  //----------------
+  class Basketball {
+    PImage img = loadImage("mani/basketball.png");
+    PVector pos, vel;
+    float rot, rotSpeed;
+    float radius; 
+    float bounce = 0.9;
+
+    void start() {
+      vel = new PVector(width*0.02, 0);
+      pos = new PVector(width + radius, -radius);
+    }
+
+    void draw() {
+      pushStyle();
+      pushMatrix();
+      imageMode(CENTER);
+      translate(pos.x, pos.y);
+      rotate(radians(rot));
+      radius += (width * 0.07 - radius) * 0.1;
+      scale(radius * 2 / img.width);
+      image(img, 0, 0);
+      popMatrix();
+      popStyle();
+
+      rot += rotSpeed;
+      rotSpeed *= 0.99;
+
+      pos.add(vel);
+      // gravity
+      vel.y += height * 0.01; 
+
+      // bounce off edges
+      if (pos.y > height - radius) {
+        pos.y = height - radius;
+        vel.y = -abs(vel.y * bounce);
+      } 
+      else if (pos.y < radius) {
+        pos.y = radius;
+        vel.y = abs(vel.y * bounce);
+      }
+      if (pos.x > width - radius) {
+        pos.x = width - radius;
+        vel.x = -abs(vel.x * bounce);
+      } 
+      else if (pos.x < radius) {
+        pos.x = radius;
+        vel.x = abs(vel.x * bounce);
+      }
+
+      // collide with hand
+      for (int i=0; i<2; i++) {
+        PVector handPos = getHand(i);
+        PVector handVel = getHandVelocity(i);
+        PVector diff = PVector.sub(pos, handPos);
+        float distance = diff.mag();
+        if (distance < radius) {
+          PVector normDiff = diff.get();
+          normDiff.normalize();
+          pos.add(PVector.mult(normDiff, radius-distance));
+          float speeddot = vel.dot(normDiff);  // component of speed into hand
+          PVector veldot = PVector.mult(normDiff, speeddot);  // component of velocity into hand
+          PVector veltan = PVector.sub(vel, veldot); // comopnent of velocty tangent to hand
+          veldot.mult(-bounce);  // flip velocity
+          vel = PVector.add(veldot, veltan);
+        }
+      }
+    }
+  };
+  Basketball basketball = new Basketball();
+
+
 
 
   //------------------------------------------------------------------------------------------------------
@@ -162,7 +235,7 @@ class ManiStory extends TSStoryBase {
   class Scene1 extends TSSceneBase {
     PImage imgRain = loadImage("mani/raindrop.png");
     ArrayList particles;
-//    PVector[] prevHandPos = new PVector[2];
+    //    PVector[] prevHandPos = new PVector[2];
 
 
     Scene1() {
@@ -183,45 +256,37 @@ class ManiStory extends TSStoryBase {
       cityGrey.draw();
       drawMaskedUser();
 
-      PVector[] handPos = { 
-        getLeftHand().get(), getRightHand().get()
-      };
-      PVector[] handVel = {
-        getLeftHandVelocity().get(), getRightHandVelocity().get()
-      };
-
-
       pushStyle();
       // add particle if velocity is above threshold
       for (int i=0; i<2; i++) {
-//        if (prevHandPos[i] != null) {
-//          PVector prv = prevHandPos[i].get();
-          PVector now = handPos[i].get();
-          PVector vel = handVel[i].get();//PVector.sub(prv, now);
-          //          if (vel.mag() > transform2D.targetSizePixels.y * 0.03) {
-          float r = transform2D.targetSizePixels.y * 0.1;
-          now.x += random(-r, r);
-//          now.y += random(-r, r);
-//          now.z += random(-r, r);
-          vel.x *= width;
-          vel.y *= height;
-          vel.y += height * 0.02;
-          MSAParticle p = new MSAParticle();//now, vel, random(-30, 30), random(-3, 3), random(height/80, height/40), 1.0, 1.0, 0.98);
-          p.pos = now;
-          p.posVel = vel;
-          p.rot = random(-30, 30);
-          p.rotVel = random(-3, 3);
-          p.radius = random(height/80, height/40);
-          p.alpha = 1;
-          p.drag = 1;
-          p.fade = 1;
-          p.posAcc = new PVector(0, 10, 0);
-          p.img = imgRain;
-          particles.add(p);
-          //          }
-//        }
+        //        if (prevHandPos[i] != null) {
+        //          PVector prv = prevHandPos[i].get();
+        PVector now = getHand(i);
+        PVector vel = getHandVelocity(i);//PVector.sub(prv, now);
+        //          if (vel.mag() > transform2D.targetSizePixels.y * 0.03) {
+        float r = transform2D.targetSizePixels.y * 0.1;
+        now.x += random(-r, r);
+        //          now.y += random(-r, r);
+        //          now.z += random(-r, r);
+        vel.x *= width;
+        vel.y *= height;
+        vel.y += height * 0.02;
+        MSAParticle p = new MSAParticle();//now, vel, random(-30, 30), random(-3, 3), random(height/80, height/40), 1.0, 1.0, 0.98);
+        p.pos = now;
+        p.posVel = vel;
+        p.rot = random(-30, 30);
+        p.rotVel = random(-3, 3);
+        p.radius = random(height/80, height/40);
+        p.alpha = 1;
+        p.drag = 1;
+        p.fade = 1;
+        p.posAcc = new PVector(0, 10, 0);
+        p.img = imgRain;
+        particles.add(p);
+        //          }
+        //        }
 
-//        prevHandPos[i] = handPos[i].get();
+        //        prevHandPos[i] = handPos[i].get();
       }
 
       while (particles.size () > 100) particles.remove(0);  // trim array
@@ -279,8 +344,8 @@ class ManiStory extends TSStoryBase {
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       drawMaskedUser();
       cityColor.draw();
-      PVector leftHand = getLeftHand().get();
-      PVector rightHand = getRightHand().get();
+      PVector leftHand = getLeftHand();
+      PVector rightHand = getRightHand();
       pushStyle();
       flowers.add(new PVector(width * 0.95, rightHand.y));
       flowers.draw();
@@ -309,7 +374,7 @@ class ManiStory extends TSStoryBase {
       cityColor.draw();
       flowers.draw();
       colorWheel.draw();
-      if(getLeftHand().x < colorWheel.pos.x + colorWheel.radius) {
+      if (getLeftHand().x < colorWheel.pos.x + colorWheel.radius) {
         colorWheel.rotSpeed *= 0.9;
         colorWheel.rotSpeed += getLeftHandVelocity().y * 50;
       }
@@ -328,11 +393,20 @@ class ManiStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
+      basketball.start();
     }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       drawMaskedUser();
+      cityColor.draw();
+      flowers.draw();
+      colorWheel.draw();
+      if (getLeftHand().x < colorWheel.pos.x + colorWheel.radius) {
+        colorWheel.rotSpeed *= 0.9;
+        colorWheel.rotSpeed += getLeftHandVelocity().y * 50;
+      }
+      basketball.draw();
     }
   };
 
