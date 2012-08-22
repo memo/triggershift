@@ -91,7 +91,7 @@ class ManiStory extends TSStoryBase {
 
       ArrayList flowersArray;
 
-    void reset() {
+    void start() {
       flowersArray = new ArrayList();
     }
 
@@ -127,20 +127,27 @@ class ManiStory extends TSStoryBase {
     PImage img = loadImage("mani/colourwheel.png");
     float rot = 0;
     float s = 0;
+    
+    void start() {
+      s = 0;
+    }
 
     void draw() {
+      s += (1-s) * 0.1;
+      
       pushStyle();
       pushMatrix();
       imageMode(CENTER);
-      translate(width * 0.25, height * 0.25);
+      translate(width * 0.2, height * 0.3);
       rotate(radians(rot));
-      scale(s);
-      image(img, width*0.25, height*0.25);
+      scale(s * width * 0.2 / img.width);
+      image(img, 0, 0);
       rot += 1;
       popMatrix();
       popStyle();
     }
   };
+  ColorWheel colorWheel = new ColorWheel();
 
 
   //------------------------------------------------------------------------------------------------------
@@ -150,7 +157,7 @@ class ManiStory extends TSStoryBase {
   class Scene1 extends TSSceneBase {
     PImage imgRain = loadImage("mani/raindrop.png");
     ArrayList particles;
-    PVector[] prevHandPos = new PVector[2];
+//    PVector[] prevHandPos = new PVector[2];
 
 
     Scene1() {
@@ -162,7 +169,7 @@ class ManiStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
-      cityGrey.set(1, 1, 1, 1);
+      cityGrey.set(1, 1, 0, 1);
       particles = new ArrayList();
     }
 
@@ -174,21 +181,24 @@ class ManiStory extends TSStoryBase {
       PVector[] handPos = { 
         getLeftHand().get(), getRightHand().get()
       };
+      PVector[] handVel = {
+        getLeftHandVelocity().get(), getRightHandVelocity().get()
+      };
 
 
       pushStyle();
       // add particle if velocity is above threshold
       for (int i=0; i<2; i++) {
-        if (prevHandPos[i] != null) {
-          PVector prv = prevHandPos[i].get();
+//        if (prevHandPos[i] != null) {
+//          PVector prv = prevHandPos[i].get();
           PVector now = handPos[i].get();
-          PVector vel = PVector.sub(prv, now);
+          PVector vel = handVel[i].get();//PVector.sub(prv, now);
           //          if (vel.mag() > transform2D.targetSizePixels.y * 0.03) {
           float r = transform2D.targetSizePixels.y * 0.1;
           now.x += random(-r, r);
           now.y += random(-r, r);
           now.z += random(-r, r);
-          vel.mult(-0.1);
+          vel.mult(-height);
           MSAParticle p = new MSAParticle();//now, vel, random(-30, 30), random(-3, 3), random(height/80, height/40), 1.0, 1.0, 0.98);
           p.pos = now;
           p.posVel = vel;
@@ -197,14 +207,14 @@ class ManiStory extends TSStoryBase {
           p.radius = random(height/80, height/40);
           p.alpha = 1;
           p.drag = 1;
-          p.fade = 0.99;
+          p.fade = 1;
           p.posAcc = new PVector(0, 10, 0);
           p.img = imgRain;
           particles.add(p);
           //          }
-        }
+//        }
 
-        prevHandPos[i] = handPos[i].get();
+//        prevHandPos[i] = handPos[i].get();
       }
 
       while (particles.size () > 100) particles.remove(0);  // trim array
@@ -255,7 +265,7 @@ class ManiStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
-      flowers.reset();
+      flowers.start();
     }
 
     //----------------
@@ -265,7 +275,7 @@ class ManiStory extends TSStoryBase {
       PVector leftHand = getLeftHand().get();
       PVector rightHand = getRightHand().get();
       pushStyle();
-      flowers.add(new PVector(width * 0.2, leftHand.y));
+      flowers.add(new PVector(width * 0.95, leftHand.y));
       //      flowers.add(rightHand);
       flowers.draw();
       popStyle();
@@ -284,11 +294,14 @@ class ManiStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
+      colorWheel.start();
     }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       drawMaskedUser();
+      flowers.draw();
+      colorWheel.draw();
     }
   };
 
