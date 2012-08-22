@@ -19,7 +19,7 @@ PVector getLeftHand() {
 
 PVector getLeftHandVelocity() {
   if (skeleton == null) return new PVector(0, 0, 0);
-  return skeleton.getJointSmoothedVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+  return PVector.mult(skeleton.getJointSmoothedVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext), 1.0/secondsSinceLastFrame);
 }
 
 PVector getRightHand() {
@@ -29,7 +29,7 @@ PVector getRightHand() {
 
 PVector getRightHandVelocity() {
   if (skeleton == null) return new PVector(0, 0, 0);
-  return skeleton.getJointSmoothedVelocity(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
+  return PVector.mult(skeleton.getJointSmoothedVelocity(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext), 1.0/secondsSinceLastFrame);
 }
 
 

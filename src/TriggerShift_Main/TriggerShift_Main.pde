@@ -43,6 +43,9 @@ int lastUserId = 1;
 PFont debugFont;
 PFont smallFont;
 
+float lastFrameMillis = 0;
+float secondsSinceLastFrame = 1;
+
 // Stories
 TSStoryBase currentStory = null;
 int numStorys = 6; // including test story
@@ -155,6 +158,10 @@ void setup() {
 
 //----------------------------------
 void draw() {
+  // update timing
+  secondsSinceLastFrame = (millis() - lastFrameMillis) * 0.001;
+  lastFrameMillis = millis();
+  
   background(80, 0, 0);
 
   // get kinect color image
@@ -210,6 +217,7 @@ void draw() {
     fill(255);
     String s = "";
     s += "fps: " + str(frameRate) + "\n";
+    s += "secondsSinceLastFrame: " + str(secondsSinceLastFrame) + "\n";
     s += currentStory.getString() + "\n";
     s += "getHead: " + getHead() + "\n";
     s += "getHip: " + getHip() + "\n";

@@ -12,21 +12,21 @@ class MSAParticle {
   PImage img;
 
   void draw() {
-    pushStyle();
+//    pushStyle();
     pushMatrix();
-    translate(pos.x, pos.y);
+    translate(pos.x, pos.y, pos.z);
     rotate(radians(rot));
     imageMode(CENTER);
     tint(255, alpha * 255);
     image(img, 0, 0, radius*2, radius*2);
     popMatrix();
-    popStyle();
+//    popStyle();
 
     if(fadeSpeed>0) alpha += (targetAlpha - alpha) * fadeSpeed;
-    pos.add(posVel);
+    pos.add(PVector.mult(posVel, secondsSinceLastFrame));
     posVel.mult(1-drag);
-    posVel.add(posAcc);
-    rot += rotVel;
+    posVel.add(PVector.mult(posAcc, secondsSinceLastFrame));
+    rot += rotVel * secondsSinceLastFrame;
     rotVel *= (1-rotDrag);
   }
 };

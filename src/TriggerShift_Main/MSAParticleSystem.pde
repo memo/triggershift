@@ -3,34 +3,31 @@
 class MSAParticleSystem {
   ArrayList particles;
 
-  PVector initPos = new PVector();                  // initial position
-  PVector initPosVariance = new PVector();          // how far from creation point can particle be created
+  PVector initPos = new PVector();                  // initial position of particle
+  PVector initPosVariance = new PVector();          // random distance to initPos where particle can be created
 
-  PVector initVel = new PVector();                  // initial velocity
-  PVector initVelVariance = new PVector();          // randomness of above
-  //  PVector initVelAdd = new PVector();               // add some more velocity on top
-  //  PVector initVelAddVariance = new PVector();       // randomness of above
-  //  PVector initVelAddMult = new PVector(1, 1, 1);    // how much of the init vel does the particle take
+  PVector initVel = new PVector();                  // initial velocity of particle
+  PVector initVelVariance = new PVector();          // random range of above
+  PVector initVelInherit = new PVector();           // particle inherits this velocity
+  PVector initVelInheritMult = new PVector();       // multiply above by this before adding to particle
 
+  PVector initAcc = new PVector();                  // acceleration of particle
+  float initAccVariance = 0;                        // random range of above
 
-  PVector initAcc = new PVector();
-  float initAccVariance = 0;
+  float initRot = 0, initRotVariance = 0;           // initial rotation & random range
 
-  float initRot = 0, initRotVariance = 0;        
+  float initRotVel = 0, initRotVelVariance = 0;     // initial rotation velocity & random range
 
-  float initRotVel = 0, initRotVelVariance = 0;  
+  float initRadius = 1, initRadiusVariance = 0;             // initial radius & random range
 
-  float initRadius = 1, initRadiusVariance = 0;  
+  float initDrag = 0, initDragVariance = 0;                 // initial drag & random range
 
-  float initDrag = 0, initDragVariance = 0;        
-
-  float initAlpha = 1, initAlphaVariance = 0;      
-  float initTargetAlpha = 1, initTargetAlphaVariance = 0;
+  float initAlpha = 1, initAlphaVariance = 0;               // initial alpha & random range
+  float initTargetAlpha = 1, initTargetAlphaVariance = 0;   // initial rotation & random range
   float initFadeSpeed = 0, initFadeSpeedVariance = 0;
 
   ArrayList imgs = null;
   PImage img = null;
-
 
   int maxCount = 0;
 
@@ -56,6 +53,7 @@ class MSAParticleSystem {
 
     p.pos = getVectorWithVariance(initPos, initPosVariance);
     p.posVel = getVectorWithVariance(initVel, initVelVariance);
+    p.posVel.add(PVector.mult(initVelInherit, initVelInheritMult));
     p.posAcc = getVectorWithVariance(initAcc, initAccVariance);
 
     p.rot = getValueWithVariance(initRot, initRotVariance);

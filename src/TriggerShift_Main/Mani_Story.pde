@@ -181,7 +181,7 @@ class ManiStory extends TSStoryBase {
       popMatrix();
       popStyle();
 
-      rot += rotSpeed;
+      rot += rotSpeed * secondsSinceLastFrame;
       rotSpeed *= 0.99;
     }
   };
@@ -198,7 +198,7 @@ class ManiStory extends TSStoryBase {
     float bounce = 0.9;
 
     void start() {
-      vel = new PVector(width*0.02, 0);
+      vel = new PVector(-units(100), 0);
       pos = new PVector(width + radius, -radius);
     }
 
@@ -214,12 +214,12 @@ class ManiStory extends TSStoryBase {
       popMatrix();
       popStyle();
 
-      rot += rotSpeed;
+      rot += rotSpeed * secondsSinceLastFrame;
       rotSpeed *= 0.99;
 
-      pos.add(vel);
+      pos.add(PVector.mult(vel, secondsSinceLastFrame));
       // gravity
-      vel.y += height * 0.01; 
+      vel.y += units(30) * secondsSinceLastFrame; 
 
       // bounce off edges
       if (pos.y > height - radius) {
@@ -311,53 +311,30 @@ class ManiStory extends TSStoryBase {
       particleSystem.start();
 
       particleSystem.initPos.set(0, 0, 0);
-      particleSystem.initPosVariance.set(units(50), units(10), 0);
-
-      particleSystem.initVel.set(0, units(120), 0);
-      particleSystem.initVelVariance.set(0, 0, 0);
-
-      particleSystem.initAcc.set(0, units(12), 0);
+      particleSystem.initPosVariance.set(units(50), units(10), units(10));
+      particleSystem.initVel.set(0, units(150), 0);
+      particleSystem.initVelVariance.set(units(0), units(150), units(150));
+      particleSystem.initVelInherit.set(0, 0, 0);
+      particleSystem.initVelInheritMult.set(width, height, 0);
+      
+      particleSystem.initAcc.set(0, units(50), 0);
       particleSystem.initAccVariance = 0;
-
       particleSystem.initRot = 0;
       particleSystem.initRotVariance = 30;        
-
       particleSystem.initRotVel = 0;
       particleSystem.initRotVelVariance = 3;  
-
       particleSystem.initRadius = units(10);
       particleSystem.initRadiusVariance = units(3);  
-
-      particleSystem.initDrag = 0;
-      particleSystem.initDragVariance = 0;        
-
+      particleSystem.initDrag = 0.01;
+      particleSystem.initDragVariance = 0.01;
       particleSystem.initAlpha = 0;
       particleSystem.initAlphaVariance = 0;
       particleSystem.initTargetAlpha = 1;
       particleSystem.initTargetAlphaVariance = 0;
-      particleSystem.initFadeSpeed = 0.2;
+      particleSystem.initFadeSpeed = 0.5;
       particleSystem.initFadeSpeedVariance = 0;
-
       particleSystem.maxCount = 100;
-
       particleSystem.img = imgRain;
-
-      //      particleSystem.initVelMult.set(width, height, 0);
-      //      particleSystem.initVel.set(0, height * 0.02, 0);
-      //      particleSystem.initRadius = 0.02;
-      //      particleSystem.initRadiusVariance = 0.001;
-      //      particleSystem.initAlpha = 1;
-      //      particleSystem.initAlphaVariance = 0;
-      //      particleSystem.initDrag = 0;
-      //      particleSystem.initDragVariance = 0;
-      //      particleSystem.initFadeSpeed = 0;
-      //      particleSystem.initFadeSpeedVariance = 0;
-      //      p.radius = random(height/80, height/40);
-      //      p.alpha = 1;
-      //      p.drag = 1;
-      //      p.fade = 1;
-      //      p.img = img;
-      //      particles.add(p);
     }
 
     //----------------
@@ -367,7 +344,7 @@ class ManiStory extends TSStoryBase {
 
       for (int i=0; i<2; i++) {
         particleSystem.initPos = getHand(i);
-        particleSystem.initVel = getHandVelocity(i);
+        particleSystem.initVelInherit = getHandVelocity(i);
         particleSystem.add();
       }
 
