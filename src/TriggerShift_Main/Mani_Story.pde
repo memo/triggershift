@@ -42,7 +42,7 @@ class ManiStory extends TSStoryBase {
     }
 
     void draw() {
-      p.rotVel = (targetRot - p.rot)*0.1;
+      p.rotVel = (targetRot - p.rot)*0.3;
       p.draw();
     }
   };
@@ -169,7 +169,7 @@ class ManiStory extends TSStoryBase {
       p.posVel = new PVector(-units(100), 0);
       p.pos = new PVector(width + p.radius, -p.radius);
       p.radius = width * 0.05;
-      p.posAcc.y = units(200);
+      p.posAcc.y = units(400);
     }
 
     void draw() {
@@ -463,9 +463,9 @@ class ManiStory extends TSStoryBase {
 
       particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(units(50), units(10), units(10)));
       particleSystem.startVel.set(new PVector(0, 0, 0), new PVector(units(100), units(100), units(100)));
-      particleSystem.acc.set(new PVector(0, units(-20), 0), new PVector(0, units(5), 0));
+      particleSystem.acc.set(new PVector(0, units(-10), 0), new PVector(0, units(3), 0));
       particleSystem.inheritVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
-      particleSystem.inheritVelMult.set(new PVector(width, height, 0), new PVector(0, 0, 0));
+      particleSystem.inheritVelMult.set(new PVector(width/2, height/2, 0), new PVector(0, 0, 0));
 
       particleSystem.startRot.set(0, 30);
       particleSystem.rotVel.set(0, 3);
