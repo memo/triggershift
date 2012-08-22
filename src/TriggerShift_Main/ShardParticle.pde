@@ -4,6 +4,7 @@ class ShardParticle extends MSAParticle {
   PVector pPos;
   boolean showWord=false;
   String word="";
+  int imageIndex=0;
   ShardParticle(PVector _pos, PVector _posVel, float _rot, float _rotVel, float _radius, float _alpha, float _drag, float _fadeSpeed) {
 //    super( _pos, _posVel, _rot, _rotVel, _radius, _alpha, _drag, _fade);
     pos = _pos.get();

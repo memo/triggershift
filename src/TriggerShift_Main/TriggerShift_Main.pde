@@ -17,7 +17,7 @@ boolean doDrawKinectRGB = false;
 boolean doDrawKinectDepth = false;
 boolean doDrawKinectMasked = false;
 boolean doDrawSkeletons = true;
-boolean doDrawDebugInfo = true;
+boolean doDrawDebugInfo = false;
 
 int maskBlurAmount = 0;
 float videoSizeX = 1;
@@ -37,6 +37,7 @@ TSTransform2D transform2D = null;
 TSMasker masker = null;
 Minim minim;
 AudioPlayer player;
+AudioPlayer player1;
 
 int lastUserId = 1;
 //for printing debug info to screen
@@ -55,6 +56,7 @@ void setupAudio() {
   minim = new Minim(this);
   //a default song to load - if we don't have this calling .close() gives null pointer
   player = minim.loadFile("song1.mp3");
+  player1 = minim.loadFile("song1.mp3");
 }
 //----------------------------------
 void setupUI() {
@@ -138,7 +140,7 @@ void setupOpenNI() {
 
 //----------------------------------
 void setup() {
-  size(1280, 800, OPENGL);
+  size(1280, 800, P3D);
   masker = new TSMasker();
   transform2D = new TSTransform2D();
 
@@ -368,6 +370,6 @@ void stop()
   // you are overriding by defining your own
   // it must be called so that your application
   // can do all the cleanup it would normally do
-  super.stop();
+ super.stop();
 }
 

@@ -191,7 +191,8 @@ class Scene_throw_coffee extends TSSceneBase {
     float thresh=0.02;
     fill(166, 129, 54);
     if (getElapsedSeconds()>4) {
-      if (skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext).y >thresh && !lock ) {
+      //now uses
+      if (getLeftHand().y < getLeftElbow().y && !lock ) {
         isThrown=true;
       }
       if (isThrown) {

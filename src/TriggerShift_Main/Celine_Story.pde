@@ -38,7 +38,7 @@ class Scene_big_buildings extends TSSceneBase {
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     drawMaskedUser();
     image(easel, picturePos.x- (easel.width*0.7575), picturePos.y-(easel.height*0.6868));
-    
+
     pushMatrix();
     translate(picturePos.x-picture.width, picturePos.y-picture.height);
     rotate(imageRotateAngle);
@@ -98,6 +98,15 @@ class Scene_ripPaper extends TSSceneBase {
     startToFlyAway=false;
     leftP = new ShardParticle(new PVector(0, 0, 0), new PVector(0, 0, 0), 0, 0, 0, 1, 0, 1);
     rightP = new ShardParticle(new PVector(0, 0, 0), new PVector(0, 0, 0), 0, 0, 0, 1, 0, 1);
+
+    //close player 2 in case we toggle back to this one
+    try {
+      player1.close();
+    }
+    catch(Exception e) {
+    }
+    player.close();
+    player = minim.loadFile("celine/rip.mp3");
   }
 
   // this is the scenes draw function
@@ -117,6 +126,7 @@ class Scene_ripPaper extends TSSceneBase {
     popMatrix();
 
     if (getElapsedSeconds()>4) {
+      player.play();
       ///get the angle between hand and elbow
       leftHand.sub(leftElbow);
       leftHand.normalize();
@@ -259,10 +269,20 @@ class Scene_fade_in_colour extends TSSceneBase {
     imageWidth = 120;
     imageHeight = 200;
     angle=0;
+
+    player.close();
+    player = minim.loadFile("celine/projectors.mp3");
+    player.loop();
+
+    //player1.close();
+    player1 = minim.loadFile("celine/phonetones.mp3");
+    player1.loop();
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     drawMaskedUser();
+
+
     PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.4, 0));
@@ -295,6 +315,14 @@ class Scene_fade_in_colour extends TSSceneBase {
     image(sepia, 0, 0);
     popMatrix();
     popStyle();
+    // player.setGain(map(mouseX,0,width,-80.0,-13.9794));
+
+    float volume1 = map(distBetweenHands, 0, maxDist, -80.0, -13.9794);
+    float volume2 = map(distBetweenHands, 0, maxDist, -13.9794, -80.0);
+    // volume= constrain(volume,0,1);
+
+    player.setGain(volume1);
+    player1.setGain(volume2);
   }
 };
 
@@ -320,6 +348,11 @@ class Scene_shrink_grow_image extends TSSceneBase {
 
     imageWidth = 120;
     imageHeight = 200;
+    player.close();
+    player1.close();
+
+    player = minim.loadFile("celine/stretch-up.mp3");
+    player.loop();
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -350,7 +383,7 @@ class Scene_turn_cards extends TSSceneBase {
   Card [] cards;
   int [] timers;
   int numCards=8;
-
+  int pWhichHand;
 
   Scene_turn_cards() {
     sceneName = "Scene5 TURN CARDS";
@@ -373,6 +406,9 @@ class Scene_turn_cards extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("CelineStory::Scene_turn_cards::onStart");
+    player.close();
+    player = minim.loadFile("celine/cardflick-a.mp3");
+    pWhichHand=0;
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -381,20 +417,35 @@ class Scene_turn_cards extends TSSceneBase {
 
     int x=0;
     int y=0;
+
+    boolean aHandIsOver=false;
+    int whichHand=0;
     //TO DO move setPos into constructor 
     for (int i=0;i<cards.length;i++) {
       PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.2*x, 0.5*y, 0));
       cards[i].setPos(picturePos);
       cards[i].check(leftHand);
       cards[i].draw();
+
+      if (cards[i].handIsOverCard(leftHand)) {
+        aHandIsOver=true;
+        whichHand=i;
+      }
       x++;
       if (x>=4) {
         x=0;
         y++;
       }
     }
-    //scale the image according to the mapped distance between hands
+    if (aHandIsOver && pWhichHand!=whichHand) {
+      player.rewind();
+    }
+    if (aHandIsOver){
+      player.play();
   }
+  pWhichHand=whichHand;
+  //scale the image according to the mapped distance between hands
+}
 };
 //a class for cards which turn over when a joint passes over them and stay in that position until next time a joint passes over them
 class Card {
@@ -427,6 +478,8 @@ class Card {
       image( face, pos.x, pos.y, cWidth, cHeight);
     }
   }
+
+
   void check(PVector handPos) {
     //if this hand is over the card
     if (pHandIsOverCard!= handIsOverCard( handPos) ) {
@@ -483,10 +536,14 @@ class Scene_flick_through_images extends TSSceneBase {
       images[i].resize(imageWidth, imageHeight);
     }
     topImageXShift=0;
+    player.close();
+    player = minim.loadFile("celine/whyisitinteresting.mp3");
+    player.loop();
+    
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     drawMaskedUser();
-    
+
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.4, 0));
     image(images[frameIndex], picturePos.x, picturePos.y);
@@ -495,7 +552,7 @@ class Scene_flick_through_images extends TSSceneBase {
     image(section, picturePos.x+images[frameIndex+1].width-topImageXShift, picturePos.y);
 
     float thresh=0.01;
-    
+
     //if the left hand is moving to the right and its a little while since we did this...
     if (skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext).x >0+thresh && counter>timeOutThresh) {
       float numSteps= 5.0;

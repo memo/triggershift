@@ -236,6 +236,8 @@ class Scene_colour_trees extends TSSceneBase {
     int radius=40;
     int x=0;
     int y=0;
+    
+    //TODO optimise this 
     for (int i=0;i<colourTrees.pixels.length;i++) {
       //get pixels around it in a radius from colour image
       if (dist(x, y, leftHand.x, leftHand.y  )<radius || dist(x, y, rightHand.x, rightHand.y  )<radius) {
@@ -252,6 +254,42 @@ class Scene_colour_trees extends TSSceneBase {
     bandwTrees.updatePixels();
 
     image(bandwTrees, 0, 0);
+    popStyle();
+    drawMaskedUser();
+  }
+};
+
+
+// Scene 11 rainbow 
+class Scene_rainbow extends TSSceneBase {
+
+  PImage rainbow = loadImage("lorna/treescolour.png");
+
+  int imageWidth=width;
+  int imageHeight=height;
+
+  Scene_rainbow() {
+    sceneName = "Scene5 colour trees";
+    //println(storyName + "::" + sceneName);
+    rainbow.resize(imageWidth, imageHeight);
+  }
+
+  //----------------
+  void onStart() {
+    //println(storyName + "::" + sceneName + "::onStart");
+  }
+
+  //----------------
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+
+    pushStyle();
+
+    //if hand is over one image
+    PVector leftHand=getLeftHand();
+    PVector rightHand=getRightHand();
+
+ 
+    image(rainbow, 0, 0);
     popStyle();
     drawMaskedUser();
   }
