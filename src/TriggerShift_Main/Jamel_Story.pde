@@ -493,10 +493,11 @@ class JamelStory extends TSStoryBase {
     }
   };
 
+  PImage imgFlag = loadImage("jamel/flagjamel.png");
+
   //------------------------------------------------------------------------------------------------------
   // my country
   class Scene6 extends TSSceneBase {
-    PImage imgFlag = loadImage("jamel/flagjamel.png");
     boolean inPosition;
     boolean startInteraction;
 
@@ -547,6 +548,7 @@ class JamelStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      image(imgFlag, 0, 0, width, height);
       drawMaskedUser();
 
       pushStyle();
@@ -566,9 +568,9 @@ class JamelStory extends TSStoryBase {
         }
       } 
       else {
-        float w = width * 0.15;
-        float h = w * imgHair1.height / imgHair1.width;
-        image(imgHair2, headPos.x, headPos.y, w, h);
+//        float w = width * 0.15;
+//        float h = w * imgHair1.height / imgHair1.width;
+//        image(imgHair2, headPos.x, headPos.y, w, h);
       }
       popStyle();
 
@@ -581,6 +583,7 @@ class JamelStory extends TSStoryBase {
   class Scene8 extends TSSceneBase {
     PImage imgBars = loadImage("jamel/prisonbars.png");
     float x1, x2;
+    boolean shut1, shut2;
     boolean startInteraction;
 
     Scene8() {
@@ -594,6 +597,8 @@ class JamelStory extends TSStoryBase {
       startInteraction = false;
       x1 = width/2;
       x2 = width/2;
+      shut1 = false;
+      shut2 = false;
     }
 
     //----------------
@@ -609,6 +614,21 @@ class JamelStory extends TSStoryBase {
       if(x1 < width * 0.1 && x2 > width * 0.9) startInteraction = true;
 
       if(startInteraction) {
+        if(x1 > width * 0.5) {
+          // sound
+          // shake
+          shut1 = true;
+        }
+        
+       if(x2 < width * 0.5) {
+         // sound
+         // shake
+          shut2 = true;
+        }
+        
+        if(shut1) x1 = width * 0.5;
+        if(shut2) x2 = width * 0.5;
+
         pushStyle();
         imageMode(CORNER);
         image(imgBars, x1 - w, 0, w, h);
