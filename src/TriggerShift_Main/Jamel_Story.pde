@@ -77,7 +77,7 @@ class JamelStory extends TSStoryBase {
 
       popStyle();
 
-      if (getLeftHand().y < getLeftElbow().y && getRightHand().y < getRightElbow().y && ripStartMillis == 0 ) ripStartMillis = millis();
+      if (getLeftHand().y < getLeftShoulder().y && getRightHand().y < getRightShoulder().y && ripStartMillis == 0 ) ripStartMillis = millis();
     }
   };
 
@@ -86,12 +86,12 @@ class JamelStory extends TSStoryBase {
   //------------------------------------------------------------------------------------------------------
   // draw graph and pound signs
   class Scene2 extends TSSceneBase {
-    MSAParticleSystem particleSystem = new MSAParticleSystem();
-    PImage[] imgs = { 
-      loadImage("jamel/pound.png"), loadImage("jamel/dollar.png"), loadImage("jamel/euro.png")
-      };
+    //    MSAParticleSystem particleSystem = new MSAParticleSystem();
+    //    PImage[] imgs = { 
+    //      loadImage("jamel/pound.png"), loadImage("jamel/dollar.png"), loadImage("jamel/euro.png")
+    //      };
 
-      ArrayList posArray;
+    ArrayList posArray;
 
     //----------------
     Scene2() {
@@ -103,30 +103,31 @@ class JamelStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       posArray = new ArrayList();
-      particleSystem.start();
-
-      particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(units(20), units(20), units(20)));
-      particleSystem.startVel.set(new PVector(0, 0, 0), new PVector(units(50), units(50), units(50)));
-      particleSystem.acc.set(new PVector(0, units(-20), 0), new PVector(0, units(5), 0));
-      particleSystem.inheritVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
-      particleSystem.inheritVelMult.set(new PVector(width/2, height/2, 0), new PVector(0, 0, 0));
-
-      particleSystem.startRot.set(0, 30);
-      particleSystem.rotVel.set(0, 3);
-
-      particleSystem.startRadius.set(0, 0);
-      particleSystem.targetRadius.set(units(15), units(2));
-      particleSystem.radiusSpeed.set(0.5, 0.1);
-
-      particleSystem.startAlpha.set(1, 0);
-      particleSystem.targetAlpha.set(0, 0);
-      particleSystem.alphaSpeed.set(0.02, 0.01);
-
-      particleSystem.drag.set(0.04, 0.005);
-      particleSystem.maxCount = 100;
-
-      particleSystem.maxCount = 20;
-      particleSystem.imgs = imgs;
+      posArray.add(new PVector(-1000, -1000, -1000));  // add first point, makes logic easier
+      //      particleSystem.start();
+      //
+      //      particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(units(20), units(20), units(20)));
+      //      particleSystem.startVel.set(new PVector(0, 0, 0), new PVector(units(50), units(50), units(50)));
+      //      particleSystem.acc.set(new PVector(0, units(-20), 0), new PVector(0, units(5), 0));
+      //      particleSystem.inheritVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
+      //      particleSystem.inheritVelMult.set(new PVector(width*0.1, height*0.1, 0), new PVector(0, 0, 0));
+      //
+      //      particleSystem.startRot.set(0, 30);
+      //      particleSystem.rotVel.set(0, 3);
+      //
+      //      particleSystem.startRadius.set(0, 0);
+      //      particleSystem.targetRadius.set(units(15), units(2));
+      //      particleSystem.radiusSpeed.set(0.5, 0.1);
+      //
+      //      particleSystem.startAlpha.set(1, 0);
+      //      particleSystem.targetAlpha.set(0, 0);
+      //      particleSystem.alphaSpeed.set(0.02, 0.01);
+      //
+      //      particleSystem.drag.set(0.3, 0.1);
+      //      particleSystem.maxCount = 100;
+      //
+      //      particleSystem.maxCount = 20;
+      //      particleSystem.imgs = imgs;
     }
 
     //----------------
@@ -134,23 +135,28 @@ class JamelStory extends TSStoryBase {
       drawMaskedUser();
       pushStyle();
       PVector activeHand = getHighestHand();
+      PVector lastPoint = (PVector)posArray.get(posArray.size()-1);
 
       // add latest hand
-      posArray.add(activeHand.get());
-      if (posArray.size() > 100) posArray.remove(0);  // trim array
+      //      if(frameCount % 10 == 0) {
+      if(PVector.sub(activeHand, lastPoint).mag() > height * 0.05) {
+        posArray.add(activeHand.get());
+        if(posArray.size() > 100) posArray.remove(0);  // trim array
+      }
+      //      }
 
       // draw graph
       noFill();
-      strokeWeight(10);
-      strokeJoin(ROUND);
-      strokeCap(ROUND);
+      strokeWeight(5);
+      //      strokeJoin(ROUND);
+      //      strokeCap(ROUND);
       beginShape();
       PVector p1 = new PVector(-1000, -1000, -1000);
       for (int i=0; i<posArray.size(); i++) {
         PVector p2 = (PVector)posArray.get(i);
         PVector diff = PVector.sub(p1, p2);
         // only draw if distance between points is less than threshold
-        if (diff.mag() < transform2D.targetSizePixels.y * 0.1) {
+        if (diff.mag() < width * 0.2) {
           stroke(255, 200, 100, i * 255.0/posArray.size());
           vertex(p2.x, p2.y);
         } 
@@ -162,16 +168,22 @@ class JamelStory extends TSStoryBase {
       }
       endShape();
 
-      popStyle();
-
-
-      if (getHighestHandVelocity().mag() > 0.1) {
-        particleSystem.startPos.base = getHighestHand();
-        particleSystem.inheritVel.base = getHighestHandVelocity();
-        particleSystem.add();
+      fill(255);
+      noStroke();
+      for (int i=0; i<posArray.size(); i++) {
+        PVector p2 = (PVector)posArray.get(i);
+        ellipse(p2.x, p2.y, 10, 10);
       }
 
-      particleSystem.draw();
+      popStyle();
+
+      //      if (getHighestHandVelocity().mag() > 0.1) {
+      //        particleSystem.startPos.base = getHighestHand();
+      //        particleSystem.inheritVel.base = getHighestHandVelocity();
+      //        particleSystem.add();
+      //      }
+      //
+      //      particleSystem.draw();
     }
   };
 
@@ -207,7 +219,7 @@ class JamelStory extends TSStoryBase {
       // smooth
       fillAmount += (newt - fillAmount) * 0.5;
 
-      float h = height * 0.7;
+      float h = height * 0.8;
       float s = h / imgTramp1.height;
       float w = imgTramp1.width * s;
 
@@ -225,8 +237,8 @@ class JamelStory extends TSStoryBase {
       imgTrampMasked2.copy(imgTramp2, 0, y2, imgTramp2.width, h2, 0, y2, imgTramp2.width, h2);
 
       imageMode(CORNER);
-      image(imgTrampMasked1, width*0.2, 0, imgTrampMasked1.width * s, imgTrampMasked1.height * s);
-      image(imgTrampMasked2, width*0.2, 0, imgTrampMasked2.width * s, imgTrampMasked2.height * s);
+      image(imgTrampMasked1, width*0.7, height*0.1, imgTrampMasked1.width * s, imgTrampMasked1.height * s);
+      image(imgTrampMasked2, width*0.7, height*0.1, imgTrampMasked2.width * s, imgTrampMasked2.height * s);
 
       popStyle();
     }
@@ -320,7 +332,7 @@ class JamelStory extends TSStoryBase {
       PVector rightHand = getRightHand();
       PVector leftHand = getLeftHand();
 
-      if (throwCats == false && getLeftHand().y < getLeftElbow().y && getRightHand().y < getRightElbow().y) {
+      if (throwCats == false && getLeftHand().y < getLeftShoulder().y && getRightHand().y < getRightShoulder().y) {
         throwCats = true;
       } 
 
@@ -347,7 +359,7 @@ class JamelStory extends TSStoryBase {
             diff.mult(catSpeedDown);
             t.cat.pos.add(diff);
           }
-          
+
           pushMatrix();
           translate(t.cat.pos.x, t.cat.pos.y);
           scale(t.cat.flipDir, 1); 
@@ -432,7 +444,7 @@ class JamelStory extends TSStoryBase {
       // smooth
       fillAmount += (newt - fillAmount) * 0.5;
 
-      float h = height * 0.7;
+      float h = height * 0.8;
       float s = h / imgTramp1.height;
       float w = imgTramp1.width * s;
 
@@ -450,8 +462,8 @@ class JamelStory extends TSStoryBase {
       imgTrampMasked2.copy(imgTramp2, 0, y2, imgTramp2.width, h2, 0, y2, imgTramp2.width, h2);
 
       imageMode(CORNER);
-      image(imgTrampMasked1, width*0.2, 0, imgTrampMasked1.width * s, imgTrampMasked1.height * s);
-      image(imgTrampMasked2, width*0.2, 0, imgTrampMasked2.width * s, imgTrampMasked2.height * s);
+      image(imgTrampMasked1, width*0.7, height*0.1, imgTrampMasked1.width * s, imgTrampMasked1.height * s);
+      image(imgTrampMasked2, width*0.7, height*0.1, imgTrampMasked2.width * s, imgTrampMasked2.height * s);
 
       popStyle();
       //      }
@@ -462,6 +474,8 @@ class JamelStory extends TSStoryBase {
   // my country
   class Scene6 extends TSSceneBase {
     PImage imgFlag = loadImage("jamel/flagjamel.png");
+    boolean inPosition;
+    boolean startLowering;
 
     Scene6() {
       sceneName = "Scene6 MYCOUNTRY";
@@ -471,16 +485,21 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
+      //      inPosition = false;
+      startLowering = false;
     }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
-      float s = getElapsedSeconds() < 0.5 ? getElapsedSeconds()/0.5 : 1;
-      pushStyle();
-      imageMode(CENTER);
-      image(imgFlag, width/2, height/2, width * s, height * s);
-      popStyle();
-
+      float curY = getHighestHand().y;
+      float headToHip = getHip().y - getHead().y;
+      float topY = getHead().y - headToHip/2;
+      if (curY < topY) startLowering = true;
+      if (startLowering) {
+        float y = map(curY, topY, getHip().y, -height, 0);
+        if (y>0) y = 0;
+        image(imgFlag, 0, y, width, height);
+      }
       drawMaskedUser();
     }
   };
@@ -510,7 +529,7 @@ class JamelStory extends TSStoryBase {
       pushStyle();
       imageMode(CENTER);
       PVector headPos = getHead();
-      headPos.y -= units(50);
+      headPos.y -= units(80);
 
       if (isTriggered == false) {
         float w = width * 0.3;
