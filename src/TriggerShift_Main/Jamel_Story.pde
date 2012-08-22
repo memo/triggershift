@@ -154,7 +154,7 @@ class JamelStory extends TSStoryBase {
         p.radius = random(height/80, height/40);
         p.alpha = 1;
         p.drag = 0.9;
-        p.fade = 0.99;
+        p.fadeSpeed = 0.99;
         p.posAcc = new PVector(0, 0, 0);
         p.img = imgPound;
         particles.add(p);

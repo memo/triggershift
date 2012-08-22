@@ -1,18 +1,19 @@
 
 
+
 PVector getHead() {
-  if (skeleton == null) return new PVector(width/2, height/2, 0);
+  if (skeleton == null) return new PVector(width*0.5, height*0.25, 0);
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
 }
 
 PVector getHip() {
-  if (skeleton == null) return new PVector(width/2, height/2, 0);
+  if (skeleton == null) return new PVector(width*0.5, height*0.5, 0);
   return PVector.mult( PVector.add(skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HIP, transform2D, openNIContext), skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HIP, transform2D, openNIContext)), 0.5);
 }
 
 
 PVector getLeftHand() {
-  if (skeleton == null) return new PVector(width/2, height/2, 0);
+  if (skeleton == null) return new PVector(width*0.25, height*0.5, 0);
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
 }
 
@@ -22,7 +23,7 @@ PVector getLeftHandVelocity() {
 }
 
 PVector getRightHand() {
-  if (skeleton == null) return new PVector(width/2, height/2, 0);
+  if (skeleton == null) return new PVector(width*0.75, height*0.5, 0);
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
 }
 
@@ -43,22 +44,22 @@ PVector getHandVelocity(int i) {
 
 
 PVector getLeftElbow() {
-  if (skeleton == null) return new PVector(width/2, height/2, 0);
+  if (skeleton == null) return new PVector(width*0.35, height*0.4, 0);
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_ELBOW, transform2D, openNIContext);
 }
 
 PVector getRightElbow() {
-  if (skeleton == null) return new PVector(width/2, height/2, 0);
+  if (skeleton == null) return new PVector(width*0.65, height*0.4, 0);
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_ELBOW, transform2D, openNIContext);
 }
 
 PVector getLeftShoulder() {
-  if (skeleton == null) return new PVector(width/2, height/2, 0);
+  if (skeleton == null) return new PVector(width*0.4, height*0.3, 0);
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_SHOULDER, transform2D, openNIContext);
 }
 
 PVector getRightShoulder() {
-  if (skeleton == null) return new PVector(width/2, height/2, 0);
+  if (skeleton == null) return new PVector(width*0.6, height*0.3, 0);
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, transform2D, openNIContext);
 }
 
@@ -121,3 +122,20 @@ void drawMaskedUser() {
   transform2D.drawImage( masker.getImage() );
 }
 
+float getValueWithVariance(float f, float variance) {
+  return random(f - variance, f + variance);
+}
+
+PVector getVectorWithVariance(PVector v, float variance) {
+  return new PVector(getValueWithVariance(v.x, variance), getValueWithVariance(v.y, variance), getValueWithVariance(v.z, variance));
+}
+
+PVector getVectorWithVariance(PVector v, PVector variance) {
+  return new PVector(getValueWithVariance(v.x, variance.x), getValueWithVariance(v.y, variance.x), getValueWithVariance(v.z, variance.x));
+}
+
+
+// convert pixel dimensions done on a 800 pixel high screen, to resolution independent
+float units(float f) {
+  return f/800 * height;
+}

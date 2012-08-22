@@ -28,18 +28,18 @@ class ManiStory extends TSStoryBase {
     float targetAlpha;
     float rot;
     float targetRot;
-    
+
     void start() {
       alpha = 0;
       targetAlpha = 1;
       rot = 0;
       targetRot = 0;
     }
-    
+
     void draw() {
       alpha += (targetAlpha - alpha) * 0.1;
       rot += (targetRot - rot) * 0.1;
-      
+
       pushStyle();
       pushMatrix();
       imageMode(CENTER);
@@ -282,10 +282,10 @@ class ManiStory extends TSStoryBase {
       image(img, 0, 0);
       popMatrix();
       popStyle();
-//
-//      rot += rotSpeed;
-//      rotSpeed *= 0.99;
-    }    
+      //
+      //      rot += rotSpeed;
+      //      rotSpeed *= 0.99;
+    }
   };
   TrafficLights trafficLights = new TrafficLights();
 
@@ -296,8 +296,7 @@ class ManiStory extends TSStoryBase {
   // grey city
   class Scene1 extends TSSceneBase {
     PImage imgRain = loadImage("mani/raindrop.png");
-    ArrayList particles;
-
+    MSAParticleSystem particleSystem = new MSAParticleSystem();
 
     Scene1() {
       sceneName = "Scene1 GREY CITY";
@@ -309,7 +308,56 @@ class ManiStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       cityGrey.set(1, 1, 0, 1);
-      particles = new ArrayList();
+      particleSystem.start();
+
+      particleSystem.initPos.set(0, 0, 0);
+      particleSystem.initPosVariance.set(units(50), units(10), 0);
+
+      particleSystem.initVel.set(0, units(120), 0);
+      particleSystem.initVelVariance.set(0, 0, 0);
+
+      particleSystem.initAcc.set(0, units(12), 0);
+      particleSystem.initAccVariance = 0;
+
+      particleSystem.initRot = 0;
+      particleSystem.initRotVariance = 30;        
+
+      particleSystem.initRotVel = 0;
+      particleSystem.initRotVelVariance = 3;  
+
+      particleSystem.initRadius = units(10);
+      particleSystem.initRadiusVariance = units(3);  
+
+      particleSystem.initDrag = 0;
+      particleSystem.initDragVariance = 0;        
+
+      particleSystem.initAlpha = 0;
+      particleSystem.initAlphaVariance = 0;
+      particleSystem.initTargetAlpha = 1;
+      particleSystem.initTargetAlphaVariance = 0;
+      particleSystem.initFadeSpeed = 0.2;
+      particleSystem.initFadeSpeedVariance = 0;
+
+      particleSystem.maxCount = 100;
+
+      particleSystem.img = imgRain;
+
+      //      particleSystem.initVelMult.set(width, height, 0);
+      //      particleSystem.initVel.set(0, height * 0.02, 0);
+      //      particleSystem.initRadius = 0.02;
+      //      particleSystem.initRadiusVariance = 0.001;
+      //      particleSystem.initAlpha = 1;
+      //      particleSystem.initAlphaVariance = 0;
+      //      particleSystem.initDrag = 0;
+      //      particleSystem.initDragVariance = 0;
+      //      particleSystem.initFadeSpeed = 0;
+      //      particleSystem.initFadeSpeedVariance = 0;
+      //      p.radius = random(height/80, height/40);
+      //      p.alpha = 1;
+      //      p.drag = 1;
+      //      p.fade = 1;
+      //      p.img = img;
+      //      particles.add(p);
     }
 
     //----------------
@@ -317,37 +365,13 @@ class ManiStory extends TSStoryBase {
       cityGrey.draw();
       drawMaskedUser();
 
-      pushStyle();
       for (int i=0; i<2; i++) {
-        PVector now = getHand(i);
-        PVector vel = getHandVelocity(i);//PVector.sub(prv, now);
-        float r = transform2D.targetSizePixels.y * 0.1;
-        now.x += random(-r, r);
-        vel.x *= width;
-        vel.y *= height;
-        vel.y += height * 0.02;
-        MSAParticle p = new MSAParticle();
-        p.pos = now;
-        p.posVel = vel;
-        p.rot = random(-30, 30);
-        p.rotVel = random(-3, 3);
-        p.radius = random(height/80, height/40);
-        p.alpha = 1;
-        p.drag = 1;
-        p.fade = 1;
-        p.posAcc = new PVector(0, 10, 0);
-        p.img = imgRain;
-        particles.add(p);
+        particleSystem.initPos = getHand(i);
+        particleSystem.initVel = getHandVelocity(i);
+        particleSystem.add();
       }
 
-      while (particles.size () > 100) particles.remove(0);  // trim array
-      // draw particles
-      for (int i=0; i<particles.size(); i++) {
-        MSAParticle p = (MSAParticle) particles.get(i);
-        p.draw();
-      }
-
-      popStyle();
+      particleSystem.draw();
     }
   };
 
@@ -493,7 +517,7 @@ class ManiStory extends TSStoryBase {
         colorWheel.rotSpeed *= 0.9;
         colorWheel.rotSpeed += getLeftHandVelocity().y * 50;
       }
-      basketball.draw();      
+      basketball.draw();
     }
   };
 
@@ -580,5 +604,4 @@ class ManiStory extends TSStoryBase {
       drawMaskedUser();
     }
   };
-}
-
+};
