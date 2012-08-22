@@ -138,7 +138,9 @@ void setupOpenNI() {
 
 //----------------------------------
 void setup() {
-  size(1280, 800, OPENGL);
+  size(1280, 800, P3D);
+  frameRate(30);
+  
   masker = new TSMasker();
   transform2D = new TSTransform2D();
 
@@ -162,7 +164,7 @@ void draw() {
   secondsSinceLastFrame = (millis() - lastFrameMillis) * 0.001;
   lastFrameMillis = millis();
   
-  background(80, 0, 0);
+  background(0, 0, 0);
 
   // get kinect color image
   if (openNIContext != null) {
