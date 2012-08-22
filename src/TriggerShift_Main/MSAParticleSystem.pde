@@ -27,6 +27,16 @@ class MSAParticleSystem {
 
   int maxCount = 0;
 
+  MSAParticleSystem() {}
+  
+  MSAParticleSystem(PImage _img) {
+    img = _img;
+  }
+    
+  MSAParticleSystem(PImage[] _imgs) {
+    imgs = _imgs;
+  }
+
 
   void start() {
     particles = new ArrayList();

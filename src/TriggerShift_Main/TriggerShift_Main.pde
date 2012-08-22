@@ -133,7 +133,7 @@ void setupOpenNI() {
 
   openNIContext.setMirror(true);
   openNIContext.alternativeViewPointDepthToImage();
-  
+
   skeleton = new TSSkeleton();
 }
 
@@ -141,6 +141,8 @@ void setupOpenNI() {
 //----------------------------------
 void setup() {
   size(1280, 800, P3D);
+
+  frameRate(30);
   masker = new TSMasker();
   transform2D = new TSTransform2D();
 
@@ -163,8 +165,8 @@ void draw() {
   // update timing
   secondsSinceLastFrame = (millis() - lastFrameMillis) * 0.001;
   lastFrameMillis = millis();
-  
-  background(80, 0, 0);
+
+  background(0, 0, 0);
 
   // get kinect color image
   if (openNIContext != null) {
@@ -208,7 +210,7 @@ void draw() {
     if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
     if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
     if (doDrawSkeletons) skeleton.drawAllSkeletons( openNIContext, transform2D);
-//    if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
+    //    if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
   }
 
   cp5.draw();
@@ -370,6 +372,6 @@ void stop()
   // you are overriding by defining your own
   // it must be called so that your application
   // can do all the cleanup it would normally do
- super.stop();
+  super.stop();
 }
 
