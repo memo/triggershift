@@ -3,13 +3,14 @@ class LornaStory extends TSStoryBase {
   LornaStory() {
     storyName = "LornaStory";
     println(storyName + "::" + storyName);
+    addScene(new Scene_maid());
+    addScene(new Scene_Black_White());
 
     addScene(new Scene_rainbow());
 
     addScene(new Scene_colour_trees());
 
     addScene(new Scene_paper_chain());
-    addScene(new Scene_Black_White());
     addScene(new Scene_reach_for_stars());
   }
 
@@ -44,8 +45,8 @@ class Scene_Black_White extends TSSceneBase {
     float h = height;
     float w = width/2;//h / imgBars.height * width;
 
-    x1 += (map(getLeftHand().x, getHip().x - getMaxArmLength(), getHip().x, 0, width/2) - x1) * 0.5;
-    x2 += (map(getRightHand().x, getHip().x + getMaxArmLength(), getHip().x, width, width/2) - x2) * 0.5;
+    x1 += (map(getLeftHand().x, getHip().x - getMaxArmLength()/2, getHip().x, 0, width) - x1) * 0.5;
+    x2 += (map(getRightHand().x, getHip().x + getMaxArmLength()/2, getHip().x, width, width) - x2) * 0.5;
     fill(255);
     rect( x1 - w, 0, w, h);
     fill(0);
@@ -341,12 +342,56 @@ class Scene_rainbow extends TSSceneBase {
       vertex(0, 0);
       endShape();
       popMatrix();
-
-
-
       popStyle();
     }
     drawMaskedUser();
+  }
+};
+
+
+// Scene 5 hand (or maybe later crayon) colours background from b and white to colour
+class Scene_maid extends TSSceneBase {
+
+  PImage maid = loadImage("lorna/maidsoutfit.png");
+   PImage hat = loadImage("lorna/maidscap.png");
+
+  int imageWidth=width;
+  int imageHeight=height;
+
+  Scene_maid() {
+    sceneName = "Scene5 maid";
+    //println(storyName + "::" + sceneName);
+    //maid.resize(imageWidth, imageHeight);
+  }
+
+  //----------------
+  void onStart() {
+    //println(storyName + "::" + sceneName + "::onStart");
+  }
+
+  //----------------
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+    drawMaskedUser();
+
+    pushStyle();
+
+    //if hand is over one image
+    PVector leftHand=getLeftHand();
+    PVector rightHand=getRightHand();
+    PVector head = getHead();
+    PVector waist = getHip();
+    PVector leftShoulder=getLeftShoulder();
+    PVector rightShoulder=getRightShoulder();
+    
+   
+    float h =1.5* ( waist.y-head.y);
+    float w=2*( rightShoulder.x-leftShoulder.x );
+     println(h+" "+w);
+    image(maid,leftShoulder.x - (0.25*w), leftShoulder.y -(0.1*h), w, h);
+    //TODO optimise this 
+
+
+    popStyle();
   }
 };
 
