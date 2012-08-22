@@ -128,6 +128,7 @@ class ManiStory extends TSStoryBase {
     PVector pos = new PVector(width * 0.2, height * 0.3);
     float rot, rotSpeed;
     float radius; 
+    float targetRadius = width * 0.1;
 
     void start() {
       rot = 0;
@@ -141,7 +142,7 @@ class ManiStory extends TSStoryBase {
       imageMode(CENTER);
       translate(pos.x, pos.y);
       rotate(radians(rot));
-      radius += (width * 0.1 - radius) * 0.1;
+      radius += (targetRadius - radius) * 0.1;
       scale(radius * 2 / img.width);
       image(img, 0, 0);
       popMatrix();
@@ -160,6 +161,7 @@ class ManiStory extends TSStoryBase {
     PVector pos, vel;
     float rot, rotSpeed;
     float radius; 
+    float targetRadius = width * 0.05;
     float bounce = 0.9;
 
     void start() {
@@ -173,7 +175,7 @@ class ManiStory extends TSStoryBase {
       imageMode(CENTER);
       translate(pos.x, pos.y);
       rotate(radians(rot));
-      radius += (width * 0.07 - radius) * 0.1;
+      radius += (targetRadius - radius) * 0.1;
       scale(radius * 2 / img.width);
       image(img, 0, 0);
       popMatrix();
@@ -226,6 +228,33 @@ class ManiStory extends TSStoryBase {
   Basketball basketball = new Basketball();
 
 
+  //----------------
+  class TrafficLights {
+    PImage img = loadImage("mani/trafficlight.png");
+    float targetPosY = height * 0.55;
+    PVector pos = new PVector(width * 0.75, targetPosY);
+    float radius = width * 0.05;
+
+    void start() {
+      pos.y = height;
+    }
+
+    void draw() {
+      pushStyle();
+      pushMatrix();
+      imageMode(CENTER);
+      pos.y += (targetPosY - pos.y) * 0.2;
+      translate(pos.x, pos.y);
+      scale(radius * 2 / img.width);
+      image(img, 0, 0);
+      popMatrix();
+      popStyle();
+//
+//      rot += rotSpeed;
+//      rotSpeed *= 0.99;
+    }    
+  };
+  TrafficLights trafficLights = new TrafficLights();
 
 
   //------------------------------------------------------------------------------------------------------
@@ -235,7 +264,6 @@ class ManiStory extends TSStoryBase {
   class Scene1 extends TSSceneBase {
     PImage imgRain = loadImage("mani/raindrop.png");
     ArrayList particles;
-    //    PVector[] prevHandPos = new PVector[2];
 
 
     Scene1() {
@@ -257,21 +285,15 @@ class ManiStory extends TSStoryBase {
       drawMaskedUser();
 
       pushStyle();
-      // add particle if velocity is above threshold
       for (int i=0; i<2; i++) {
-        //        if (prevHandPos[i] != null) {
-        //          PVector prv = prevHandPos[i].get();
         PVector now = getHand(i);
         PVector vel = getHandVelocity(i);//PVector.sub(prv, now);
-        //          if (vel.mag() > transform2D.targetSizePixels.y * 0.03) {
         float r = transform2D.targetSizePixels.y * 0.1;
         now.x += random(-r, r);
-        //          now.y += random(-r, r);
-        //          now.z += random(-r, r);
         vel.x *= width;
         vel.y *= height;
         vel.y += height * 0.02;
-        MSAParticle p = new MSAParticle();//now, vel, random(-30, 30), random(-3, 3), random(height/80, height/40), 1.0, 1.0, 0.98);
+        MSAParticle p = new MSAParticle();
         p.pos = now;
         p.posVel = vel;
         p.rot = random(-30, 30);
@@ -283,10 +305,6 @@ class ManiStory extends TSStoryBase {
         p.posAcc = new PVector(0, 10, 0);
         p.img = imgRain;
         particles.add(p);
-        //          }
-        //        }
-
-        //        prevHandPos[i] = handPos[i].get();
       }
 
       while (particles.size () > 100) particles.remove(0);  // trim array
@@ -422,11 +440,21 @@ class ManiStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
+      trafficLights.start();
     }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       drawMaskedUser();
+      trafficLights.draw();
+      cityColor.draw();
+      flowers.draw();
+      colorWheel.draw();
+      if (getLeftHand().x < colorWheel.pos.x + colorWheel.radius) {
+        colorWheel.rotSpeed *= 0.9;
+        colorWheel.rotSpeed += getLeftHandVelocity().y * 50;
+      }
+      basketball.draw();      
     }
   };
 
