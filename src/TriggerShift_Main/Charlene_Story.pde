@@ -573,19 +573,11 @@ class Scene_shatter_image extends TSSceneBase {
     sceneName="scene9 SHATTER IMAGE";
 
     //println(storyName + "::" + sceneName + "::onStart");
-    int x=0;
-    int y=0;
-    float rowLength=4.0;
+    
     picturePos =transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
     for (int i=0;i<numShards;i++) {
       shardImages[i]=loadImage("charlene/shard"+str(i+1)+".png");
       shardImages[i].resize(imageWidth, imageHeight);
-      shards[i]= new ShardParticle(picturePos, new PVector(0, 0, 0), 0.0, 0.0, imageWidth/2, 255, 0, 0); 
-      shards[i].setOffset(new PVector (x*(imageWidth/rowLength), y*(0.333*imageHeight)));
-      x++;
-      if (x>=rowLength) {
-        y++;
-      }
     }
     setTrigger(new KeyPressTrigger('w'));
   }
@@ -596,6 +588,19 @@ class Scene_shatter_image extends TSSceneBase {
     handOver=false;
     player.close();
     player = minim.loadFile("charlene/donttouch.mp3");
+    
+    int x=0;
+    int y=0;
+        float rowLength=4.0;
+
+    for (int i=0;i<numShards;i++) {
+      shards[i]= new ShardParticle(picturePos, new PVector(0, 0, 0), 0.0, 0.0, imageWidth/2, 255, 0, 0); 
+      shards[i].setOffset(new PVector (x*(imageWidth/rowLength), y*(0.333*imageHeight)));
+      x++;
+      if (x>=rowLength) {
+        y++;
+      }
+    }
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     drawMaskedUser();

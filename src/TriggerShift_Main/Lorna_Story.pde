@@ -3,6 +3,9 @@ class LornaStory extends TSStoryBase {
   LornaStory() {
     storyName = "LornaStory";
     println(storyName + "::" + storyName);
+
+    addScene(new Scene_rainbow());
+
     addScene(new Scene_colour_trees());
 
     addScene(new Scene_paper_chain());
@@ -37,16 +40,15 @@ class Scene_Black_White extends TSSceneBase {
     drawMaskedUser();
 
     pushStyle();
+    imageMode(CORNER);
     float h = height;
-    float w = width / 2;//imgBars.height * width;
-    noStroke();
+    float w = width/2;//h / imgBars.height * width;
 
-    x1 = (map(getLeftHand().x, getHip().x - getMaxArmLength(), getHip().x, 0, width) ) ;
-    x2 = (map(getRightHand().x, getHip().x + getMaxArmLength(), getHip().x, width-(w*0.5), 0-(w*0.5)));
+    x1 += (map(getLeftHand().x, getHip().x - getMaxArmLength(), getHip().x, 0, width/2) - x1) * 0.5;
+    x2 += (map(getRightHand().x, getHip().x + getMaxArmLength(), getHip().x, width, width/2) - x2) * 0.5;
     fill(255);
-    rect(x1 - w, 0, w, h);
+    rect( x1 - w, 0, w, h);
     fill(0);
-
     rect(x2, 0, w, h);
     popStyle();
   }
@@ -127,8 +129,9 @@ class Scene_paper_chain extends TSSceneBase {
   boolean chainHasStarted;
   boolean chainExists;
   boolean fall;
-  int imageWidth=30;
-  int imageHeight=40;
+  int imageWidth=60;
+  int imageHeight=80;
+
   Scene_paper_chain() {
     sceneName = "Scene6 paper chain";
     //println(storyName + "::" + sceneName);
@@ -236,7 +239,7 @@ class Scene_colour_trees extends TSSceneBase {
     int radius=40;
     int x=0;
     int y=0;
-    
+
     //TODO optimise this 
     for (int i=0;i<colourTrees.pixels.length;i++) {
       //get pixels around it in a radius from colour image
@@ -263,11 +266,11 @@ class Scene_colour_trees extends TSSceneBase {
 // Scene 11 rainbow 
 class Scene_rainbow extends TSSceneBase {
 
-  PImage rainbow = loadImage("lorna/treescolour.png");
+  PImage rainbow = loadImage("lorna/rainbow.png");
 
-  int imageWidth=width;
-  int imageHeight=height;
-
+  int imageWidth=500;
+  int imageHeight=300;
+  boolean handsOverHead;
   Scene_rainbow() {
     sceneName = "Scene5 colour trees";
     //println(storyName + "::" + sceneName);
@@ -277,20 +280,72 @@ class Scene_rainbow extends TSSceneBase {
   //----------------
   void onStart() {
     //println(storyName + "::" + sceneName + "::onStart");
+    handsOverHead=false;
   }
 
   //----------------
   void onDraw(PImage userImage, TSSkeleton skeleton) {
+
+
 
     pushStyle();
 
     //if hand is over one image
     PVector leftHand=getLeftHand();
     PVector rightHand=getRightHand();
+    PVector head=getHead();
+    PVector leftShoulder=getLeftShoulder();
+    PVector rightShoulder=getRightShoulder();
 
- 
-    image(rainbow, 0, 0);
-    popStyle();
+    if (rightHand.y < head.y && leftHand.y <head.y) {
+      handsOverHead=true;
+    }
+    if (handsOverHead) {
+      image( rainbow, head.x- (0.5*rainbow.width), head.y- (0.8*rainbow.height) );
+      //draw triangular mask over left shoulder
+      float hyp=imageHeight+imageWidth;
+      //get angle between shoulder and hand
+      float angle = atan2( leftHand.y-leftShoulder.y, leftHand.x - leftShoulder.x );
+      pushMatrix();
+      translate( leftShoulder.x, leftShoulder.y);
+      float x=hyp*cos(angle);
+      float y=hyp*sin  (angle);
+      //line(0,0,x,y);
+      noStroke();
+      //SOHCAHTOA
+      fill(0);
+      beginShape();
+      vertex(0, 0);
+      vertex(x, y);
+      vertex(-imageWidth, 0);
+      vertex(0, 0);
+      endShape();
+      popMatrix();
+
+
+      //draw triangular mask over right shoulder
+      //get angle between shoulder and hand
+      angle = atan2( rightHand.y-rightShoulder.y, rightHand.x - rightShoulder.x );
+      pushMatrix();
+      translate( rightShoulder.x, rightShoulder.y);
+      x=hyp*cos(angle);
+      y=hyp*sin  (angle);
+      //line(0,0,x,y);
+      noStroke();
+      //SOHCAHTOA
+      fill(0);
+      beginShape();
+      vertex(0, 0);
+      vertex(x, y);
+      vertex(imageWidth, 0);
+      vertex(0, 0);
+      endShape();
+      popMatrix();
+
+
+
+      popStyle();
+    }
     drawMaskedUser();
   }
 };
