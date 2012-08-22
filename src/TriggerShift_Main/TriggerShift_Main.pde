@@ -208,11 +208,24 @@ void draw() {
     pushStyle();
     textFont(smallFont);
     fill(255);
-    int x = 20, yinc = 25, y = height - yinc * 3; 
-    text("fps: " + str(frameRate), x, y); 
-    y += yinc;
-    text(currentStory.getString(), x, y); 
-    y += yinc;
+    String s = "";
+    s += "fps: " + str(frameRate) + "\n";
+    s += currentStory.getString() + "\n";
+    s += "getHead: " + getHead() + "\n";
+    s += "getHip: " + getHip() + "\n";
+    s += "getLeftHand: " + getLeftHand() + "\n";
+    s += "getRightHand: " + getRightHand() + "\n";
+    s += "getLeftElbow: " + getLeftElbow() + "\n";
+    s += "getRightElbow: " + getRightElbow() + "\n";
+    s += "getLeftShoulder: " + getLeftShoulder() + "\n";
+    s += "getRightShoulder: " + getRightShoulder() + "\n";
+    s += "getLeftArm: " + getLeftArm() + "\n";
+    s += "getRightArm: " + getRightArm() + "\n";
+    s += "getMaxArmLength: " + str(getMaxArmLength()) + "\n";
+    s += "getLeftHandVelocity: " + PVector.mult(getLeftHandVelocity(), 100) + "%\n";
+    s += "getRightHandVelocity: " + PVector.mult(getRightHandVelocity(), 100) + "%\n";
+    text(s, width - 300, 20); 
+
     popStyle();
   }
 }
