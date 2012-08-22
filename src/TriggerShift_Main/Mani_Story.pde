@@ -198,7 +198,8 @@ class ManiStory extends TSStoryBase {
           now.x += random(-r, r);
           now.y += random(-r, r);
           now.z += random(-r, r);
-          vel.mult(-height);
+          vel.x *= width;
+          vel.y *= height;
           MSAParticle p = new MSAParticle();//now, vel, random(-30, 30), random(-3, 3), random(height/80, height/40), 1.0, 1.0, 0.98);
           p.pos = now;
           p.posVel = vel;
