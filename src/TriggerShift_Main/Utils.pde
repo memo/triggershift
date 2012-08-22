@@ -122,16 +122,16 @@ void drawMaskedUser() {
   transform2D.drawImage( masker.getImage() );
 }
 
-float getValueWithVariance(float f, float variance) {
+float getWithVariance(float f, float variance) {
   return random(f - variance, f + variance);
 }
 
-PVector getVectorWithVariance(PVector v, float variance) {
-  return new PVector(getValueWithVariance(v.x, variance), getValueWithVariance(v.y, variance), getValueWithVariance(v.z, variance));
+PVector getWithVariance(PVector v, float variance) {
+  return new PVector(getWithVariance(v.x, variance), getWithVariance(v.y, variance), getWithVariance(v.z, variance));
 }
 
-PVector getVectorWithVariance(PVector v, PVector variance) {
-  return new PVector(getValueWithVariance(v.x, variance.x), getValueWithVariance(v.y, variance.x), getValueWithVariance(v.z, variance.x));
+PVector getWithVariance(PVector v, PVector variance) {
+  return new PVector(getWithVariance(v.x, variance.x), getWithVariance(v.y, variance.x), getWithVariance(v.z, variance.x));
 }
 
 
@@ -139,3 +139,51 @@ PVector getVectorWithVariance(PVector v, PVector variance) {
 float units(float f) {
   return f/800 * height;
 }
+
+
+
+class FloatWithVariance {
+  float base, variance;
+  FloatWithVariance() {
+    set(0, 0);
+  }
+  
+  FloatWithVariance(float _base, float _variance) {
+    set(_base, _variance);
+  }
+  
+  void set(float _base, float _variance) {
+    base = _base;
+    variance = _variance;
+  }
+  
+  float get() {
+    return getWithVariance(base, variance);
+  }
+};
+
+
+
+class VectorWithVariance {
+  PVector base, variance;
+
+  VectorWithVariance() {
+    set(new PVector(), new PVector());
+  }
+
+  VectorWithVariance(PVector _base, PVector _variance) {
+    set(_base, _variance);
+  }
+  
+  void set(PVector _base, PVector _variance) {
+    base = _base;
+    variance = _variance;
+  }
+
+  PVector get() {
+    return getWithVariance(base, variance);
+  }
+};
+
+
+

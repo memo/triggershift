@@ -14,7 +14,7 @@ class ShardParticle extends MSAParticle {
     radius = _radius;
     alpha = _alpha;
     drag = _drag;
-    fadeSpeed = fadeSpeed;
+    alphaSpeed = alphaSpeed;
     pPos=_pos;
   }
   void setWord(String _word){

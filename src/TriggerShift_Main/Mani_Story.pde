@@ -161,12 +161,17 @@ class ManiStory extends TSStoryBase {
     PVector pos = new PVector(width * 0.2, height * 0.3);
     float rot, rotSpeed;
     float radius; 
-    float targetRadius = width * 0.1;
+    float targetRadius;
 
     void start() {
       rot = 0;
       rotSpeed = 0;
       radius = 0;
+      targetRadius = width * 0.1;
+    }
+
+    void end() {
+      targetRadius = 0;
     }
 
     void draw() {
@@ -203,23 +208,26 @@ class ManiStory extends TSStoryBase {
     }
 
     void draw() {
-      pushStyle();
-      pushMatrix();
-      imageMode(CENTER);
-      translate(pos.x, pos.y);
-      rotate(radians(rot));
-      radius += (targetRadius - radius) * 0.1;
-      scale(radius * 2 / img.width);
-      image(img, 0, 0);
-      popMatrix();
-      popStyle();
+      if (radius > 1) {
+        pushStyle();
+        pushMatrix();
+        imageMode(CENTER);
+        translate(pos.x, pos.y);
+        rotate(radians(rot));
+        radius += (targetRadius - radius) * 0.1;
+        scale(radius * 2 / img.width);
+        image(img, 0, 0);
+        popMatrix();
+        popStyle();
+      }
 
       rot += rotSpeed * secondsSinceLastFrame;
       rotSpeed *= 0.99;
 
       pos.add(PVector.mult(vel, secondsSinceLastFrame));
+
       // gravity
-      vel.y += units(30) * secondsSinceLastFrame; 
+      vel.y += units(80) * secondsSinceLastFrame; 
 
       // bounce off edges
       if (pos.y > height - radius) {
@@ -310,29 +318,24 @@ class ManiStory extends TSStoryBase {
       cityGrey.set(1, 1, 0, 1);
       particleSystem.start();
 
-      particleSystem.initPos.set(0, 0, 0);
-      particleSystem.initPosVariance.set(units(50), units(10), units(10));
-      particleSystem.initVel.set(0, units(150), 0);
-      particleSystem.initVelVariance.set(units(0), units(150), units(150));
-      particleSystem.initVelInherit.set(0, 0, 0);
-      particleSystem.initVelInheritMult.set(width, height, 0);
+      particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(units(50), units(10), units(10)));
+      particleSystem.startVel.set(new PVector(0, units(150), 0), new PVector(units(0), units(150), units(150)));
+      particleSystem.acc.set(new PVector(0, units(50), 0), new PVector(0, 0, 0));
+      particleSystem.inheritVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
+      particleSystem.inheritVelMult.set(new PVector(width*0.2, height*0.2, 0), new PVector(0, 0, 0));
+
+      particleSystem.startRot.set(0, 5);
+      particleSystem.rotVel.set(0, 0);
       
-      particleSystem.initAcc.set(0, units(50), 0);
-      particleSystem.initAccVariance = 0;
-      particleSystem.initRot = 0;
-      particleSystem.initRotVariance = 30;        
-      particleSystem.initRotVel = 0;
-      particleSystem.initRotVelVariance = 3;  
-      particleSystem.initRadius = units(10);
-      particleSystem.initRadiusVariance = units(3);  
-      particleSystem.initDrag = 0.01;
-      particleSystem.initDragVariance = 0.01;
-      particleSystem.initAlpha = 0;
-      particleSystem.initAlphaVariance = 0;
-      particleSystem.initTargetAlpha = 1;
-      particleSystem.initTargetAlphaVariance = 0;
-      particleSystem.initFadeSpeed = 0.5;
-      particleSystem.initFadeSpeedVariance = 0;
+      particleSystem.startRadius.set(0, 0);
+      particleSystem.targetRadius.set(units(3), units(1));
+      particleSystem.radiusSpeed.set(0.3, 0.0);
+      
+      particleSystem.startAlpha.set(0, 0);
+      particleSystem.targetAlpha.set(1, 0);
+      particleSystem.alphaSpeed.set(0.5, 0.1);
+
+      particleSystem.drag.set(0.02, 0.005);
       particleSystem.maxCount = 100;
       particleSystem.img = imgRain;
     }
@@ -343,8 +346,8 @@ class ManiStory extends TSStoryBase {
       drawMaskedUser();
 
       for (int i=0; i<2; i++) {
-        particleSystem.initPos = getHand(i);
-        particleSystem.initVelInherit = getHandVelocity(i);
+        particleSystem.startPos.base = getHand(i);
+        particleSystem.inheritVel.base = getHandVelocity(i);
         particleSystem.add();
       }
 
@@ -450,6 +453,7 @@ class ManiStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       basketball.start();
+      colorWheel.end();
     }
 
     //----------------
@@ -502,21 +506,68 @@ class ManiStory extends TSStoryBase {
   //------------------------------------------------------------------------------------------------------
   // music
   class Scene7 extends TSSceneBase {
-    Scene7() {
-      sceneName = "Scene7 MUSIC";
-      println(storyName + "::" + sceneName);
-      setTrigger(new MouseClickTrigger());
-    }
+    MSAParticleSystem particleSystem = new MSAParticleSystem();
+    PImage[] imgs = { 
+      loadImage("mani/note1.png"), loadImage("mani/note2.png"), loadImage("mani/note3.png"), loadImage("mani/note4.png"), loadImage("mani/note5.png"), loadImage("mani/note6.png")
+      };
+
+
+      Scene7() {
+        sceneName = "Scene7 MUSIC";
+        println(storyName + "::" + sceneName);
+        setTrigger(new MouseClickTrigger());
+      }
 
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
+      particleSystem.start();
+
+      particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(units(50), units(10), units(10)));
+      particleSystem.startVel.set(new PVector(0, 0, 0), new PVector(units(100), units(100), units(100)));
+      particleSystem.acc.set(new PVector(0, units(-20), 0), new PVector(0, units(5), 0));
+      particleSystem.inheritVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
+      particleSystem.inheritVelMult.set(new PVector(width, height, 0), new PVector(0, 0, 0));
+
+      particleSystem.startRot.set(0, 30);
+      particleSystem.rotVel.set(0, 3);
+      
+      particleSystem.startRadius.set(0, 0);
+      particleSystem.targetRadius.set(units(7), units(2));
+      particleSystem.radiusSpeed.set(0.4, 0.1);
+      
+      particleSystem.startAlpha.set(1, 0);
+      particleSystem.targetAlpha.set(0, 0);
+      particleSystem.alphaSpeed.set(0.02, 0.01);
+
+      particleSystem.drag.set(0.04, 0.005);
+      particleSystem.maxCount = 100;
+
+      particleSystem.maxCount = 100;
+      particleSystem.imgs = imgs;
     }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       sky.draw();
       drawMaskedUser();
+      trafficLights.draw();
+      cityColor.draw();
+      flowers.draw();
+      colorWheel.draw();
+      if (getLeftHand().x < colorWheel.pos.x + colorWheel.radius) {
+        colorWheel.rotSpeed *= 0.9;
+        colorWheel.rotSpeed += getLeftHandVelocity().y * 50;
+      }
+      basketball.draw();
+
+      for (int i=0; i<2; i++) {
+        particleSystem.startPos.base = getHand(i);
+        particleSystem.inheritVel.base = getHandVelocity(i);
+        if (getHandVelocity(i).mag() > 0.1) particleSystem.add();
+      }
+
+      particleSystem.draw();
     }
   };
 
@@ -582,3 +633,4 @@ class ManiStory extends TSStoryBase {
     }
   };
 };
+

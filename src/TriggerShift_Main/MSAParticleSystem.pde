@@ -3,33 +3,30 @@
 class MSAParticleSystem {
   ArrayList particles;
 
-  PVector initPos = new PVector();                  // initial position of particle
-  PVector initPosVariance = new PVector();          // random distance to initPos where particle can be created
+  VectorWithVariance startPos = new VectorWithVariance();
+  VectorWithVariance startVel = new VectorWithVariance();
+  VectorWithVariance acc = new VectorWithVariance();
+  VectorWithVariance inheritVel = new VectorWithVariance();           // particle inherits this velocity
+  VectorWithVariance inheritVelMult = new VectorWithVariance();       // multiply above by this before adding to particle
 
-  PVector initVel = new PVector();                  // initial velocity of particle
-  PVector initVelVariance = new PVector();          // random range of above
-  PVector initVelInherit = new PVector();           // particle inherits this velocity
-  PVector initVelInheritMult = new PVector();       // multiply above by this before adding to particle
+  FloatWithVariance startRot = new FloatWithVariance(0, 0);
+  FloatWithVariance rotVel = new FloatWithVariance(0, 0);
 
-  PVector initAcc = new PVector();                  // acceleration of particle
-  float initAccVariance = 0;                        // random range of above
+  FloatWithVariance startRadius = new FloatWithVariance(0, 0);
+  FloatWithVariance targetRadius = new FloatWithVariance(0, 0);
+  FloatWithVariance radiusSpeed = new FloatWithVariance(0, 0);
 
-  float initRot = 0, initRotVariance = 0;           // initial rotation & random range
+  FloatWithVariance startAlpha = new FloatWithVariance(0, 0);
+  FloatWithVariance targetAlpha = new FloatWithVariance(0, 0);
+  FloatWithVariance alphaSpeed = new FloatWithVariance(0, 0);
 
-  float initRotVel = 0, initRotVelVariance = 0;     // initial rotation velocity & random range
+  FloatWithVariance drag = new FloatWithVariance(0, 0);
 
-  float initRadius = 1, initRadiusVariance = 0;             // initial radius & random range
-
-  float initDrag = 0, initDragVariance = 0;                 // initial drag & random range
-
-  float initAlpha = 1, initAlphaVariance = 0;               // initial alpha & random range
-  float initTargetAlpha = 1, initTargetAlphaVariance = 0;   // initial rotation & random range
-  float initFadeSpeed = 0, initFadeSpeedVariance = 0;
-
-  ArrayList imgs = null;
+  PImage[] imgs = null;
   PImage img = null;
 
   int maxCount = 0;
+
 
   void start() {
     particles = new ArrayList();
@@ -43,30 +40,32 @@ class MSAParticleSystem {
       p.img = img;
     } 
     else if (imgs != null) {
-      int imageIndex = (int)floor(random(0, imgs.size()));
-      p.img = (PImage)imgs.get(imageIndex);
+      int imageIndex = (int)floor(random(0, imgs.length));
+      p.img = imgs[imageIndex];
     } else {
       println("WARNING MSAParticleSystem has no images");
       return;
     }
     
 
-    p.pos = getVectorWithVariance(initPos, initPosVariance);
-    p.posVel = getVectorWithVariance(initVel, initVelVariance);
-    p.posVel.add(PVector.mult(initVelInherit, initVelInheritMult));
-    p.posAcc = getVectorWithVariance(initAcc, initAccVariance);
+    p.pos = startPos.get();
+    p.posVel = startVel.get();
+    p.posVel.add(PVector.mult(inheritVel.get(), inheritVelMult.get()));
+    p.posAcc = acc.get();
 
-    p.rot = getValueWithVariance(initRot, initRotVariance);
+    p.rot = startRot.get();
 
-    p.rotVel = getValueWithVariance(initRotVel, initRotVelVariance);
+    p.rotVel = rotVel.get();
 
-    p.radius = getValueWithVariance(initRadius, initRadiusVariance);
+    p.radius = startRadius.get();
+    p.targetRadius = targetRadius.get();
+    p.radiusSpeed = radiusSpeed.get();
 
-    p.drag = getValueWithVariance(initDrag, initDragVariance);
+    p.drag = drag.get();
 
-    p.alpha = getValueWithVariance(initAlpha, initAlphaVariance);
-    p.targetAlpha = getValueWithVariance(initTargetAlpha, initTargetAlphaVariance);
-    p.fadeSpeed = getValueWithVariance(initFadeSpeed, initFadeSpeedVariance);
+    p.alpha = startAlpha.get();
+    p.targetAlpha = targetAlpha.get();
+    p.alphaSpeed = alphaSpeed.get();
 
     particles.add(p);
   }
