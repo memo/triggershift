@@ -1,6 +1,6 @@
 
 class MSAParticle {
-  PVector pos, posVel, posAcc;
+  PVector pos = new PVector(), posVel = new PVector(), posAcc = new PVector();
   float rot = 0;
   float rotVel = 0;
   float rotDrag = 0;
@@ -14,7 +14,7 @@ class MSAParticle {
   PImage img;
 
   void draw() {
-//    pushStyle();
+    pushStyle();
     pushMatrix();
     translate(pos.x, pos.y, pos.z);
     rotate(radians(rot));
@@ -23,7 +23,7 @@ class MSAParticle {
     tint(255, alpha * 255);
     image(img, 0, 0);
     popMatrix();
-//    popStyle();
+    popStyle();
 
     if(alphaSpeed>0) alpha += (targetAlpha - alpha) * alphaSpeed;
     if(radiusSpeed>0) radius += (targetRadius - radius) * radiusSpeed;

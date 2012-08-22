@@ -23,33 +23,28 @@ class ManiStory extends TSStoryBase {
 
   //----------------
   class Sky {
-    PImage img = loadImage("mani/nightandday.png");
-    float alpha;
-    float targetAlpha;
-    float rot;
-    float targetRot;
+    MSAParticle p = new MSAParticle();
+    
+    Sky() {
+      p.img = loadImage("mani/nightandday.png");
+    }
 
     void start() {
-      alpha = 0;
-      targetAlpha = 1;
-      rot = 0;
-      targetRot = 0;
+      p.alpha = 0;
+      p.targetAlpha = 1;
+      p.alphaSpeed = 0.1;
+
+      p.rot = 0;
+      
+      p.radius = 0;
+      p.targetRadius = height * 1.5;
+      p.radiusSpeed = 0.05;
+      
+      p.pos.set(width/2, height, 0);
     }
 
     void draw() {
-      alpha += (targetAlpha - alpha) * 0.1;
-      rot += (targetRot - rot) * 0.1;
-
-      pushStyle();
-      pushMatrix();
-      imageMode(CENTER);
-      translate(width/2, height);
-      rotate(radians(rot));
-      scale(width / img.width);
-      tint(255, alpha * 255);
-      image(img, 0, 0);
-      popMatrix();
-      popStyle();
+      p.draw();
     }
   };
   Sky sky = new Sky();
@@ -320,7 +315,7 @@ class ManiStory extends TSStoryBase {
 
       particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(units(50), units(10), units(10)));
       particleSystem.startVel.set(new PVector(0, units(150), 0), new PVector(units(0), units(150), units(150)));
-      particleSystem.acc.set(new PVector(0, units(50), 0), new PVector(0, 0, 0));
+      particleSystem.acc.set(new PVector(0, units(100), 0), new PVector(0, 0, 0));
       particleSystem.inheritVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
       particleSystem.inheritVelMult.set(new PVector(width*0.2, height*0.2, 0), new PVector(0, 0, 0));
 
@@ -328,7 +323,7 @@ class ManiStory extends TSStoryBase {
       particleSystem.rotVel.set(0, 0);
 
       particleSystem.startRadius.set(0, 0);
-      particleSystem.targetRadius.set(units(3), units(1));
+      particleSystem.targetRadius.set(units(10), units(3));
       particleSystem.radiusSpeed.set(0.3, 0.0);
 
       particleSystem.startAlpha.set(0, 0);
@@ -336,12 +331,13 @@ class ManiStory extends TSStoryBase {
       particleSystem.alphaSpeed.set(0.5, 0.1);
 
       particleSystem.drag.set(0.02, 0.005);
-      particleSystem.maxCount = 100;
+      particleSystem.maxCount = 500;
       particleSystem.img = imgRain;
     }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      background(0);
       cityGrey.draw();
       drawMaskedUser();
 
@@ -375,6 +371,7 @@ class ManiStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      background(0);
       sky.draw();
       cityGrey.draw();
       drawMaskedUser();
@@ -399,6 +396,7 @@ class ManiStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      background(0);
       sky.draw();
       drawMaskedUser();
       cityColor.draw();
@@ -428,6 +426,7 @@ class ManiStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      background(0);
       sky.draw();
       drawMaskedUser();
       cityColor.draw();
@@ -458,6 +457,7 @@ class ManiStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      background(0);
       sky.draw();
       drawMaskedUser();
       cityColor.draw();
@@ -488,6 +488,7 @@ class ManiStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      background(0);
       sky.draw();
       drawMaskedUser();
       trafficLights.draw();
@@ -549,6 +550,7 @@ class ManiStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      background(0);
       sky.draw();
       drawMaskedUser();
       trafficLights.draw();
@@ -589,6 +591,7 @@ class ManiStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      background(0);
       drawMaskedUser();
     }
   };
@@ -610,6 +613,7 @@ class ManiStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      background(0);
       drawMaskedUser();
     }
   };    
