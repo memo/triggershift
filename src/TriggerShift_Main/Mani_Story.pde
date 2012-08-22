@@ -326,11 +326,11 @@ class ManiStory extends TSStoryBase {
 
       particleSystem.startRot.set(0, 5);
       particleSystem.rotVel.set(0, 0);
-      
+
       particleSystem.startRadius.set(0, 0);
       particleSystem.targetRadius.set(units(3), units(1));
       particleSystem.radiusSpeed.set(0.3, 0.0);
-      
+
       particleSystem.startAlpha.set(0, 0);
       particleSystem.targetAlpha.set(1, 0);
       particleSystem.alphaSpeed.set(0.5, 0.1);
@@ -531,11 +531,11 @@ class ManiStory extends TSStoryBase {
 
       particleSystem.startRot.set(0, 30);
       particleSystem.rotVel.set(0, 3);
-      
+
       particleSystem.startRadius.set(0, 0);
       particleSystem.targetRadius.set(units(7), units(2));
-      particleSystem.radiusSpeed.set(0.4, 0.1);
-      
+      particleSystem.radiusSpeed.set(0.5, 0.1);
+
       particleSystem.startAlpha.set(1, 0);
       particleSystem.targetAlpha.set(0, 0);
       particleSystem.alphaSpeed.set(0.02, 0.01);
@@ -562,9 +562,11 @@ class ManiStory extends TSStoryBase {
       basketball.draw();
 
       for (int i=0; i<2; i++) {
-        particleSystem.startPos.base = getHand(i);
-        particleSystem.inheritVel.base = getHandVelocity(i);
-        if (getHandVelocity(i).mag() > 0.1) particleSystem.add();
+        if (getHandVelocity(i).mag() > 0.1) {
+          particleSystem.startPos.base = getHand(i);
+          particleSystem.inheritVel.base = getHandVelocity(i);
+          particleSystem.add();
+        }
       }
 
       particleSystem.draw();

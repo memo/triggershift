@@ -86,9 +86,12 @@ class JamelStory extends TSStoryBase {
   //------------------------------------------------------------------------------------------------------
   // draw graph and pound signs
   class Scene2 extends TSSceneBase {
-    PImage imgPound = loadImage("jamel/pound.png");
+    MSAParticleSystem particleSystem = new MSAParticleSystem();
+    PImage[] imgs = { 
+      loadImage("jamel/pound.png"), loadImage("jamel/dollar.png"), loadImage("jamel/euro.png")
+      };
+
     ArrayList posArray;
-    ArrayList particles;
 
     //----------------
     Scene2() {
@@ -100,7 +103,30 @@ class JamelStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       posArray = new ArrayList();
-      particles = new ArrayList();
+      particleSystem.start();
+
+      particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(units(20), units(20), units(20)));
+      particleSystem.startVel.set(new PVector(0, 0, 0), new PVector(units(50), units(50), units(50)));
+      particleSystem.acc.set(new PVector(0, units(-20), 0), new PVector(0, units(5), 0));
+      particleSystem.inheritVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
+      particleSystem.inheritVelMult.set(new PVector(width/2, height/2, 0), new PVector(0, 0, 0));
+
+      particleSystem.startRot.set(0, 30);
+      particleSystem.rotVel.set(0, 3);
+      
+      particleSystem.startRadius.set(0, 0);
+      particleSystem.targetRadius.set(units(7), units(2));
+      particleSystem.radiusSpeed.set(0.5, 0.1);
+      
+      particleSystem.startAlpha.set(1, 0);
+      particleSystem.targetAlpha.set(0, 0);
+      particleSystem.alphaSpeed.set(0.02, 0.01);
+
+      particleSystem.drag.set(0.04, 0.005);
+      particleSystem.maxCount = 100;
+
+      particleSystem.maxCount = 20;
+      particleSystem.imgs = imgs;
     }
 
     //----------------
@@ -136,38 +162,17 @@ class JamelStory extends TSStoryBase {
       }
       endShape();
 
-      // add particle if velocity is above threshold
-      PVector now = getHighestHand();
-      PVector vel = getHighestHandVelocity();
-      if (vel.mag() > 0.01) {
-        float r = transform2D.targetSizePixels.y * 0.05;
-        now.x += random(-r, r);
-        now.y += random(-r, r);
-        now.z += random(-r, r);
-        vel.x *= width/2;
-        vel.y *= height/2;
-        MSAParticle p = new MSAParticle();
-        p.pos = now;
-        p.posVel = vel;
-        p.rot = random(-30, 30);
-        p.rotVel = random(-3, 3);
-        p.radius = random(height/80, height/40);
-        p.alpha = 1;
-        p.drag = 0.9;
-        p.alphaSpeed = 0.99;
-        p.posAcc = new PVector(0, 0, 0);
-        p.img = imgPound;
-        particles.add(p);
-      }
-
-      if (particles.size() > 20) particles.remove(0);  // trim array
-      // draw particles
-      for (int i=0; i<particles.size(); i++) {
-        MSAParticle p = (MSAParticle) particles.get(i);
-        p.draw();
-      }
-
       popStyle();
+      
+      
+      if (getHighestHandVelocity().mag() > 0.1) {
+        particleSystem.startPos.base = getHighestHand();
+        particleSystem.inheritVel.base = getHighestHandVelocity();
+        particleSystem.add();
+      }
+
+      particleSystem.draw();
+
     }
   };
 
