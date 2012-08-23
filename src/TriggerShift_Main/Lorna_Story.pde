@@ -3,14 +3,12 @@ class LornaStory extends TSStoryBase {
   LornaStory() {
     storyName = "LornaStory";
     println(storyName + "::" + storyName);
+        addScene(new Scene_Black_White());
+
     addScene(new Scene_maid());
-    addScene(new Scene_Black_White());
-
-    addScene(new Scene_rainbow());
-
     addScene(new Scene_colour_trees());
-
     addScene(new Scene_paper_chain());
+    addScene(new Scene_rainbow());
     addScene(new Scene_reach_for_stars());
   }
 

@@ -140,7 +140,7 @@ void setupOpenNI() {
 
 //----------------------------------
 void setup() {
-  size(1280, 800, P3D);
+  size(1024, 768, P3D);
 
   frameRate(30);
   masker = new TSMasker();
@@ -266,7 +266,7 @@ void keyPressed() {
   case '5': 
     setStory(5); 
     break;
-  case '.': 
+  case ' ': 
     currentStory.nextScene(); 
     break;
   case ',': 
