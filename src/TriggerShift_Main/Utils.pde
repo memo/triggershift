@@ -72,6 +72,17 @@ PVector getRightArm() {
 }
 
 
+PVector getLeftFoot() {
+  if (skeleton == null) return new PVector(width*0.35, height*0.4, 0);
+  return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_FOOT, transform2D, openNIContext);
+}
+
+PVector getRightFoot() {
+  if (skeleton == null) return new PVector(width*0.65, height*0.4, 0);
+  return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_FOOT, transform2D, openNIContext);
+}
+
+
 
 PVector getHighestHand() {
   PVector rightHand = getRightHand();
@@ -120,6 +131,10 @@ float getMaxArmLength() {
 
 void drawMaskedUser() {
   transform2D.drawImage( masker.getImage() );
+}
+
+void drawUserDepthPlane() {
+  transform2D.drawImage( masker.getMask() );
 }
 
 float getWithVariance(float f, float variance) {

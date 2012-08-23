@@ -46,5 +46,9 @@ class TSMasker {
   PImage getImage() { 
     return rgbImage;
   }
+    // return image
+  PImage getMask() { 
+    return maskImage;
+  }
 };
 

@@ -22,8 +22,8 @@ class Scene_flickBook extends TSSceneBase {
   PImage [] book = new PImage[numPageCells];
 
 
-  int imageWidth = 200;
-  int imageHeight = 200;
+  int imageWidth = 500;
+  int imageHeight = 500;
   int frameIndex=0;
 
   Scene_flickBook() {
@@ -48,7 +48,7 @@ class Scene_flickBook extends TSSceneBase {
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     drawMaskedUser();
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
-    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
+    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
     image(book[frameIndex], picturePos.x, picturePos.y);
 
     float thresh=0.01;
@@ -66,13 +66,13 @@ class Scene_flickBook extends TSSceneBase {
 
 //SCENE 2Animated clock hands are superimposed over book
 class Scene_clock_hands extends TSSceneBase {
-  int bookImageWidth = 200;
-  int bookImageHeight = 200;
+  int bookImageWidth = 500;
+  int bookImageHeight = 500;
   PImage hourHand=loadImage("charlene/hourHand.png");
   PImage minuteHand=loadImage("charlene/hourHand.png");
   PImage book = loadImage("charlene/bookPage_0.png");
-  int imageWidth = 20;
-  int imageHeight = 100;
+  int imageWidth = 50;
+  int imageHeight = 220;
   float angle=0.0;
 
   Scene_clock_hands() {
@@ -96,7 +96,7 @@ class Scene_clock_hands extends TSSceneBase {
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     drawMaskedUser();
-    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
+    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
     image(book, picturePos.x, picturePos.y);
     pushMatrix();
     translate(picturePos.x+(0.5*bookImageWidth), picturePos.y+(0.5*bookImageHeight));
@@ -198,9 +198,9 @@ class Scene_throw_coffee extends TSSceneBase {
       if (isThrown) {
         if (!lock) {
           for (int i=0;i<blobs.length;i++) {
-            blobs[i].setPosVel(new PVector(random(-3, 3), random(-2, -8), 0));
+            blobs[i].setPosVel(new PVector(random(-3, 3), random(-6, -8), 0));
             blobs[i].setRotVel(random(-3, 3));
-            float distThresh= 50;
+            float distThresh= 150;
             if (dist(blobs[i].pos.x, blobs[i].pos.y, leftHand.x, leftHand.y )>distThresh) {
               blobs[i].showWord=true;
             }
@@ -265,7 +265,12 @@ class Scene_mortar_board_on_head extends TSSceneBase {
 
     float currentX = lerp(startPos.x, endPos.x, inc);
     float currentY = lerp(startPos.y, endPos.y, inc);
+    
+    PVector leftShoulder=getLeftShoulder();
+    PVector rightShoulder=getRightShoulder();
 
+    w=(rightShoulder.x-leftShoulder.x  );
+    h =w*0.7;
     image(mortarBoard, currentX-(0.5*w), currentY-(0.7*h), w, h);
     if (inc<1.0) {
       inc+=speed;
@@ -296,8 +301,8 @@ class Scene_zoom_from_space extends TSSceneBase {
   void onStart() {
     println("Charlene::Scene_zoom_from_space::onStart");
 
-    imageWidth = 200;
-    imageHeight = 200;
+    imageWidth = 500;
+    imageHeight = 500;
     country.resize(imageWidth, imageHeight);
     world.resize(imageWidth, imageHeight);
     city.resize(imageWidth, imageHeight);
@@ -311,7 +316,7 @@ class Scene_zoom_from_space extends TSSceneBase {
     drawMaskedUser();
     PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
-    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
+    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
 
     float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
     float maxDist= 300;
@@ -377,10 +382,10 @@ class Scene_vote_in_box extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("Charlene::Scene_vote_in_box::onStart");
-    wBallotBox=200;
-    hBallotBox=200;
-    wVote=120;
-    hVote=120;
+    wBallotBox=300;
+    hBallotBox=300;
+    wVote=180;
+    hVote=180;
     ballotBoxFront.resize(wBallotBox, hBallotBox);
     ballotBoxBack.resize(wBallotBox, hBallotBox);
     vote.resize(wVote, hVote);
@@ -501,8 +506,8 @@ class Scene_power_hands extends TSSceneBase {
 //SCENE 8 circling left hand gesture above the shoulder rotates one image to another on the flip side
 class Scene_spin_right_wrong extends TSSceneBase {
 
-  int imageWidth = 200;
-  int imageHeight = 200;
+  int imageWidth = 400;
+  int imageHeight = 400;
 
   PImage right=loadImage("charlene/right.png");
   PImage wrong=loadImage("charlene/wrong.png");
@@ -529,7 +534,7 @@ class Scene_spin_right_wrong extends TSSceneBase {
     pushMatrix();
     PVector leftHand = skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_HAND);
     PVector leftShoulder = skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_SHOULDER);
-    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.2, 0));
+    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.2, 0.2, 0));
     //get the angle between the left shoulder and the left hand as if looking down from above ie at the x z plane
     float angle = atan2( leftShoulder.z- leftHand.z, leftShoulder.x- leftHand.x);
     translate(picturePos.x+(0.5*imageWidth), picturePos.y);
@@ -559,8 +564,8 @@ class Scene_spin_right_wrong extends TSSceneBase {
 //SCENE 9 
 class Scene_shatter_image extends TSSceneBase {
 
-  int imageWidth = 200;
-  int imageHeight = 200;
+  int imageWidth = 350;
+  int imageHeight = 500;
   int numShards=10;
   float angle=0.0;
   boolean moveShards=false;
@@ -573,7 +578,7 @@ class Scene_shatter_image extends TSSceneBase {
     sceneName="scene9 SHATTER IMAGE";
 
     //println(storyName + "::" + sceneName + "::onStart");
-    
+
     picturePos =transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
     for (int i=0;i<numShards;i++) {
       shardImages[i]=loadImage("charlene/shard"+str(i+1)+".png");
@@ -588,10 +593,10 @@ class Scene_shatter_image extends TSSceneBase {
     handOver=false;
     player.close();
     player = minim.loadFile("charlene/donttouch.mp3");
-    
+
     int x=0;
     int y=0;
-        float rowLength=4.0;
+    float rowLength=4.0;
 
     for (int i=0;i<numShards;i++) {
       shards[i]= new ShardParticle(picturePos, new PVector(0, 0, 0), 0.0, 0.0, imageWidth/2, 255, 0, 0); 
@@ -637,7 +642,8 @@ class Scene_drop_set extends TSSceneBase {
   PImage theatre=loadImage("charlene/theatre.png");
   boolean startDrop;
   boolean endDrop;
-
+  float sizeMult=2.0;
+  
   Scene_drop_set() {
     sceneName="scene10 DROP SET";
 
@@ -660,6 +666,8 @@ class Scene_drop_set extends TSSceneBase {
     drawMaskedUser();
     pushStyle();
     pushMatrix();
+    imageMode(CENTER);
+    
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
     PVector head = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
@@ -673,18 +681,20 @@ class Scene_drop_set extends TSSceneBase {
 
     if (startDrop) {
       if (!endDrop) {
-        float mappedY = map (leftHand.y-head.y, 0, maxRange, 0, height+50);
-        picturePos= new PVector(0, mappedY);
+        float mappedY = map (leftHand.y-head.y, 0, maxRange, (height/2), height+(height/2));
+        picturePos= new PVector(width/2, mappedY);
       }
-      if (picturePos.y>height) {
+      if (picturePos.y>height+(height/2)) {
         endDrop=true;
       }
     }
     else {
-      picturePos= new PVector(0, 0);
+      picturePos= new PVector(width/2, height/2);
     }
-    image(theatre, picturePos.x, picturePos.y);
-
+    image(theatre, picturePos.x, picturePos.y,theatre.width *sizeMult, theatre.height*sizeMult);
+    if(sizeMult>1){
+     sizeMult*=0.98; 
+    }
     popMatrix();
     popStyle();
   }

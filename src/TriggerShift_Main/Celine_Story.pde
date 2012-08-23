@@ -14,10 +14,10 @@ class CelineStory extends TSStoryBase {
 ///SCENE 1
 class Scene_big_buildings extends TSSceneBase {
   PImage easel = loadImage("celine/easel.png");
-  PImage picture = loadImage("celine/skyscraper1.png");
-  int imageWidth=120;
-  int imageHeight=200;
-  PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.4, 0));
+  PImage picture = loadImage("celine/skyscraper1.png");  
+  int imageWidth=150;
+  int imageHeight=262;
+  PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
 
   Scene_big_buildings() {
     sceneName = "Scene1 BIG BUILDINGS";
@@ -30,18 +30,18 @@ class Scene_big_buildings extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("CelineStory::Scene_big_buildings::onStart");
-
-    imageWidth = 120;
-    imageHeight = 200;
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     drawMaskedUser();
-    image(easel, picturePos.x- (easel.width*0.7575), picturePos.y-(easel.height*0.6868));
-
+    image(easel, picturePos.x- (easel.width*0.85), picturePos.y-(easel.height*0.66));
+    ellipse(picturePos.x, picturePos.y, 20, 20);
     pushMatrix();
-    translate(picturePos.x-picture.width, picturePos.y-picture.height);
+    translate(picturePos.x, picturePos.y);
+
     rotate(imageRotateAngle);
+    translate(-picture.width, -picture.height);
+
     image(picture, 0, 0);
     popMatrix();
   }
@@ -50,14 +50,17 @@ class Scene_big_buildings extends TSSceneBase {
 //SCENE 2
 class Scene_ripPaper extends TSSceneBase {
   PImage easel = loadImage("celine/easel.png");
+  //the picture underneath
+  PImage picture = loadImage("celine/skyscraper1.png");
+
   PImage leftHalf = loadImage("celine/left.png");
   PImage rightHalf= loadImage("celine/right.png");
 
   ShardParticle leftP;
   ShardParticle rightP;
 
-  int imageWidth=120;
-  int imageHeight=200;
+  int imageWidth=150;
+  int imageHeight=262;
   float angle;
   float angle1;
   //to lerp distance when halves are thrown away
@@ -66,9 +69,9 @@ class Scene_ripPaper extends TSSceneBase {
   //set to true if the 2 halves get past about 20 degrees
   boolean startToFlyAway;
   //the top left of the skyscraper image : the easel is drawn above and left of this to aligh
-  PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.4, 0));
+  PVector rightHalfPos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
 
-  PVector rightHalfPos =transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.4, 0));
+  PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
 
   PVector  leftHalfPos= new PVector(rightHalfPos.x, rightHalfPos.y, rightHalfPos.z) ;
   PVector axis;
@@ -87,8 +90,7 @@ class Scene_ripPaper extends TSSceneBase {
   void onStart() {
     println("CelineStory::Scene_ripPaper::onStart");
 
-    imageWidth = 120;
-    imageHeight = 200;
+
     angle=0;
     angle1=0;
     //to lerp distance when halves are thrown away
@@ -121,11 +123,36 @@ class Scene_ripPaper extends TSSceneBase {
     PVector leftElbow = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_ELBOW, transform2D, openNIContext);
 
     //draw the easel behind the 2 halves of the image
+
+
+
     pushMatrix();
-    image(easel, picturePos.x- (easel.width*0.7575), picturePos.y-(easel.height*0.6868));
+    image(easel, picturePos.x- (easel.width*0.85), picturePos.y-(easel.height*0.66));
     popMatrix();
 
+    ellipse(picturePos.x, picturePos.y, 20, 20);
+
+
     if (getElapsedSeconds()>4) {
+
+
+      pushMatrix();
+      imageMode(CENTER);
+      translate(picturePos.x, picturePos.y, picturePos.z);
+      rotate(imageRotateAngle);
+      float sW=imageWidth*0.5;
+      float sH=imageHeight*0.5;
+
+      translate(-imageWidth*0.5, -imageHeight*0.5);
+
+      image(picture, 0, 0, sW, sH);
+
+
+      popMatrix();
+
+      imageMode(CORNER);
+
+
       player.play();
       ///get the angle between hand and elbow
       leftHand.sub(leftElbow);
@@ -144,16 +171,21 @@ class Scene_ripPaper extends TSSceneBase {
         angle = acos(imageOrientation.dot(leftHand));
         axis = imageOrientation.cross(leftHand);
         //translate to the place we want to draw the image
+
         translate(rightHalfPos.x, rightHalfPos.y, rightHalfPos.z);
-        translate(-rightHalf.width*0.5, -rightHalf.height, 0);
+
+
+        //translate(-rightHalf.width*0.5, -rightHalf.height, 0);
         //translate rotation point to bottom left of image
-        translate(0, rightHalf.height, 0);
+        // translate(0, rightHalf.height, 0);
         //rotate by joint orientation of forearm
         rotate(angle, axis.x, axis.y, -axis.z);
         //rotate by easel angle
         rotate(imageRotateAngle);
+
+        translate(-rightHalf.width, -rightHalf.height, 0);
         //translate back up to draw
-        translate(-rightHalf.width*0.2, -rightHalf.height, 0);
+        // translate(-rightHalf.width*0.2, -rightHalf.height, 0);
         rightP.draw(rightHalf);
         popMatrix();
 
@@ -168,16 +200,14 @@ class Scene_ripPaper extends TSSceneBase {
 
         axis1 = imageOrientation.cross(rightHand);
 
-        //translate to the place we want to draw the image
-        translate(leftHalfPos.x, leftHalfPos.y, leftHalfPos.z);
-        translate(-leftHalf.width*0.5, -leftHalf.height, 0);
-        //translate rotation point to bottom left of image
-        translate(0, leftHalf.height, 0);
-        //rotate by joint orientation of forearm
+        translate(rightHalfPos.x, rightHalfPos.y, rightHalfPos.z);
+
+        rotate(imageRotateAngle);
+
+        translate(-rightHalf.width*0.8, 0);
+
         rotate(-angle1, axis1.x, axis1.y, axis1.z);
-        //rotate by easel angle
         rotate(PI+imageRotateAngle);
-        //translate back up to draw
         translate(-leftHalf.width, -leftHalf.height, 0);
         leftP.draw(leftHalf);
         popMatrix();
@@ -250,8 +280,8 @@ class Scene_fade_in_colour extends TSSceneBase {
   PImage easel = loadImage("celine/easel.png");
   PImage picture = loadImage("celine/skyscraper1.png");
   PImage sepia = loadImage("celine/skyscraper1.png");
-  int imageWidth=120;
-  int imageHeight=200;
+  int imageWidth=150;
+  int imageHeight=262;
   float angle;
   Scene_fade_in_colour() {
     sceneName = "Scene3 FADE IN COLOUR";
@@ -266,8 +296,7 @@ class Scene_fade_in_colour extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("CelineStory::Scene_fade_in_colour::onStart");
-    imageWidth = 120;
-    imageHeight = 200;
+
     angle=0;
 
     player.close();
@@ -282,10 +311,11 @@ class Scene_fade_in_colour extends TSSceneBase {
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     drawMaskedUser();
 
+    pushStyle();
 
     PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
-    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.4, 0));
+    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
 
     //get the distance between hands
     float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
@@ -294,14 +324,22 @@ class Scene_fade_in_colour extends TSSceneBase {
     //the alpha value 
     float alp =  map(distBetweenHands, 0, maxDist, 0.0, 255);
     //draw the colour image under the sepia one - we are going to make the top layer semi-transparent
-    image(easel, picturePos.x- (easel.width*0.7575), picturePos.y-(easel.height*0.6868));
+    image(easel, picturePos.x- (easel.width*0.85), picturePos.y-(easel.height*0.66));
+
+
     pushMatrix();
-    translate(picturePos.x-picture.width, picturePos.y-picture.height);
+
+
+    imageMode(CENTER);
+    translate(picturePos.x, picturePos.y, picturePos.z);
     rotate(imageRotateAngle);
-    angle+=0.05;
-    image(picture, 0, 0);
-    popMatrix();
-    pushStyle();
+    float sW=imageWidth*0.5;
+    float sH=imageHeight*0.5;
+
+    translate(-imageWidth*0.5, -imageHeight*0.5);
+
+    image(picture, 0, 0, sW, sH);
+
     //tint a sepia -ish colour
     tint(232, 222, 48, alp);
     sepia.loadPixels();
@@ -309,11 +347,10 @@ class Scene_fade_in_colour extends TSSceneBase {
       sepia.pixels[i]=color(red(sepia.pixels[i]), green(sepia.pixels[i] ), blue( sepia.pixels[i] ), alp ) ;
     }
     sepia.updatePixels();
-    pushMatrix();
-    translate(picturePos.x-picture.width, picturePos.y-picture.height);
-    rotate(imageRotateAngle);
-    image(sepia, 0, 0);
+
+    image(sepia, 0, 0, sW, sH);
     popMatrix();
+
     popStyle();
     // player.setGain(map(mouseX,0,width,-80.0,-13.9794));
 
@@ -330,8 +367,8 @@ class Scene_fade_in_colour extends TSSceneBase {
 class Scene_shrink_grow_image extends TSSceneBase {
   PImage easel = loadImage("celine/easel.png");
   PImage picture = loadImage("celine/skyscraper1.png");
-  int imageWidth=120;
-  int imageHeight=200;
+  int imageWidth=150;
+  int imageHeight=262;
 
   Scene_shrink_grow_image() {
     sceneName = "Scene4 SHRINK AND GROW IMAGE";
@@ -346,33 +383,47 @@ class Scene_shrink_grow_image extends TSSceneBase {
   void onStart() {
     println("CelineStory::Scene_shrink_grow_image::onStart");
 
-    imageWidth = 120;
-    imageHeight = 200;
     player.close();
-    player1.close();
-
+    try {
+      player1.close();
+    }
+    catch(Exception e) {
+    }
     player = minim.loadFile("celine/stretch-up.mp3");
     player.loop();
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    drawMaskedUser();
+    //imageMode(CORNER);
     PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
-    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.4, 0));
+    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
     //PVector easelPos=transform2D.getWorldCoordsForInputNorm(new PVector(0.2, 0.5, 0));
 
     float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
     float maxDist= 300;
     //scale the image according to the mapped distance between hands
-    float imageScale =  map(distBetweenHands, 0, maxDist, 0.0, 1);
+    float imageScale =map(distBetweenHands, 0, maxDist, 0.0, 1);
     imageScale = constrain(imageScale, 0.0, 1.0);
-    image(easel, picturePos.x- (easel.width*0.7575), picturePos.y-(easel.height*0.6868));
+    image(easel, picturePos.x- (easel.width*0.85), picturePos.y-(easel.height*0.66));
+
+
+    ellipse(picturePos.x, picturePos.y, 20, 20);
+
     pushMatrix();
-    translate(picturePos.x-picture.width, picturePos.y-picture.height);
+    translate(picturePos.x, picturePos.y );
+
+
     rotate(imageRotateAngle);
+
+    translate(-(0.5* picture.width), 0);//picturePos.y + (0.2* picture.width));
+
+    translate( -(0.5*imageScale*picture.width), -picture.height*imageScale  );
+
     image(picture, 0, 0, picture.width*imageScale, picture.height*imageScale );
+
     popMatrix();
+    drawMaskedUser();
   }
 };
 
@@ -384,7 +435,7 @@ class Scene_turn_cards extends TSSceneBase {
   int [] timers;
   int numCards=8;
   int pWhichHand;
-
+  int whichHand=0;
   Scene_turn_cards() {
     sceneName = "Scene5 TURN CARDS";
 
@@ -395,7 +446,7 @@ class Scene_turn_cards extends TSSceneBase {
     int index=1;
     for (int i=0;i<cards.length;i++) {
       //TODO update to use back of image file names
-      cards[i] = new Card( 60, 100, "celine/playingcards"+str(index)+".png", "celine/back"+str(index)+".png" );
+      cards[i] = new Card( 120, 200, "celine/playingcards"+str(index)+".png", "celine/back"+str(index)+".png" );
       index++;
       if (index>=5) {
         index=1;
@@ -419,10 +470,12 @@ class Scene_turn_cards extends TSSceneBase {
     int y=0;
 
     boolean aHandIsOver=false;
-    int whichHand=0;
+
     //TO DO move setPos into constructor 
     for (int i=0;i<cards.length;i++) {
-      PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.2*x, 0.5*y, 0));
+      float interval = width / 5;// (1+(cards.length/2));
+      PVector picturePos=  new PVector(interval+ (interval*x)-60, y*(height/2), 0  );//     transform2D.getWorldCoordsForInputNorm(new PVector(0.2+(0.2*x), 0.5*y, 0));
+
       cards[i].setPos(picturePos);
       cards[i].check(leftHand);
       cards[i].draw();
@@ -440,12 +493,12 @@ class Scene_turn_cards extends TSSceneBase {
     if (aHandIsOver && pWhichHand!=whichHand) {
       player.rewind();
     }
-    if (aHandIsOver){
+    if (aHandIsOver) {
       player.play();
+    }
+    pWhichHand=whichHand;
+    //scale the image according to the mapped distance between hands
   }
-  pWhichHand=whichHand;
-  //scale the image according to the mapped distance between hands
-}
 };
 //a class for cards which turn over when a joint passes over them and stay in that position until next time a joint passes over them
 class Card {
@@ -508,11 +561,10 @@ class Card {
 
 //SCENE 6 flick through images with left hand
 class Scene_flick_through_images extends TSSceneBase {
-  int numImages=8;
+  int numImages=4;
   PImage [] images = new PImage[numImages];
 
-  int imageWidth = 200;
-  int imageHeight = 200;
+  int imageWidth = 400;
   int frameIndex=0;
   int topImageXShift=0;
   int timeOutThresh=30;
@@ -520,11 +572,31 @@ class Scene_flick_through_images extends TSSceneBase {
   boolean firstTime=true;
   Scene_flick_through_images() {
     //println(storyName + "::" + sceneName + "::onStart");
-    for (int i=0;i<numImages;i++) {
-      //TODO replace with correct image url
-      images[i]=loadImage("charlene/bookPage_"+str(i)+".png");
-    }
+    
+    images[0]=loadImage("celine/house.png");
+    images[1]=loadImage("celine/bubbles.png");
+    images[2]=loadImage("celine/money.png");
+    images[3]=loadImage("celine/beach.png");
+
     setTrigger(new KeyPressTrigger('w'));
+    
+    for (int i=0;i<numImages;i++) {
+      //get the longest dimension
+      //if its wider than it is tall
+      float proportion = images[i].width/images[i].height;
+      images[i].resize (imageWidth,int( images[i].height * proportion) );
+      
+      
+      if(images[i].width>images[i].height){
+        
+        
+        
+      }
+      else{
+        
+      }
+      
+    }
   }
 
   // this is called when the scene starts (i.e. is triggered)
@@ -533,35 +605,46 @@ class Scene_flick_through_images extends TSSceneBase {
 
     println("Celine::Scene_flickBook::onStart");
     for (int i=0;i<numImages;i++) {
-      images[i].resize(imageWidth, imageHeight);
+      //images[i].resize(imageWidth, imageHeight);
     }
     topImageXShift=0;
     player.close();
     player = minim.loadFile("celine/whyisitinteresting.mp3");
     player.loop();
-    
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    drawMaskedUser();
 
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
-    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.4, 0));
-    image(images[frameIndex], picturePos.x, picturePos.y);
+    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
 
-    PImage section =images[frameIndex+1].get(0, 0, topImageXShift, height);
-    image(section, picturePos.x+images[frameIndex+1].width-topImageXShift, picturePos.y);
+    image(images[frameIndex], picturePos.x, picturePos.y);
+   // text("BLAH BALH ",picturePos.x+(images[frameIndex].width/2), picturePos.y+(images[frameIndex].height/2));
+    PImage topImage;
+    PImage refImage;
+    if (frameIndex<images.length-1) {
+      topImage =images[frameIndex+1].get(0, 0, topImageXShift, height);
+      refImage = images[frameIndex+1];
+    }
+    else {
+      topImage =images[0].get(0, 0, topImageXShift, height);
+      refImage = images[0];
+    }
+    //println(frameIndex+" "+images.length);
+    image(topImage, picturePos.x+refImage.width-topImageXShift, picturePos.y);
 
     float thresh=0.01;
 
     //if the left hand is moving to the right and its a little while since we did this...
     if (skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext).x >0+thresh && counter>timeOutThresh) {
       float numSteps= 5.0;
-      float speed = images[frameIndex+1].width/numSteps;
+      float speed = refImage.width/numSteps;
       //don't move past the left edge of where we want the image to go
-      if (topImageXShift<images[frameIndex+1].width ) {
+      if (topImageXShift<refImage.width ) {
         topImageXShift+=speed;
+        
       }
       else {
+        println("new frame");
         frameIndex++;
         topImageXShift=0;
         counter=0;
@@ -569,11 +652,11 @@ class Scene_flick_through_images extends TSSceneBase {
     }
     counter++;
 
-    if (counter>60) {
-    }
-    if (frameIndex>=images.length-1) {
+    if (frameIndex>=images.length) {
       frameIndex=0; // frameIndex=images.length-1;
     }
+        drawMaskedUser();
+
   }
 };
 

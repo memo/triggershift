@@ -3,7 +3,8 @@ class LornaStory extends TSStoryBase {
   LornaStory() {
     storyName = "LornaStory";
     println(storyName + "::" + storyName);
-        addScene(new Scene_Black_White());
+    addScene(new Scene_shadow());
+    addScene(new Scene_Black_White());
 
     addScene(new Scene_maid());
     addScene(new Scene_colour_trees());
@@ -36,7 +37,6 @@ class Scene_Black_White extends TSSceneBase {
 
   //----------------
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    drawMaskedUser();
 
     pushStyle();
     imageMode(CORNER);
@@ -44,12 +44,14 @@ class Scene_Black_White extends TSSceneBase {
     float w = width/2;//h / imgBars.height * width;
 
     x1 += (map(getLeftHand().x, getHip().x - getMaxArmLength()/2, getHip().x, 0, width) - x1) * 0.5;
-    x2 += (map(getRightHand().x, getHip().x + getMaxArmLength()/2, getHip().x, width, width) - x2) * 0.5;
+    x2 += (map(getRightHand().x, getHip().x + getMaxArmLength()/2, getHip().x, width, 0) - x2) * 0.5;
     fill(255);
     rect( x1 - w, 0, w, h);
-    fill(0);
+    fill(255, 0, 0);
     rect(x2, 0, w, h);
     popStyle();
+    drawMaskedUser();
+    println(x2);
   }
 };
 
@@ -57,7 +59,7 @@ class Scene_Black_White extends TSSceneBase {
 
 //SCENE 13 2 HANDS UP ATTACTS STAR PARTICLES
 class Scene_reach_for_stars extends TSSceneBase {
-  int numStars=20;
+  int numStars=30;
   StarParticle[] stars = new StarParticle[numStars];
   boolean startAttract;
   float amt;
@@ -70,7 +72,7 @@ class Scene_reach_for_stars extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     for (int i=0;i<stars.length;i++) {
-      stars[i]= new StarParticle(new PVector(random(width), random(height/2)), new PVector (0, 0, 0), random(TWO_PI), 0, random(20, 30));
+      stars[i]= new StarParticle(new PVector(random(width), random(height/2)), new PVector (0, 0, 0), random(TWO_PI), 0, random(3, 10));
     }
     startAttract=false;
     println("Lorna::Scene_reach_for_stars::onStart");
@@ -239,17 +241,44 @@ class Scene_colour_trees extends TSSceneBase {
     int x=0;
     int y=0;
 
+    ArrayList indices = new ArrayList();
+
+
+
+    //leftHand.x, leftHand.y
     //TODO optimise this 
-    for (int i=0;i<colourTrees.pixels.length;i++) {
-      //get pixels around it in a radius from colour image
-      if (dist(x, y, leftHand.x, leftHand.y  )<radius || dist(x, y, rightHand.x, rightHand.y  )<radius) {
-        //write into bandw image with colour data 
-        bandwTrees.pixels[i] = colourTrees.pixels[i];
+    int boxSize=2*radius;
+    int startPosX =int(leftHand.x - boxSize);
+    int endPosX =int(leftHand.x + boxSize);
+    int startPosY =int(leftHand.y- boxSize);
+    int endPosY =int(leftHand.y + boxSize);
+    for (int x1=startPosX; x1<endPosX; x1++) {
+      for (int y1=startPosY; y1<endPosY; y1++) {
+
+        int index = x1+ (colourTrees.width*y1);
+        if(index< bandwTrees.pixels.length &&index>0 ){
+        if (dist(x1, y1, leftHand.x, leftHand.y  )<radius) {
+          //write into bandw image with colour data 
+          bandwTrees.pixels[index] = colourTrees.pixels[index];
+        }
+        }
       }
-      x++;
-      if (x>=colourTrees.width) {
-        x=0;
-        y++;
+    }
+
+     startPosX =int(rightHand.x - boxSize);
+     endPosX =int(rightHand.x + boxSize);
+     startPosY =int(rightHand.y- boxSize);
+     endPosY =int(rightHand.y + boxSize);
+    for (int x1=startPosX; x1<endPosX; x1++) {
+      for (int y1=startPosY; y1<endPosY; y1++) {
+
+        int index = x1+ (colourTrees.width*y1);
+        if(index< bandwTrees.pixels.length &&index>0 ){
+        if ( dist(x1, y1, rightHand.x, rightHand.y  )<radius) {
+          //write into bandw image with colour data 
+          bandwTrees.pixels[index] = colourTrees.pixels[index];
+        }
+        }
       }
     }
     colourTrees.updatePixels();
@@ -351,15 +380,15 @@ class Scene_rainbow extends TSSceneBase {
 class Scene_maid extends TSSceneBase {
 
   PImage maid = loadImage("lorna/maidsoutfit.png");
-   PImage hat = loadImage("lorna/maidscap.png");
+  PImage cap = loadImage("lorna/maidscap.png");
+  PImage duster = loadImage("lorna/featherduster.png");
 
-  int imageWidth=width;
-  int imageHeight=height;
-
+  int imageWidth=80;
+  int imageHeight=200;
   Scene_maid() {
     sceneName = "Scene5 maid";
     //println(storyName + "::" + sceneName);
-    //maid.resize(imageWidth, imageHeight);
+    duster.resize(imageWidth, imageHeight);
   }
 
   //----------------
@@ -378,16 +407,73 @@ class Scene_maid extends TSSceneBase {
     PVector rightHand=getRightHand();
     PVector head = getHead();
     PVector waist = getHip();
+    PVector leftElbow=getLeftElbow();
     PVector leftShoulder=getLeftShoulder();
+
     PVector rightShoulder=getRightShoulder();
-    
-   
+
+    float rot = atan2(waist.y- head.y, waist.x-head.x );
     float h =1.5* ( waist.y-head.y);
     float w=2*( rightShoulder.x-leftShoulder.x );
-     println(h+" "+w);
-    image(maid,leftShoulder.x - (0.25*w), leftShoulder.y -(0.1*h), w, h);
+    //image(maid, leftShoulder.x - (0.25*w), leftShoulder.y -(0.1*h), w, h);
     //TODO optimise this 
 
+
+    //DRAW MAID BODY
+    pushMatrix();
+    imageMode(CENTER);
+    translate(waist.x, waist.y);
+    rotate(rot-(0.5*PI)  );
+    image(maid, 0, 0, w, h);
+    popMatrix();
+
+    //DRAW CAP
+    pushMatrix();
+
+    float cw=0.7*(rightShoulder.x-leftShoulder.x  );
+    float ch =cw/2;
+    translate(head.x, head.y-(0.4*cap.height));
+    image(cap, 0, 0, cw, ch);
+    popMatrix();
+    pushMatrix();
+    imageMode(CORNER);
+
+    float angle = atan2( leftHand.y-leftElbow.y, leftHand.x - leftElbow.x );
+    translate(leftHand.x, leftHand.y);
+    rotate(angle);
+    image(duster, 0, 0);
+
+    popMatrix();
+
+    popStyle();
+  }
+};
+
+
+// Scene 5 hand (or maybe later crayon) colours background from b and white to colour
+class Scene_shadow extends TSSceneBase {
+
+  PImage shadow;
+
+  Scene_shadow() {
+    sceneName = "Scene5 shadow";
+    //println(storyName + "::" + sceneName);
+    //maid.resize(imageWidth, imageHeight);
+  }
+
+  //----------------
+  void onStart() {
+    //println(storyName + "::" + sceneName + "::onStart");
+  }
+
+  //----------------
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+    drawMaskedUser();
+    shadow = masker.getMask();
+    pushStyle();
+    pushMatrix();
+
+    popMatrix();
 
     popStyle();
   }

@@ -10,7 +10,7 @@ import SimpleOpenNI.*;
 import controlP5.*;
 
 // SET THIS TO TRUE OR FALSE
-boolean useOpenNI = false;
+boolean useOpenNI = true;
 
 // params
 boolean doDrawKinectRGB = false;
@@ -76,8 +76,8 @@ void setupUI() {
   cp5.addSlider("videoPosY", 0, 1).linebreak().moveTo("Display");
   cp5.addSlider("spreadArmExtent", 0, 500).linebreak().moveTo("Display");
   cp5.addSlider("imageRotateAngle", 0, TWO_PI).linebreak().moveTo("Display");
-  cp5.addSlider("leftShift", 0, 1).linebreak().moveTo("Display");
-  cp5.addSlider("upShift", 0, 1).linebreak().moveTo("Display");
+  cp5.addSlider("leftShift", -500, 500).linebreak().moveTo("Display");
+  cp5.addSlider("upShift", -  500, 500).linebreak().moveTo("Display");
 }
 
 
