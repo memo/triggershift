@@ -147,16 +147,16 @@ class FloatWithVariance {
   FloatWithVariance() {
     set(0, 0);
   }
-  
+
   FloatWithVariance(float _base, float _variance) {
     set(_base, _variance);
   }
-  
+
   void set(float _base, float _variance) {
     base = _base;
     variance = _variance;
   }
-  
+
   float get() {
     return getWithVariance(base, variance);
   }
@@ -174,7 +174,7 @@ class VectorWithVariance {
   VectorWithVariance(PVector _base, PVector _variance) {
     set(_base, _variance);
   }
-  
+
   void set(PVector _base, PVector _variance) {
     base = _base;
     variance = _variance;
@@ -184,6 +184,4 @@ class VectorWithVariance {
     return getWithVariance(base, variance);
   }
 };
-
-
 

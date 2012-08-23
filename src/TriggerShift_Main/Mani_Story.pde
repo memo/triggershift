@@ -25,7 +25,7 @@ class ManiStory extends TSStoryBase {
   class Sky {
     MSAParticle p = new MSAParticle(loadImage("mani/nightandday.png"));
     float targetRot;
-    
+
     void start() {
       targetRot = 0;
       p.alpha = 0;
@@ -33,11 +33,11 @@ class ManiStory extends TSStoryBase {
       p.alphaSpeed = 0.1;
 
       p.rot = 0;
-      
-      p.radius = 0;
-      p.targetRadius = height * 1.5;
-      p.radiusSpeed = 0.05;
-      
+
+      p.radius = height * 1.2;
+      //      p.targetRadius = height * 1.2;
+      //      p.radiusSpeed = 0.0;
+
       p.pos.set(width/2, height, 0);
     }
 
@@ -93,12 +93,12 @@ class ManiStory extends TSStoryBase {
     PImage[] imgs = { 
       loadImage("mani/flower1.png"), loadImage("mani/flower2.png"), loadImage("mani/flower3.png"), loadImage("mani/flower4.png"), loadImage("mani/flower5.png")
       };
-    MSAParticleSystem particleSystem = new MSAParticleSystem(imgs);
+      MSAParticleSystem particleSystem = new MSAParticleSystem(imgs);
 
     void start() {
       particleSystem.start();
 
-      particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
+      particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(units(30), units(30), 0));
       particleSystem.startVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
       particleSystem.acc.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
       particleSystem.inheritVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
@@ -153,7 +153,7 @@ class ManiStory extends TSStoryBase {
         p.rotVel *= 0.9;
         p.rotVel += getLeftHandVelocity().y * 50;
       }
-      
+
       p.draw();
     }
   };
@@ -208,7 +208,7 @@ class ManiStory extends TSStoryBase {
           p.posVel = PVector.add(veldot, veltan);
         }
       }
-      
+
       p.draw();
     }
   };
@@ -217,13 +217,17 @@ class ManiStory extends TSStoryBase {
 
   //----------------
   class TrafficLights {
-    PImage img = loadImage("mani/trafficlight.png");
+    PImage[] imgs = { 
+      loadImage("mani/trafficlight1.png"), loadImage("mani/trafficlight2.png"), loadImage("mani/trafficlight3.png")
+    };
     float targetPosY = height * 0.55;
-    PVector pos = new PVector(width * 0.75, targetPosY);
+    PVector pos = new PVector(width * 0.25, targetPosY);
     float radius = width * 0.05;
+    int currentLight = 0;
 
     void start() {
       pos.y = height;
+      currentLight = 0;
     }
 
     void draw() {
@@ -232,8 +236,8 @@ class ManiStory extends TSStoryBase {
       imageMode(CENTER);
       pos.y += (targetPosY - pos.y) * 0.2;
       translate(pos.x, pos.y);
-      scale(radius * 2 / img.width);
-      image(img, 0, 0);
+      scale(radius * 2 / imgs[currentLight].width);
+      image(imgs[currentLight], 0, 0);
       popMatrix();
       popStyle();
       //
@@ -351,9 +355,9 @@ class ManiStory extends TSStoryBase {
       sky.draw();
       drawMaskedUser();
       cityColor.draw();
-//      PVector leftHand = getLeftHand();
+      //      PVector leftHand = getLeftHand();
       PVector rightHand = getRightHand();
-      if(getRightHandVelocity().mag() > 0.1) flowers.add(new PVector(width * 0.95, rightHand.y));
+      if (getRightHandVelocity().mag() > -0.1) flowers.add(new PVector(width * 0.95, rightHand.y));
       flowers.draw();
     }
   };
