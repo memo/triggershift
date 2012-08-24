@@ -32,7 +32,6 @@ class Scene_flickBook extends TSSceneBase {
     for (int i=0;i<numPageCells;i++) {
       book[i]=loadImage("charlene/bookPage_"+str(i)+".png");
     }
-    setTrigger(new KeyPressTrigger('w'));
   }
 
   // this is called when the scene starts (i.e. is triggered)
@@ -46,7 +45,6 @@ class Scene_flickBook extends TSSceneBase {
     player.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    drawMaskedUser();
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
     image(book[frameIndex], picturePos.x, picturePos.y);
@@ -60,6 +58,7 @@ class Scene_flickBook extends TSSceneBase {
     if (frameIndex>=book.length) {
       frameIndex=0; // frameIndex=book.length-1;
     }
+    drawMaskedUser();
   }
 };
 
@@ -84,7 +83,6 @@ class Scene_clock_hands extends TSSceneBase {
     minuteHand.resize(int(0.8*imageWidth), int( 0.6*imageHeight));
     book.resize(bookImageWidth, bookImageHeight);
 
-    setTrigger(new KeyPressTrigger('w'));
   }
 
   // this is called when the scene starts (i.e. is triggered)
@@ -95,7 +93,6 @@ class Scene_clock_hands extends TSSceneBase {
     player.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    drawMaskedUser();
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
     image(book, picturePos.x, picturePos.y);
     pushMatrix();
@@ -113,6 +110,8 @@ class Scene_clock_hands extends TSSceneBase {
     noStroke();
     ellipse(picturePos.x+(0.5*bookImageWidth), picturePos.y+(0.5*bookImageHeight), imageWidth/2, imageWidth/2);
     popStyle();
+    drawMaskedUser();
+
     angle+=0.005;
   }
 };
@@ -121,6 +120,7 @@ class Scene_throw_coffee extends TSSceneBase {
   FWorld world;
   FMouseJoint joint;
   PApplet ref;
+  PFont _font;
   PImage mug=loadImage("charlene/mugUpright.png");
   PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.01, 0.5, 0));
   int imageWidth;
@@ -136,6 +136,7 @@ class Scene_throw_coffee extends TSSceneBase {
   boolean lock;
   Scene_throw_coffee(PApplet _ref) {
     sceneName="scene3 THROW COFFEE";
+    _font=loadFont("AdobeFanHeitiStd-Bold-24.vlw");
     //println(storyName + "::" + sceneName + "::onStart");
     ref =_ref;
   }
@@ -166,6 +167,7 @@ class Scene_throw_coffee extends TSSceneBase {
 
     int index=0;
     for (int i=0;i<numBlobs;i++) {
+
       blobs[i]= new ShardParticle(picturePos, new PVector(0, 0, 0), 0.0, 0.0, imageWidth/6, 255, 0, 0);
       blobs[i].setWord(words[index]);
       index++;
@@ -181,6 +183,8 @@ class Scene_throw_coffee extends TSSceneBase {
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
+    pushStyle();
+    textFont(_font,24);
     drawMaskedUser();
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     //PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
@@ -190,39 +194,46 @@ class Scene_throw_coffee extends TSSceneBase {
     //if the left hand is moving to the right increment the page index
     float thresh=0.02;
     fill(166, 129, 54);
-    if (getElapsedSeconds()>4) {
-      //now uses
-      if (getLeftHand().y < getLeftElbow().y && !lock ) {
-        isThrown=true;
-      }
-      if (isThrown) {
-        if (!lock) {
-          for (int i=0;i<blobs.length;i++) {
-            blobs[i].setPosVel(new PVector(random(-3, 3), random(-6, -8), 0));
-            blobs[i].setRotVel(random(-3, 3));
-            float distThresh= 150;
-            if (dist(blobs[i].pos.x, blobs[i].pos.y, leftHand.x, leftHand.y )>distThresh) {
-              blobs[i].showWord=true;
-            }
-          } 
-          lock=true;
-        }
-      }
-      else {
+    //if (getElapsedSeconds()>4) {
+    //now uses
+    if (getLeftHand().y < getLeftElbow().y && !lock ) {
+      isThrown=true;
+    }
+    if (isThrown) {
+      //the first time we have thrown the coffee, set a velocity to the particles
+      if (!lock) {
         for (int i=0;i<blobs.length;i++) {
-          blobs[i].setPos(new PVector(leftHand.x-(0.4*mug.width), leftHand.y, 0)  );
-        }
+          blobs[i].setPosVel(new PVector(random(-3, 3), random(-8, -2), 0));
+          blobs[i].setRotVel(random(-3, 3));
+        } 
+        lock=true;
       }
+    }
+    else {
       for (int i=0;i<blobs.length;i++) {
+        blobs[i].setPos(new PVector(leftHand.x-(0.4*mug.width), leftHand.y-(0.4*mug.width), 0)  );
+      }
+    }
+
+    //draw the blobs and check if they should turn in to words
+    if (isThrown) {
+      for (int i=0;i<blobs.length;i++) {
+        float distThresh= 350;
+
+        if (dist(blobs[i].pos.x, blobs[i].pos.y, leftHand.x, leftHand.y )>distThresh) {
+          blobs[i].showWord=true;
+        }
         blobs[i].draw();
       }
-      //if particle distance is a little away from the mug
-      //turn the particles into words
-      //ellipse(leftHand.x, leftHand.y, 20, 20);
     }
+    //if particle distance is a little away from the mug
+    //turn the particles into words
+    //ellipse(leftHand.x, leftHand.y, 20, 20);
+
     image(mug, leftHand.x-(0.7*mug.width), leftHand.y-(0.7*mug.height));
 
     popMatrix();
+    popStyle();
   }
 };
 
@@ -240,7 +251,6 @@ class Scene_mortar_board_on_head extends TSSceneBase {
   Scene_mortar_board_on_head() {
     sceneName="scene4 MORTAR BOARD ON HEAD";
     //println(storyName + "::" + sceneName + "::onStart");
-    setTrigger(new KeyPressTrigger('w'));
     startPos=transform2D.getWorldCoordsForInputNorm(new PVector(0.5, 0.0, 0));
   }
 
@@ -265,7 +275,7 @@ class Scene_mortar_board_on_head extends TSSceneBase {
 
     float currentX = lerp(startPos.x, endPos.x, inc);
     float currentY = lerp(startPos.y, endPos.y, inc);
-    
+
     PVector leftShoulder=getLeftShoulder();
     PVector rightShoulder=getRightShoulder();
 
@@ -294,7 +304,6 @@ class Scene_zoom_from_space extends TSSceneBase {
 
     //println(storyName + "::" + sceneName + "::onStart");
 
-    setTrigger(new KeyPressTrigger('w'));
   }
 
   // this is called when the scene starts (i.e. is triggered)
@@ -313,7 +322,6 @@ class Scene_zoom_from_space extends TSSceneBase {
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    drawMaskedUser();
     PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
@@ -332,6 +340,7 @@ class Scene_zoom_from_space extends TSSceneBase {
     }
 
     image(blended, picturePos.x, picturePos.y);
+    drawMaskedUser();
   }
 
   PImage lerpImage(PImage image1, PImage image2, float amt) {
@@ -375,7 +384,6 @@ class Scene_vote_in_box extends TSSceneBase {
   Scene_vote_in_box() {
     sceneName="scene6 VOTE IN BOX";
 
-    setTrigger(new KeyPressTrigger('e'));
     //println(storyName + "::" + sceneName + "::onStart");
   }
 
@@ -456,7 +464,6 @@ class Scene_power_hands extends TSSceneBase {
     //println(storyName + "::" + sceneName + "::onStart");
     orb.resize(imageWidth, imageHeight);
 
-    setTrigger(new KeyPressTrigger('w'));
   }
 
   // this is called when the scene starts (i.e. is triggered)
@@ -519,7 +526,6 @@ class Scene_spin_right_wrong extends TSSceneBase {
     right.resize(imageWidth, imageHeight);
     wrong.resize(imageWidth, imageHeight);
 
-    setTrigger(new KeyPressTrigger('w'));
   }
 
   // this is called when the scene starts (i.e. is triggered)
@@ -530,7 +536,6 @@ class Scene_spin_right_wrong extends TSSceneBase {
     player.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    drawMaskedUser();
     pushMatrix();
     PVector leftHand = skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_HAND);
     PVector leftShoulder = skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_SHOULDER);
@@ -556,6 +561,7 @@ class Scene_spin_right_wrong extends TSSceneBase {
     image(wrong, 0, 0);
     popMatrix();
     popMatrix();
+    drawMaskedUser();
   }
 };
 
@@ -571,6 +577,7 @@ class Scene_shatter_image extends TSSceneBase {
   boolean moveShards=false;
   ShardParticle [] shards = new ShardParticle[numShards];
   PImage [] shardImages = new PImage[numShards];
+  PImage scream = loadImage("charlene/scream_complete.png");
   boolean handOver;
   PVector picturePos;
 
@@ -581,10 +588,10 @@ class Scene_shatter_image extends TSSceneBase {
 
     picturePos =transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
     for (int i=0;i<numShards;i++) {
-      shardImages[i]=loadImage("charlene/shard"+str(i+1)+".png");
+      shardImages[i]=loadImage("charlene/scream_"+str(i)+".png");
       shardImages[i].resize(imageWidth, imageHeight);
     }
-    setTrigger(new KeyPressTrigger('w'));
+    scream.resize(imageWidth, imageHeight);
   }
 
   // this is called when the scene starts (i.e. is triggered)
@@ -596,7 +603,7 @@ class Scene_shatter_image extends TSSceneBase {
 
     int x=0;
     int y=0;
-    float rowLength=4.0;
+    float rowLength=5.0;
 
     for (int i=0;i<numShards;i++) {
       shards[i]= new ShardParticle(picturePos, new PVector(0, 0, 0), 0.0, 0.0, imageWidth/2, 255, 0, 0); 
@@ -604,11 +611,11 @@ class Scene_shatter_image extends TSSceneBase {
       x++;
       if (x>=rowLength) {
         y++;
+        x=0;
       }
     }
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    drawMaskedUser();
     if (handOver) {
       player.play();
     }
@@ -625,9 +632,15 @@ class Scene_shatter_image extends TSSceneBase {
       }
       moveShards=true;
     }
+    if(handOver){
     for (int i=0;i<numShards;i++) {
       shards[i].draw(shardImages[i]);
     }
+    }
+    else{
+      image(scream, picturePos.x,picturePos.y);
+    }
+    drawMaskedUser();
   }
 };
 
@@ -643,14 +656,13 @@ class Scene_drop_set extends TSSceneBase {
   boolean startDrop;
   boolean endDrop;
   float sizeMult=2.0;
-  
+
   Scene_drop_set() {
     sceneName="scene10 DROP SET";
 
     println("Charlene::Scene_drop_set");
     theatre.resize(imageWidth, imageHeight);
 
-    setTrigger(new KeyPressTrigger('w'));
   }
 
   // this is called when the scene starts (i.e. is triggered)
@@ -667,7 +679,7 @@ class Scene_drop_set extends TSSceneBase {
     pushStyle();
     pushMatrix();
     imageMode(CENTER);
-    
+
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
     PVector head = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
@@ -691,9 +703,9 @@ class Scene_drop_set extends TSSceneBase {
     else {
       picturePos= new PVector(width/2, height/2);
     }
-    image(theatre, picturePos.x, picturePos.y,theatre.width *sizeMult, theatre.height*sizeMult);
-    if(sizeMult>1){
-     sizeMult*=0.98; 
+    image(theatre, picturePos.x, picturePos.y, theatre.width *sizeMult, theatre.height*sizeMult);
+    if (sizeMult>1) {
+      sizeMult*=0.98;
     }
     popMatrix();
     popStyle();

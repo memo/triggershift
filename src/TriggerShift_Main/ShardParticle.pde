@@ -5,8 +5,9 @@ class ShardParticle extends MSAParticle {
   boolean showWord=false;
   String word="";
   int imageIndex=0;
+  PVector [] vertices;
   ShardParticle(PVector _pos, PVector _posVel, float _rot, float _rotVel, float _radius, float _alpha, float _drag, float _fadeSpeed) {
-//    super( _pos, _posVel, _rot, _rotVel, _radius, _alpha, _drag, _fade);
+    //    super( _pos, _posVel, _rot, _rotVel, _radius, _alpha, _drag, _fade);
     pos = _pos.get();
     posVel = _posVel.get();
     posAcc = new PVector(0, 0, 0);
@@ -17,6 +18,16 @@ class ShardParticle extends MSAParticle {
     drag = _drag;
     alphaSpeed = alphaSpeed;
     pPos=_pos;
+    float angle=0;
+    int numPoints=10;
+    vertices=new PVector[numPoints];
+    for (int i=0;i<numPoints;i++) {
+      float rad=random(7, 10);
+      float x=rad *sin(angle);
+      float y=rad*cos(angle);
+      vertices[i]=new PVector(x,y);
+      angle+= TWO_PI/numPoints;
+    }
   }
   void setWord(String _word) {
     word=_word;
@@ -62,6 +73,7 @@ class ShardParticle extends MSAParticle {
   void draw() {
     pushStyle();
     pushMatrix();
+    noStroke();
     translate(pos.x, pos.y);
     //translate rotation point to the middle of the actual image
     translate(offset.x, offset.y);
@@ -77,7 +89,16 @@ class ShardParticle extends MSAParticle {
       text(word, 0, 0);
     }
     else {
-      ellipse(0, 0, radius, radius);
+      beginShape();
+      curveVertex(vertices[0].x,vertices[0].y);
+       for (int i=0;i<vertices.length;i++) {
+         
+         curveVertex(vertices[i].x,vertices[i].y);
+         
+       }
+       curveVertex(vertices[vertices.length-1].x,vertices[vertices.length-1].y);
+      endShape();
+     // ellipse(0, 0, radius, radius);
     }
 
 

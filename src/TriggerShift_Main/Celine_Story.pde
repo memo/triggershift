@@ -22,7 +22,6 @@ class Scene_big_buildings extends TSSceneBase {
   Scene_big_buildings() {
     sceneName = "Scene1 BIG BUILDINGS";
     //println(storyName + "::" + sceneName + "::onStart");
-    setTrigger(new MouseClickTrigger());
     picture.resize(imageWidth, imageHeight);
     easel.resize(int(2.2*imageWidth), int(2.8*imageHeight));
   }
@@ -33,9 +32,7 @@ class Scene_big_buildings extends TSSceneBase {
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    drawMaskedUser();
     image(easel, picturePos.x- (easel.width*0.85), picturePos.y-(easel.height*0.66));
-    ellipse(picturePos.x, picturePos.y, 20, 20);
     pushMatrix();
     translate(picturePos.x, picturePos.y);
 
@@ -44,6 +41,7 @@ class Scene_big_buildings extends TSSceneBase {
 
     image(picture, 0, 0);
     popMatrix();
+    drawMaskedUser();
   }
 };
 
@@ -80,7 +78,6 @@ class Scene_ripPaper extends TSSceneBase {
   Scene_ripPaper() {
     sceneName = "Scene2 RIP PAPER";
     //println(storyName + "::" + sceneName + "::onStart");
-    setTrigger(new KeyPressTrigger('q'));
     leftHalf.resize(imageWidth/2, imageHeight);
     rightHalf.resize(imageWidth/2, imageHeight);
     easel.resize(int(2.2*imageWidth), int(2.8*imageHeight));
@@ -114,7 +111,6 @@ class Scene_ripPaper extends TSSceneBase {
   // this is the scenes draw function
   // use getElapsedSeconds() to see how long the scene has been running (useful for transitions)
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    drawMaskedUser();
     //      println("StoryTest::Scene1::onDraw");      
     //   pushMatrix();
     PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
@@ -130,10 +126,9 @@ class Scene_ripPaper extends TSSceneBase {
     image(easel, picturePos.x- (easel.width*0.85), picturePos.y-(easel.height*0.66));
     popMatrix();
 
-    ellipse(picturePos.x, picturePos.y, 20, 20);
 
 
-    if (getElapsedSeconds()>4) {
+    if (getElapsedSeconds()>1) {
 
 
       pushMatrix();
@@ -271,6 +266,7 @@ class Scene_ripPaper extends TSSceneBase {
         popMatrix();
       }
     }
+    drawMaskedUser();
   }
 };
 
@@ -286,7 +282,6 @@ class Scene_fade_in_colour extends TSSceneBase {
   Scene_fade_in_colour() {
     sceneName = "Scene3 FADE IN COLOUR";
     //println(storyName + "::" + sceneName + "::onStart");
-    setTrigger(new KeyPressTrigger('w'));
     sepia.filter(GRAY);
     picture.resize(imageWidth, imageHeight);
     sepia.resize(imageWidth, imageHeight);
@@ -309,7 +304,6 @@ class Scene_fade_in_colour extends TSSceneBase {
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    drawMaskedUser();
 
     pushStyle();
 
@@ -352,14 +346,16 @@ class Scene_fade_in_colour extends TSSceneBase {
     popMatrix();
 
     popStyle();
-    // player.setGain(map(mouseX,0,width,-80.0,-13.9794));
 
     float volume1 = map(distBetweenHands, 0, maxDist, -80.0, -13.9794);
     float volume2 = map(distBetweenHands, 0, maxDist, -13.9794, -80.0);
-    // volume= constrain(volume,0,1);
-
+    volume1=constrain(volume1, -80.0, -13.9794);
+    volume2=constrain(volume2, -80.0, -13.9794);
     player.setGain(volume1);
     player1.setGain(volume2);
+
+    println(volume1+" "+volume2);
+    drawMaskedUser();
   }
 };
 
@@ -374,7 +370,6 @@ class Scene_shrink_grow_image extends TSSceneBase {
     sceneName = "Scene4 SHRINK AND GROW IMAGE";
 
     //println(storyName + "::" + sceneName + "::onStart");
-    setTrigger(new MouseClickTrigger());
     picture.resize(imageWidth, imageHeight);
     easel.resize(int(2.2*imageWidth), int(2.8*imageHeight));
   }
@@ -388,8 +383,9 @@ class Scene_shrink_grow_image extends TSSceneBase {
       player1.close();
     }
     catch(Exception e) {
+      println ("Couldn't close player1");
     }
-    player = minim.loadFile("celine/stretch-up.mp3");
+    player = minim.loadFile("celine/zoom-loop.mp3");
     player.loop();
   }
 
@@ -408,20 +404,13 @@ class Scene_shrink_grow_image extends TSSceneBase {
     image(easel, picturePos.x- (easel.width*0.85), picturePos.y-(easel.height*0.66));
 
 
-    ellipse(picturePos.x, picturePos.y, 20, 20);
 
     pushMatrix();
     translate(picturePos.x, picturePos.y );
-
-
     rotate(imageRotateAngle);
-
     translate(-(0.5* picture.width), 0);//picturePos.y + (0.2* picture.width));
-
     translate( -(0.5*imageScale*picture.width), -picture.height*imageScale  );
-
     image(picture, 0, 0, picture.width*imageScale, picture.height*imageScale );
-
     popMatrix();
     drawMaskedUser();
   }
@@ -440,7 +429,6 @@ class Scene_turn_cards extends TSSceneBase {
     sceneName = "Scene5 TURN CARDS";
 
     //println(storyName + "::" + sceneName + "::onStart");
-    setTrigger(new MouseClickTrigger());
     cards= new Card[numCards];
     //TODO -replace with card images
     int index=1;
@@ -463,7 +451,6 @@ class Scene_turn_cards extends TSSceneBase {
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    drawMaskedUser();
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
 
     int x=0;
@@ -498,6 +485,7 @@ class Scene_turn_cards extends TSSceneBase {
     }
     pWhichHand=whichHand;
     //scale the image according to the mapped distance between hands
+    drawMaskedUser();
   }
 };
 //a class for cards which turn over when a joint passes over them and stay in that position until next time a joint passes over them
@@ -561,7 +549,7 @@ class Card {
 
 //SCENE 6 flick through images with left hand
 class Scene_flick_through_images extends TSSceneBase {
-  int numImages=4;
+  int numImages=6;
   PImage [] images = new PImage[numImages];
 
   int imageWidth = 400;
@@ -572,30 +560,19 @@ class Scene_flick_through_images extends TSSceneBase {
   boolean firstTime=true;
   Scene_flick_through_images() {
     //println(storyName + "::" + sceneName + "::onStart");
-    
+
     images[0]=loadImage("celine/house.png");
     images[1]=loadImage("celine/bubbles.png");
     images[2]=loadImage("celine/money.png");
-    images[3]=loadImage("celine/beach.png");
+    images[3]=loadImage("celine/banker.png");
+    images[4]=loadImage("celine/beach.png");
+    images[5]=loadImage("celine/atm.png");
 
-    setTrigger(new KeyPressTrigger('w'));
-    
     for (int i=0;i<numImages;i++) {
       //get the longest dimension
       //if its wider than it is tall
       float proportion = images[i].width/images[i].height;
-      images[i].resize (imageWidth,int( images[i].height * proportion) );
-      
-      
-      if(images[i].width>images[i].height){
-        
-        
-        
-      }
-      else{
-        
-      }
-      
+      images[i].resize (imageWidth, int( images[i].height * proportion) );
     }
   }
 
@@ -618,7 +595,7 @@ class Scene_flick_through_images extends TSSceneBase {
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
 
     image(images[frameIndex], picturePos.x, picturePos.y);
-   // text("BLAH BALH ",picturePos.x+(images[frameIndex].width/2), picturePos.y+(images[frameIndex].height/2));
+    // text("BLAH BALH ",picturePos.x+(images[frameIndex].width/2), picturePos.y+(images[frameIndex].height/2));
     PImage topImage;
     PImage refImage;
     if (frameIndex<images.length-1) {
@@ -641,7 +618,6 @@ class Scene_flick_through_images extends TSSceneBase {
       //don't move past the left edge of where we want the image to go
       if (topImageXShift<refImage.width ) {
         topImageXShift+=speed;
-        
       }
       else {
         println("new frame");
@@ -655,8 +631,7 @@ class Scene_flick_through_images extends TSSceneBase {
     if (frameIndex>=images.length) {
       frameIndex=0; // frameIndex=images.length-1;
     }
-        drawMaskedUser();
-
+    drawMaskedUser();
   }
 };
 
