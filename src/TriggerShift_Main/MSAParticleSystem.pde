@@ -21,6 +21,8 @@ class MSAParticleSystem {
   FloatWithVariance alphaSpeed = new FloatWithVariance(0, 0);
 
   FloatWithVariance drag = new FloatWithVariance(0, 0);
+  
+  boolean alignToDir = false;
 
   PImage[] imgs = null;
   PImage img = null;
@@ -76,6 +78,8 @@ class MSAParticleSystem {
     p.alpha = startAlpha.get();
     p.targetAlpha = targetAlpha.get();
     p.alphaSpeed = alphaSpeed.get();
+    
+    p.alignToDir = alignToDir;
 
     particles.add(p);
   }

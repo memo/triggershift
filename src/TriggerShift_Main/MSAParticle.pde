@@ -11,6 +11,7 @@ class MSAParticle {
   float targetAlpha = 1;
   float drag = 0;
   float alphaSpeed = 0;
+  boolean alignToDir = false;
   PImage img;
   
   MSAParticle() {}
@@ -26,8 +27,13 @@ class MSAParticle {
     pos.add(PVector.mult(posVel, secondsSinceLastFrame));
     posVel.mult(1-drag);
     posVel.add(PVector.mult(posAcc, secondsSinceLastFrame));
-    rot += rotVel * secondsSinceLastFrame;
-    rotVel *= (1-rotDrag);
+    
+    if(alignToDir) {
+      rot = degrees(atan2(posVel.y, posVel.x)) - 90;
+    } else {
+      rot += rotVel * secondsSinceLastFrame;
+      rotVel *= (1-rotDrag);
+    }
     
     pushStyle();
     pushMatrix();
