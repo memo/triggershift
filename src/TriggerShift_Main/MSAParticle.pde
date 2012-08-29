@@ -9,8 +9,8 @@ class MSAParticle {
   float radiusSpeed = 0;
   float alpha = 1;
   float targetAlpha = 1;
-  float drag = 0;
   float alphaSpeed = 0;
+  float drag = 0;
   boolean alignToDir = false;
   PImage img;
   

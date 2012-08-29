@@ -23,26 +23,19 @@ class ManiStory extends TSStoryBase {
 
   //----------------
   class Sky {
-    MSAParticle p = new MSAParticle(loadImage("mani/nightandday.png"));
-    float targetRot;
+    MSAParticle p = new MSAParticle(loadImage("mani/daynight.png"));
 
     void start() {
-      targetRot = 0;
       p.alpha = 0;
       p.targetAlpha = 1;
       p.alphaSpeed = 0.1;
-
       p.rot = 0;
-
+      p.rotVel = 0;
       p.radius = height * 1.2;
-      //      p.targetRadius = height * 1.2;
-      //      p.radiusSpeed = 0.0;
-
       p.pos.set(width/2, height, 0);
     }
 
     void draw() {
-      p.rotVel = (targetRot - p.rot)*0.3;
       p.draw();
     }
   };
@@ -57,6 +50,7 @@ class ManiStory extends TSStoryBase {
     float ts;   // target scale
     float ta;   // target alpha
     float speed = 0.05;
+    float tintAmount = 1;
 
     City(String imgName) {
       img = loadImage(imgName);
@@ -75,7 +69,7 @@ class ManiStory extends TSStoryBase {
 
       pushStyle();
       pushMatrix();
-      tint(255, a*a * 255);
+      tint(255 * tintAmount, a*a * 255);
       imageMode(CENTER);
       translate(width/2, height/2);
       scale(s);
@@ -142,10 +136,13 @@ class ManiStory extends TSStoryBase {
       p.radius = 0;
       p.targetRadius = width * 0.1;
       p.radiusSpeed = 0.1;
+      p.alpha = 0;
+      p.targetAlpha = 1;
+      p.alphaSpeed = 0.5;
     }
 
     void end() {
-      p.targetRadius = 0;
+      p.targetAlpha = 0;
     }
 
     void draw() {
@@ -166,9 +163,15 @@ class ManiStory extends TSStoryBase {
     float bounce = 0.9;
 
     void start() {
-      p.posVel = new PVector(-units(100), 0);
-      p.pos = new PVector(width + p.radius, -p.radius);
-      p.radius = width * 0.05;
+      p.alpha = 0;
+      p.targetAlpha = 1;
+      p.alphaSpeed = 0.5;
+      p.posVel = new PVector(units(100), 0);
+      p.pos = colorWheel.p.pos.get();
+      p.radius = colorWheel.p.targetRadius;
+      p.targetRadius = width * 0.07;
+      p.radiusSpeed = 0.2;
+      p.rotVel = colorWheel.p.rotVel;
       p.posAcc.y = units(400);
     }
 
@@ -219,10 +222,9 @@ class ManiStory extends TSStoryBase {
   class TrafficLights {
     PImage[] imgs = { 
       loadImage("mani/trafficlight1.png"), loadImage("mani/trafficlight2.png"), loadImage("mani/trafficlight3.png")
-    };
-    float targetPosY = height * 0.55;
+      };
+      float targetPosY = height * 0.55;
     PVector pos = new PVector(width * 0.25, targetPosY);
-    float radius = width * 0.05;
     int currentLight = 0;
 
     void start() {
@@ -230,22 +232,171 @@ class ManiStory extends TSStoryBase {
       currentLight = 0;
     }
 
+    void end() {
+      targetPosY = height;
+    }
+
     void draw() {
+      PVector leftHand = getLeftHand();
+      float w = units(120);
+      float h = w * imgs[0].height / imgs[0].width;
+
+      float topY = pos.y - h * 0.45;
+      float bottomY = pos.y + h * 0.2;
+      if (leftHand.x < pos.x + w * 0.2 && leftHand.y > topY && leftHand.y < bottomY) {
+        currentLight = (int)round(map(leftHand.y, topY, bottomY, 0, 2));
+      }
+
       pushStyle();
       pushMatrix();
       imageMode(CENTER);
       pos.y += (targetPosY - pos.y) * 0.2;
       translate(pos.x, pos.y);
-      scale(radius * 2 / imgs[currentLight].width);
-      image(imgs[currentLight], 0, 0);
+      image(imgs[currentLight], 0, 0, w, h);
       popMatrix();
       popStyle();
-      //
-      //      rot += rotSpeed;
-      //      rotSpeed *= 0.99;
     }
   };
   TrafficLights trafficLights = new TrafficLights();
+
+
+
+  class MusicNotes {
+    boolean doCreate;
+
+    MSAParticleSystem particleSystem = new MSAParticleSystem();
+    PImage[] imgs = { 
+      loadImage("mani/note1.png"), loadImage("mani/note2.png"), loadImage("mani/note3.png"), loadImage("mani/note4.png"), loadImage("mani/note5.png"), loadImage("mani/note6.png")
+      };
+
+
+      void start() {
+        particleSystem.start();
+
+        particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(units(10), units(10), units(5)));
+        particleSystem.startVel.set(new PVector(0, 0, 0), new PVector(units(30), units(30), units(0)));
+        particleSystem.acc.set(new PVector(0, units(-30), 0), new PVector(0, units(0), 0));
+        particleSystem.inheritVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
+        particleSystem.inheritVelMult.set(new PVector(width/100, height/100, 0), new PVector(0, 0, 0));
+
+        particleSystem.startRot.set(0, 30);
+        particleSystem.rotVel.set(0, 3);
+
+        particleSystem.startRadius.set(0, 0);
+        particleSystem.targetRadius.set(units(7), units(2));
+        particleSystem.radiusSpeed.set(0.3, 0.1);
+
+        particleSystem.startAlpha.set(1, 0);
+        particleSystem.targetAlpha.set(0, 0);
+        particleSystem.alphaSpeed.set(0.1, 0.01);
+
+        particleSystem.drag.set(0.01, 0.001);
+
+        particleSystem.maxCount = 100;
+        particleSystem.imgs = imgs;
+
+        doCreate = true;
+      }
+
+    void end() {
+      //doCreate = false;
+    }
+
+    void draw() {
+      if (doCreate) {
+        for (int i=0; i<2; i++) {
+          if (getHandVelocity(i).mag() > 0.1) {
+            if (random(1.0)<0.5) {
+              particleSystem.startPos.base = getHand(i);
+              particleSystem.inheritVel.base = getHandVelocity(i);
+              particleSystem.add();
+            }
+          }
+        }
+      }
+
+      particleSystem.draw();
+    }
+  };
+  MusicNotes musicNotes = new MusicNotes();
+
+
+  class Stars {
+    MSAParticleSystem particleSystem = new MSAParticleSystem();
+    PImage[] imgs = { 
+      loadImage("mani/star1.png"), loadImage("mani/star2.png")
+      };
+
+
+      void start() {
+        particleSystem.start();
+
+        particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(units(0), units(0), units(0)));
+        particleSystem.startVel.set(new PVector(0, 0, 0), new PVector(units(0), units(0), units(0)));
+        particleSystem.acc.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
+        particleSystem.inheritVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
+        particleSystem.inheritVelMult.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
+
+        particleSystem.startRot.set(0, 360);
+        particleSystem.rotVel.set(0, 0);
+
+        particleSystem.startRadius.set(0, 0);
+        particleSystem.targetRadius.set(units(7), units(2));
+        particleSystem.radiusSpeed.set(0.3, 0.1);
+
+        particleSystem.startAlpha.set(0, 0);
+        particleSystem.targetAlpha.set(1, 0);
+        particleSystem.alphaSpeed.set(0.1, 0.01);
+
+        particleSystem.drag.set(0.0, 0.0);
+
+        particleSystem.maxCount = 100;
+        particleSystem.imgs = imgs;
+      }
+
+    void end() {
+      //doCreate = false;
+    }
+
+    void draw() {
+      for (int i=0; i<2; i++) {
+        if (getHandVelocity(i).mag() > 0.5) {
+          if (random(1.0)<0.7) {
+            particleSystem.startPos.base = getHand(i);
+            particleSystem.inheritVel.base = getHandVelocity(i);
+            particleSystem.add();
+          }
+        }
+      }
+
+      particleSystem.draw();
+    }
+  };
+  Stars stars = new Stars();
+
+
+
+  //----------------
+  class Ballerina {
+    MSAParticle p = new MSAParticle(loadImage("mani/ballerina.png"));
+
+    void start() {
+      p.radius = 0;
+      p.targetRadius = units(150);
+      p.radiusSpeed = 0.05;
+      p.pos = new PVector(width * 0.75, height * 0.5);
+    }
+
+    void end() {
+      p.targetRadius = 0;
+      p.radiusSpeed = 0.2;
+    } 
+
+    void draw() {
+      p.draw();
+    }
+  };
+  Ballerina ballerina = new Ballerina();
 
 
   //------------------------------------------------------------------------------------------------------
@@ -259,7 +410,7 @@ class ManiStory extends TSStoryBase {
     Scene1() {
       sceneName = "Scene1 GREY CITY";
       println(storyName + "::" + sceneName);
-      setTrigger(new MouseClickTrigger());
+      //      setTrigger(new MouseClickTrigger());
     }
 
     //----------------
@@ -268,7 +419,7 @@ class ManiStory extends TSStoryBase {
       cityGrey.set(1, 1, 0, 1);
       particleSystem.start();
 
-      particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(units(50), units(10), units(10)));
+      particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(units(50), units(0), units(0)));
       particleSystem.startVel.set(new PVector(0, units(150), 0), new PVector(units(0), units(150), units(150)));
       particleSystem.acc.set(new PVector(0, units(100), 0), new PVector(0, 0, 0));
       particleSystem.inheritVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
@@ -278,7 +429,7 @@ class ManiStory extends TSStoryBase {
       particleSystem.rotVel.set(0, 0);
 
       particleSystem.startRadius.set(0, 0);
-      particleSystem.targetRadius.set(units(10), units(3));
+      particleSystem.targetRadius.set(units(8), units(3));
       particleSystem.radiusSpeed.set(0.3, 0.0);
 
       particleSystem.startAlpha.set(0, 0);
@@ -288,6 +439,8 @@ class ManiStory extends TSStoryBase {
       particleSystem.drag.set(0.02, 0.005);
       particleSystem.maxCount = 500;
       particleSystem.img = imgRain;
+
+      particleSystem.alignToDir = true;
     }
 
     //----------------
@@ -313,7 +466,7 @@ class ManiStory extends TSStoryBase {
     Scene2() {
       sceneName = "Scene2 MAIN CITY";
       println(storyName + "::" + sceneName);
-      setTrigger(new MouseClickTrigger());
+      //      setTrigger(new MouseClickTrigger());
     }
 
     //----------------
@@ -340,7 +493,7 @@ class ManiStory extends TSStoryBase {
     Scene3() {
       sceneName = "Scene3 FLOWERS";
       println(storyName + "::" + sceneName);
-      setTrigger(new MouseClickTrigger());
+      //      setTrigger(new MouseClickTrigger());
     }
 
     //----------------
@@ -357,7 +510,7 @@ class ManiStory extends TSStoryBase {
       cityColor.draw();
       //      PVector leftHand = getLeftHand();
       PVector rightHand = getRightHand();
-      if (getRightHandVelocity().mag() > -0.1) flowers.add(new PVector(width * 0.95, rightHand.y));
+      if (getRightHandVelocity().mag() > 0.01) flowers.add(new PVector(width * 0.95, rightHand.y));
       flowers.draw();
     }
   };
@@ -368,7 +521,7 @@ class ManiStory extends TSStoryBase {
     Scene4() {
       sceneName = "Scene4 COLOR WHEEL";
       println(storyName + "::" + sceneName);
-      setTrigger(new MouseClickTrigger());
+      //      setTrigger(new MouseClickTrigger());
     }
 
     //----------------
@@ -394,7 +547,7 @@ class ManiStory extends TSStoryBase {
     Scene5() {
       sceneName = "Scene5 HIP HOP";
       println(storyName + "::" + sceneName);
-      setTrigger(new MouseClickTrigger());
+      //      setTrigger(new MouseClickTrigger());
     }
 
     //----------------
@@ -416,13 +569,14 @@ class ManiStory extends TSStoryBase {
     }
   };
 
+
   //------------------------------------------------------------------------------------------------------
   // traffic lights
   class Scene6 extends TSSceneBase {
     Scene6() {
       sceneName = "Scene6 TRAFFIC LIGHTS";
       println(storyName + "::" + sceneName);
-      setTrigger(new MouseClickTrigger());
+      //      setTrigger(new MouseClickTrigger());
     }
 
     //----------------
@@ -448,45 +602,17 @@ class ManiStory extends TSStoryBase {
   //------------------------------------------------------------------------------------------------------
   // music
   class Scene7 extends TSSceneBase {
-    MSAParticleSystem particleSystem = new MSAParticleSystem();
-    PImage[] imgs = { 
-      loadImage("mani/note1.png"), loadImage("mani/note2.png"), loadImage("mani/note3.png"), loadImage("mani/note4.png"), loadImage("mani/note5.png"), loadImage("mani/note6.png")
-      };
-
-
-      Scene7() {
-        sceneName = "Scene7 MUSIC";
-        println(storyName + "::" + sceneName);
-        setTrigger(new MouseClickTrigger());
-      }
+    Scene7() {
+      sceneName = "Scene7 MUSIC";
+      println(storyName + "::" + sceneName);
+      //      setTrigger(new MouseClickTrigger());
+    }
 
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
-      particleSystem.start();
-
-      particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(units(50), units(10), units(10)));
-      particleSystem.startVel.set(new PVector(0, 0, 0), new PVector(units(100), units(100), units(100)));
-      particleSystem.acc.set(new PVector(0, units(-10), 0), new PVector(0, units(3), 0));
-      particleSystem.inheritVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
-      particleSystem.inheritVelMult.set(new PVector(width/2, height/2, 0), new PVector(0, 0, 0));
-
-      particleSystem.startRot.set(0, 30);
-      particleSystem.rotVel.set(0, 3);
-
-      particleSystem.startRadius.set(0, 0);
-      particleSystem.targetRadius.set(units(7), units(2));
-      particleSystem.radiusSpeed.set(0.5, 0.1);
-
-      particleSystem.startAlpha.set(1, 0);
-      particleSystem.targetAlpha.set(0, 0);
-      particleSystem.alphaSpeed.set(0.02, 0.01);
-
-      particleSystem.drag.set(0.1, 0.005);
-      particleSystem.maxCount = 100;
-
-      particleSystem.maxCount = 100;
-      particleSystem.imgs = imgs;
+      musicNotes.start();
+      trafficLights.end();
     }
 
     //----------------
@@ -499,16 +625,7 @@ class ManiStory extends TSStoryBase {
       flowers.draw();
       colorWheel.draw();
       basketball.draw();
-
-      for (int i=0; i<2; i++) {
-        if (getHandVelocity(i).mag() > 0.1) {
-          particleSystem.startPos.base = getHand(i);
-          particleSystem.inheritVel.base = getHandVelocity(i);
-          particleSystem.add();
-        }
-      }
-
-      particleSystem.draw();
+      musicNotes.draw();
     }
   };
 
@@ -518,12 +635,13 @@ class ManiStory extends TSStoryBase {
     Scene8() {
       sceneName = "Scene8 BALLERINA";
       println(storyName + "::" + sceneName);
-      setTrigger(new MouseClickTrigger());
+      //      setTrigger(new MouseClickTrigger());
     }
 
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
+      ballerina.start();
     }
 
     //----------------
@@ -531,11 +649,13 @@ class ManiStory extends TSStoryBase {
       background(0);
       sky.draw();
       drawMaskedUser();
-      trafficLights.draw();
+      //      trafficLights.draw();
       cityColor.draw();
+      ballerina.draw();
       flowers.draw();
       colorWheel.draw();
       basketball.draw();
+      musicNotes.draw();
     }
   };
 
@@ -543,27 +663,48 @@ class ManiStory extends TSStoryBase {
   //------------------------------------------------------------------------------------------------------
   // night
   class Scene9 extends TSSceneBase {
+    boolean doInteraction;
+
     Scene9() {
       sceneName = "Scene9 NIGHT";
       println(storyName + "::" + sceneName);
-      setTrigger(new MouseClickTrigger());
+      //      setTrigger(new MouseClickTrigger());
     }
 
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
-      sky.targetRot = 180;
+      doInteraction = false;
+      ballerina.end();
     }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      PVector hand = getLeftHand();
+      float nightAmount = map(degrees(atan2(hand.y - height/2, hand.x - width/2)), -180, 0, 0, 1);
+//      println(nightAmount);
+      if (nightAmount > 1.5) {
+        nightAmount = 0;
+        doInteraction = true;
+      } 
+      else if (nightAmount > 1) {
+        nightAmount = 1;
+        if(sky.p.rot > 179) doInteraction = false;
+      }
+
+      if (doInteraction) {
+        sky.p.rot += (nightAmount * 180 - sky.p.rot) * 0.25;
+        cityColor.tintAmount = 1 - nightAmount * 0.8;
+      }
+
       background(0);
       sky.draw();
       drawMaskedUser();
-      trafficLights.draw();
+      //      trafficLights.draw();
       cityColor.draw();
+      ballerina.draw();
       flowers.draw();
-      colorWheel.draw();
+      //      colorWheel.draw();
       basketball.draw();
     }
   };    
@@ -575,17 +716,32 @@ class ManiStory extends TSStoryBase {
     Scene10() {
       sceneName = "Scene10 STARS";
       println(storyName + "::" + sceneName);
-      setTrigger(new MouseClickTrigger());
+      //      setTrigger(new MouseClickTrigger());
     }
 
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
+      stars.start();
     }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      for(int i=0; i<stars.particleSystem.particles.size(); i++) {
+        MSAParticle p = (MSAParticle)stars.particleSystem.particles.get(i);
+        p.alpha = random(1.0);
+        p.radius = random(units(5), units(10));
+      }
+      background(0);
+      sky.draw();
       drawMaskedUser();
+      //      trafficLights.draw();
+      cityColor.draw();
+      ballerina.draw();
+      flowers.draw();
+      //      colorWheel.draw();
+      basketball.draw();
+      stars.draw();
     }
   };
 };
