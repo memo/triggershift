@@ -112,6 +112,9 @@ class ManiStory extends TSStoryBase {
       particleSystem.drag.set(0, 0);
       particleSystem.maxCount = 200;
     }
+    
+    void end() {
+    }
 
     void add(PVector _pos) {
       particleSystem.startPos.base = _pos.get();
@@ -173,6 +176,10 @@ class ManiStory extends TSStoryBase {
       p.radiusSpeed = 0.2;
       p.rotVel = colorWheel.p.rotVel;
       p.posAcc.y = units(400);
+    }
+    
+    void end() {
+      p.targetRadius = 0;
     }
 
     void draw() {
@@ -288,11 +295,11 @@ class ManiStory extends TSStoryBase {
 
         particleSystem.startAlpha.set(1, 0);
         particleSystem.targetAlpha.set(0, 0);
-        particleSystem.alphaSpeed.set(0.1, 0.01);
+        particleSystem.alphaSpeed.set(0.05, 0.01);
 
         particleSystem.drag.set(0.01, 0.001);
 
-        particleSystem.maxCount = 100;
+        particleSystem.maxCount = 30;
         particleSystem.imgs = imgs;
 
         doCreate = true;
@@ -529,6 +536,7 @@ class ManiStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       colorWheel.start();
+      flowers.end();
     }
 
     //----------------
@@ -564,7 +572,7 @@ class ManiStory extends TSStoryBase {
       sky.draw();
       drawMaskedUser();
       cityColor.draw();
-      flowers.draw();
+//      flowers.draw();
       colorWheel.draw();
       basketball.draw();
     }
@@ -584,6 +592,7 @@ class ManiStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       trafficLights.start();
+      basketball.end();
     }
 
     //----------------
@@ -593,7 +602,7 @@ class ManiStory extends TSStoryBase {
       drawMaskedUser();
       trafficLights.draw();
       cityColor.draw();
-      flowers.draw();
+//      flowers.draw();
       colorWheel.draw();
       basketball.draw();
     }
@@ -623,9 +632,9 @@ class ManiStory extends TSStoryBase {
       drawMaskedUser();
       trafficLights.draw();
       cityColor.draw();
-      flowers.draw();
+//      flowers.draw();
       colorWheel.draw();
-      basketball.draw();
+//      basketball.draw();
       musicNotes.draw();
     }
   };
@@ -653,9 +662,9 @@ class ManiStory extends TSStoryBase {
       //      trafficLights.draw();
       cityColor.draw();
       ballerina.draw();
-      flowers.draw();
+//      flowers.draw();
       colorWheel.draw();
-      basketball.draw();
+//      basketball.draw();
       musicNotes.draw();
     }
   };
@@ -690,7 +699,10 @@ class ManiStory extends TSStoryBase {
       } 
       else if (nightAmount > 1) {
         nightAmount = 1;
-        if(sky.p.rot > 179) doInteraction = false;
+        if(sky.p.rot > 179) {
+          doInteraction = false;
+          nextScene();
+        }
       }
 
       if (doInteraction) {
@@ -704,9 +716,9 @@ class ManiStory extends TSStoryBase {
       //      trafficLights.draw();
       cityColor.draw();
       ballerina.draw();
-      flowers.draw();
+//      flowers.draw();
       //      colorWheel.draw();
-      basketball.draw();
+//      basketball.draw();
     }
   };    
 
@@ -739,8 +751,8 @@ class ManiStory extends TSStoryBase {
       drawMaskedUser();
       //      trafficLights.draw();
       cityColor.draw();
-      ballerina.draw();
-      flowers.draw();
+//      ballerina.draw();
+//      flowers.draw();
       //      colorWheel.draw();
       basketball.draw();
     }
