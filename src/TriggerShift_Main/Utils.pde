@@ -2,12 +2,12 @@
 
 
 PVector getHead() {
-  if (skeleton == null) return new PVector(mouseX, mouseY, 0);
+  if (skeleton == null) return new PVector(width * 0.5, height * 0.25, 0);
   return skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
 }
 
 PVector getHip() {
-  if (skeleton == null) return new PVector(mouseX, mouseY, 0);
+  if (skeleton == null) return new PVector(width * 0.5, height * 0.5, 0);
   return PVector.mult( PVector.add(skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HIP, transform2D, openNIContext), skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HIP, transform2D, openNIContext)), 0.5);
 }
 

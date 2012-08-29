@@ -19,7 +19,36 @@ class MSAParticle {
   MSAParticle(PImage _img) {
     img = _img;
   }
+  
+  float x1() {
+    return pos.x - radius;
+  }
+  
+  float y1() {
+    return pos.y - radius * img.height / img.width;
+  }
     
+  float x2() {
+    return pos.x + radius;
+  }
+  
+  float y2() {
+    return pos.y + radius * img.height / img.width;
+  }
+  
+  boolean pointXIn(PVector p) {
+    return p.x > x1() && p.x < x2();
+  }
+
+  boolean pointYIn(PVector p) {
+    return p.y > y1() && p.y < y2();
+  }
+  
+  boolean pointIn(PVector p) {
+    return pointXIn(p) && pointYIn(p);
+  }
+  
+
 
   void draw() {
     if(alphaSpeed>0) alpha += (targetAlpha - alpha) * alphaSpeed;

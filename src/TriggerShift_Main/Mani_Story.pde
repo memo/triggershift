@@ -360,8 +360,8 @@ class ManiStory extends TSStoryBase {
 
     void draw() {
       for (int i=0; i<2; i++) {
-        if (getHandVelocity(i).mag() > 0.5) {
-          if (random(1.0)<0.7) {
+        if (getHandVelocity(i).mag() > 0.1) {
+          if (random(1.0)<0.2) {
             particleSystem.startPos.base = getHand(i);
             particleSystem.inheritVel.base = getHandVelocity(i);
             particleSystem.add();
@@ -451,6 +451,7 @@ class ManiStory extends TSStoryBase {
 
       for (int i=0; i<2; i++) {
         particleSystem.startPos.base = getHand(i);
+        particleSystem.startPos.base.y += units(20);
         particleSystem.inheritVel.base = getHandVelocity(i);
         particleSystem.add();
       }
@@ -734,6 +735,7 @@ class ManiStory extends TSStoryBase {
       }
       background(0);
       sky.draw();
+      stars.draw();
       drawMaskedUser();
       //      trafficLights.draw();
       cityColor.draw();
@@ -741,7 +743,6 @@ class ManiStory extends TSStoryBase {
       flowers.draw();
       //      colorWheel.draw();
       basketball.draw();
-      stars.draw();
     }
   };
 };

@@ -77,7 +77,7 @@ class JamelStory extends TSStoryBase {
 
       popStyle();
 
-      if (getLeftHand().y < getLeftShoulder().y && getRightHand().y < getRightShoulder().y && ripStartMillis == 0 ) ripStartMillis = millis();
+      if (getLeftHand().y < getHead().y && getRightHand().y < getHead().y && ripStartMillis == 0 ) ripStartMillis = millis();
     }
   };
 
@@ -86,7 +86,9 @@ class JamelStory extends TSStoryBase {
   //------------------------------------------------------------------------------------------------------
   // draw graph and pound signs
   class Scene2 extends TSSceneBase {
-    boolean startInteraction;
+    MSAParticle graph = new MSAParticle(loadImage("jamel/graph.png"));
+
+    boolean doInteraction;
     //    MSAParticleSystem particleSystem = new MSAParticleSystem();
     //    PImage[] imgs = { 
     //      loadImage("jamel/pound.png"), loadImage("jamel/dollar.png"), loadImage("jamel/euro.png")
@@ -103,7 +105,13 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
-      startInteraction = false;
+      doInteraction = false;
+
+      graph.pos = new PVector(width/2, height/2);
+      graph.radius = 0;
+      graph.targetRadius = width * 0.3;
+      graph.radiusSpeed = 0.2;
+
       posArray = new ArrayList();
       posArray.add(new PVector(-1000, -1000, -1000));  // add first point, makes logic easier
       //      particleSystem.start();
@@ -135,16 +143,18 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       drawMaskedUser();
-      PVector activeHand = getHighestHand();
-      if (getHighestHand().y > getHip().y) startInteraction = true;
+      graph.draw();
 
-      if (startInteraction) {
+      PVector activeHand = getRightHand();
+      if (activeHand.x < graph.x1()) doInteraction = true;
+
+      if (doInteraction) {
         pushStyle();
         PVector lastPoint = (PVector)posArray.get(posArray.size()-1);
 
         // add latest hand
         //      if(frameCount % 10 == 0) {
-        if (PVector.sub(activeHand, lastPoint).mag() > height * 0.05) {
+        if (graph.pointIn(activeHand) && activeHand.x > lastPoint.x && PVector.sub(activeHand, lastPoint).mag() > height * 0.05) {
           posArray.add(activeHand.get());
           if (posArray.size() > 100) posArray.remove(0);  // trim array
         }
@@ -193,50 +203,19 @@ class JamelStory extends TSStoryBase {
   };
 
 
-  //------------------------------------------------------------------------------------------------------
-  // Tramp
-  class Scene3 extends TSSceneBase {
-    PImage imgTramp1 = loadImage("jamel/tramp1.png");
-    PImage imgTramp2 = loadImage("jamel/tramp2.png");
+  class Tramp {
+    PImage imgTramp1 = loadImage("jamel/newtramp.png");
+    PImage imgTramp2 = loadImage("jamel/businessman.png");
     PImage imgTrampMasked1 = createImage(imgTramp1.width, imgTramp1.height, ARGB);
     PImage imgTrampMasked2 = createImage(imgTramp2.width, imgTramp2.height, ARGB);
+    float h = height * 0.8;
+    float s = h / imgTramp1.height;
+    float w = imgTramp1.width * s;
+    PVector pos = new PVector(units(50), height - h);
     float fillAmount;
-    boolean startInteraction;
 
-    Scene3() {
-      sceneName = "Scene3 TRAMP";
-      println(storyName + "::" + sceneName);
-    }
-
-    //----------------
-    void onStart() {
-      println(storyName + "::" + sceneName + "::onStart");
-      startInteraction = false;
-      fillAmount = 0;
-    }
-
-    //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
-      drawMaskedUser();
-
-      // position of hand relative to waist->head
-      float newt = constrain(map(getHighestHand().y, getHip().y, getHead().y, 0.0, 1.0), 0.0, 1.0);
-
-      if (newt < 0.01) startInteraction = true;
-
-      if (startInteraction) {
-        fillAmount += (newt - fillAmount) * 0.5;
-      } 
-      else {
-        fillAmount = 0;
-      }
-
+    void draw() {
       pushStyle();
-
-      // smooth
-      float h = height * 0.8;
-      float s = h / imgTramp1.height;
-      float w = imgTramp1.width * s;
 
       imgTrampMasked1.loadPixels();
       Arrays.fill(imgTrampMasked1.pixels, 0);
@@ -252,10 +231,41 @@ class JamelStory extends TSStoryBase {
       imgTrampMasked2.copy(imgTramp2, 0, y2, imgTramp2.width, h2, 0, y2, imgTramp2.width, h2);
 
       imageMode(CORNER);
-      image(imgTrampMasked1, width*0.7, height*0.1, imgTrampMasked1.width * s, imgTrampMasked1.height * s);
-      image(imgTrampMasked2, width*0.7, height*0.1, imgTrampMasked2.width * s, imgTrampMasked2.height * s);
+      image(imgTrampMasked1, pos.x, pos.y, imgTrampMasked1.width * s, imgTrampMasked1.height * s);
+      image(imgTrampMasked2, pos.x, pos.y, imgTrampMasked2.width * s, imgTrampMasked2.height * s);
 
       popStyle();
+    }
+  };
+  Tramp tramp = new Tramp();
+
+  //------------------------------------------------------------------------------------------------------
+  // Tramp
+  class Scene3 extends TSSceneBase {
+    boolean doInteraction;
+
+    Scene3() {
+      sceneName = "Scene3 TRAMP";
+      println(storyName + "::" + sceneName);
+    }
+
+    //----------------
+    void onStart() {
+      println(storyName + "::" + sceneName + "::onStart");
+      doInteraction = false;
+      tramp.fillAmount = 0;
+    }
+
+    //----------------
+    void onDraw(PImage userImage, TSSkeleton skeleton) {
+      drawMaskedUser();
+
+      // position of hand relative to waist->head
+      float newt = constrain(map(getLeftHand().y, getHip().y, getHead().y, 0.0, 1.0), 0.0, 1.0);
+      if (newt < 0.01) doInteraction = true;
+      if (doInteraction) tramp.fillAmount += (newt - tramp.fillAmount) * 0.5;
+      else tramp.fillAmount = 0;
+      tramp.draw();
     }
   };
 
@@ -268,30 +278,46 @@ class JamelStory extends TSStoryBase {
 
   class Cat {
     Tree tree;
-    PVector pos;
+    PVector pos = new PVector();
     float rot = random(-30, 30);
     int flipDir;
+    PImage img;
 
     Cat(Tree t) {
       tree = t;
-      pos = tree.pos.get();
       flipDir = pos.x < width/2 ? -1 : 1;
     }
+    
+    void draw() {
+        if(tree.currentHeight < 10) return;
+        
+        float w = width * 0.15;
+        float h = w * img.height / img.width;
+
+        pushMatrix();
+        translate(pos.x, pos.y);
+        scale(flipDir, 1); 
+        rotate(radians(rot));
+        image(img, 0, 0, w, h);
+        popMatrix();
+      }
   };
 
   class Tree {
     float targetHeight = random(height*0.5, height * 0.6);
     float currentHeight = 0;
-    PVector pos = new PVector(random(0, width), random(height * 0.7, height * 1) - targetHeight);  // position of center top
+    PVector targetPos = new PVector(random(0, width), random(height * 0.7, height * 1) - targetHeight);  // position of center top
+    PVector currentPos = new PVector();
     float speed = random(0.5, 0.6);
     float startTime;
     Cat cat;
     float elapsedSeconds;
 
     void draw() {
+      currentPos = new PVector(targetPos.x, targetPos.y + targetHeight - currentHeight);
       if (elapsedSeconds > startTime) currentHeight += (targetHeight-currentHeight) * speed;
       float currentWidth = imgTree.width * currentHeight / imgTree.height;
-      image(imgTree, pos.x - currentWidth/2, pos.y + targetHeight - currentHeight, currentWidth, currentHeight);
+      image(imgTree, currentPos.x - currentWidth/2, currentPos.y, currentWidth, currentHeight);
     }
 
     boolean isGrown() {
@@ -303,8 +329,11 @@ class JamelStory extends TSStoryBase {
   // vars
   Tree []trees = new Tree[numTrees];
   PImage imgTree = loadImage("jamel/tree.png");
-  PImage[] imgCats = { 
+  PImage[] imgCatsJumping = { 
     loadImage("jamel/cat1.png"), loadImage("jamel/cat2.png"), loadImage("jamel/cat3.png")
+    };
+  PImage[] imgCatsSitting = { 
+    loadImage("jamel/cat1sit.png"), loadImage("jamel/cat2sit.png"), loadImage("jamel/cat3sit.png")
     };
 
 
@@ -325,7 +354,7 @@ class JamelStory extends TSStoryBase {
       for (int i=0; i<numTrees; i++) {
         Tree t = trees[i] = new Tree();
         float r = (i+0.5)/numTrees;
-        t.pos.x = r * width;
+        t.targetPos.x = r * width;
         t.startTime = r * 2;
         t.cat = new Cat(t);
       }
@@ -347,7 +376,7 @@ class JamelStory extends TSStoryBase {
       PVector rightHand = getRightHand();
       PVector leftHand = getLeftHand();
 
-      if (throwCats == false && getLeftHand().y < getLeftShoulder().y && getRightHand().y < getRightShoulder().y) {
+      if (throwCats == false && getLeftHand().y < getHead().y && getRightHand().y < getHead().y) {
         throwCats = true;
       } 
 
@@ -356,12 +385,9 @@ class JamelStory extends TSStoryBase {
       for (int i=0; i<numTrees; i++) {
         Tree t = trees[i];
         if (t.isGrown()) {
-          PImage imgCat = imgCats[i % 3];
-          float catWidth = width * 0.15;
-          float catHeight = catWidth * imgCat.height / imgCat.width;
-
+          PVector diff;
           if (throwCats) {
-            PVector diff = PVector.sub(t.pos, t.cat.pos);
+            diff = PVector.sub(t.currentPos, t.cat.pos);
             diff.mult(catSpeedUp);
             t.cat.pos.add(diff);
           } 
@@ -370,18 +396,20 @@ class JamelStory extends TSStoryBase {
             PVector closestHand = abs(rightHand.x - t.cat.pos.x) > abs(leftHand.x - t.cat.pos.x) ? leftHand : rightHand;
 
             // lerp to closest hand
-            PVector diff = PVector.sub(closestHand, t.cat.pos);
+            diff = PVector.sub(closestHand, t.cat.pos);
             diff.mult(catSpeedDown);
             t.cat.pos.add(diff);
           }
 
-          pushMatrix();
-          translate(t.cat.pos.x, t.cat.pos.y);
-          scale(t.cat.flipDir, 1); 
-          rotate(radians(t.cat.rot));
-          image(imgCat, 0, 0, catWidth, catHeight);
-          popMatrix();
+          t.cat.img = diff.mag() > units(10) ? imgCatsJumping[i % 3] : imgCatsSitting[i % 3];
+        } 
+        else {
+          t.cat.pos = t.currentPos.get();
+          t.cat.img = imgCatsSitting[i % 3];
         }
+        
+        t.cat.draw();
+
       }
       popStyle();
     }
@@ -390,12 +418,7 @@ class JamelStory extends TSStoryBase {
   //------------------------------------------------------------------------------------------------------
   // lied (re-dress tramp)
   class Scene5 extends TSSceneBase {
-    PImage imgTramp1 = loadImage("jamel/tramp1.png");
-    PImage imgTramp2 = loadImage("jamel/tramp2.png");
-    PImage imgTrampMasked1 = createImage(imgTramp1.width, imgTramp1.height, ARGB);
-    PImage imgTrampMasked2 = createImage(imgTramp2.width, imgTramp2.height, ARGB);
-    float fillAmount;
-    boolean startInteraction;
+    boolean doInteraction;
 
     Scene5() {
       sceneName = "Scene5 LIED";
@@ -405,91 +428,21 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
-      fillAmount = 1;
-      startInteraction = false;
+      doInteraction = false;
+      tramp.fillAmount = 1;
     }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
-      // do cats
-      //      if (getElapsedSeconds() < 3) {
-      //        pushStyle();
-      //        imageMode(CORNER);
-      //        for (int i=0; i<numTrees; i++) {
-      //          Tree t = trees[i];
-      //          t.elapsedSeconds = getElapsedSeconds();
-      //          t.draw();
-      //        }
-      //        popStyle();
-      //
-      //        drawMaskedUser();
-      //
-      //        PVector rightHand = getRightHand();
-      //        PVector leftHand = getLeftHand();
-      //
-      //        pushStyle();
-      //        imageMode(CENTER);
-      //        for (int i=0; i<numTrees; i++) {
-      //          Tree t = trees[i];
-      //          PImage imgCat = imgCats[i % 3];
-      //          float catWidth = width * 0.15;
-      //          float catHeight = catWidth * imgCat.height / imgCat.width;
-      //
-      //          // lerp to tree
-      //          PVector diff = PVector.sub(t.pos, t.cat.pos);
-      //          diff.mult(catSpeedUp);
-      //          t.cat.pos.add(diff);
-      //
-      //          pushMatrix();
-      //          translate(t.cat.pos.x, t.cat.pos.y);
-      //          scale(t.cat.flipDir, 1); 
-      //          rotate(radians(t.cat.rot));
-      //          image(imgCat, 0, 0, catWidth, catHeight);
-      //          popMatrix();
-      //        }
-      //        popStyle();
-      //      } 
-      //      else {
-      // do tramp
       drawMaskedUser();
 
       // position of hand relative to waist->head
-      float newt = constrain(map(getHighestHand().y, getHip().y, getHead().y, 0.0, 1.0), 0.0, 1.0);
+      float newt = constrain(map(getLeftHand().y, getHip().y, getHead().y, 0.0, 1.0), 0.0, 1.0);
+      if (newt > 0.99) doInteraction = true;
+      if (doInteraction) tramp.fillAmount += (newt - tramp.fillAmount) * 0.5;
+      else tramp.fillAmount = 1;
 
-      if (newt > 0.99) startInteraction = true;
-
-      if (startInteraction) {
-        fillAmount += (newt - fillAmount) * 0.5;
-      } 
-      else {
-        fillAmount = 1;
-      }
-
-      pushStyle();
-
-      float h = height * 0.8;
-      float s = h / imgTramp1.height;
-      float w = imgTramp1.width * s;
-
-      imgTrampMasked1.loadPixels();
-      Arrays.fill(imgTrampMasked1.pixels, 0);
-      imgTrampMasked1.updatePixels();
-      int h1 = (int)(imgTrampMasked1.height * (1-fillAmount));
-      imgTrampMasked1.copy(imgTramp1, 0, 0, imgTramp1.width, h1, 0, 0, imgTramp1.width, h1);
-
-      imgTrampMasked2.loadPixels();
-      Arrays.fill(imgTrampMasked2.pixels, 0);
-      imgTrampMasked2.updatePixels();
-      int h2 = (int)(imgTrampMasked2.height * fillAmount);
-      int y2 = imgTrampMasked2.height - h2;
-      imgTrampMasked2.copy(imgTramp2, 0, y2, imgTramp2.width, h2, 0, y2, imgTramp2.width, h2);
-
-      imageMode(CORNER);
-      image(imgTrampMasked1, width*0.7, height*0.1, imgTrampMasked1.width * s, imgTrampMasked1.height * s);
-      image(imgTrampMasked2, width*0.7, height*0.1, imgTrampMasked2.width * s, imgTrampMasked2.height * s);
-
-      popStyle();
-      //      }
+      tramp.draw();
     }
   };
 
@@ -499,7 +452,7 @@ class JamelStory extends TSStoryBase {
   // my country
   class Scene6 extends TSSceneBase {
     boolean inPosition;
-    boolean startInteraction;
+    boolean doInteraction;
 
     Scene6() {
       sceneName = "Scene6 MYCOUNTRY";
@@ -510,7 +463,7 @@ class JamelStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       //      inPosition = false;
-      startInteraction = false;
+      doInteraction = false;
     }
 
     //----------------
@@ -518,8 +471,8 @@ class JamelStory extends TSStoryBase {
       float curY = getHighestHand().y;
       float headToHip = getHip().y - getHead().y;
       float topY = getHead().y - headToHip/2;
-      if (curY < topY) startInteraction = true;
-      if (startInteraction) {
+      if (curY < topY) doInteraction = true;
+      if (doInteraction) {
         float y = map(curY, topY, getHip().y, -height, 0);
         if (y>0) y = 0;
         image(imgFlag, 0, y, width, height);
@@ -568,9 +521,9 @@ class JamelStory extends TSStoryBase {
         }
       } 
       else {
-//        float w = width * 0.15;
-//        float h = w * imgHair1.height / imgHair1.width;
-//        image(imgHair2, headPos.x, headPos.y, w, h);
+        //        float w = width * 0.15;
+        //        float h = w * imgHair1.height / imgHair1.width;
+        //        image(imgHair2, headPos.x, headPos.y, w, h);
       }
       popStyle();
 
@@ -584,7 +537,7 @@ class JamelStory extends TSStoryBase {
     PImage imgBars = loadImage("jamel/prisonbars.png");
     float x1, x2;
     boolean shut1, shut2;
-    boolean startInteraction;
+    boolean doInteraction;
 
     Scene8() {
       sceneName = "Scene8 PRISON";
@@ -594,7 +547,7 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
-      startInteraction = false;
+      doInteraction = false;
       x1 = width/2;
       x2 = width/2;
       shut1 = false;
@@ -610,24 +563,24 @@ class JamelStory extends TSStoryBase {
 
       x1 += (map(getLeftHand().x, getHip().x - getMaxArmLength()/2, getHip().x, 0, width/2) - x1) * 0.5;
       x2 += (map(getRightHand().x, getHip().x + getMaxArmLength()/2, getHip().x, width, width/2) - x2) * 0.5;
-      
-      if(x1 < width * 0.1 && x2 > width * 0.9) startInteraction = true;
 
-      if(startInteraction) {
-        if(x1 > width * 0.5) {
+      if (x1 < width * 0.1 && x2 > width * 0.9) doInteraction = true;
+
+      if (doInteraction) {
+        if (x1 > width * 0.5) {
           // sound
           // shake
           shut1 = true;
         }
-        
-       if(x2 < width * 0.5) {
-         // sound
-         // shake
+
+        if (x2 < width * 0.5) {
+          // sound
+          // shake
           shut2 = true;
         }
-        
-        if(shut1) x1 = width * 0.5;
-        if(shut2) x2 = width * 0.5;
+
+        if (shut1) x1 = width * 0.5;
+        if (shut2) x2 = width * 0.5;
 
         pushStyle();
         imageMode(CORNER);

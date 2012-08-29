@@ -10,7 +10,7 @@ import SimpleOpenNI.*;
 import controlP5.*;
 
 // SET THIS TO TRUE OR FALSE
-boolean useOpenNI = true;
+boolean useOpenNI = false;
 
 // params
 boolean doDrawKinectRGB = false;
