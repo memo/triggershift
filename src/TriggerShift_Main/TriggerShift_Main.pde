@@ -18,6 +18,7 @@ boolean doDrawKinectDepth = false;
 boolean doDrawKinectMasked = false;
 boolean doDrawSkeletons = true;
 boolean doDrawDebugInfo = false;
+boolean doShowGUI = false;
 
 int maskBlurAmount = 0;
 float videoSizeX = 1;
@@ -213,7 +214,7 @@ void draw() {
     //    if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
   }
 
-  cp5.draw();
+  if(doShowGUI) cp5.draw();
 
   if (doDrawDebugInfo) {
     pushStyle();
@@ -285,6 +286,10 @@ void keyPressed() {
   case 'd': 
     doDrawDebugInfo ^= true; 
     break;
+  case 'g':
+    doShowGUI ^= true;
+    break;
+   
   }
 }
 
