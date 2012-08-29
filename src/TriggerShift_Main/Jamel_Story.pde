@@ -453,6 +453,7 @@ class JamelStory extends TSStoryBase {
   class Scene6 extends TSSceneBase {
     boolean inPosition;
     boolean doInteraction;
+    float flagY;
 
     Scene6() {
       sceneName = "Scene6 MYCOUNTRY";
@@ -464,6 +465,7 @@ class JamelStory extends TSStoryBase {
       println(storyName + "::" + sceneName + "::onStart");
       //      inPosition = false;
       doInteraction = false;
+      flagY = -height*2;
     }
 
     //----------------
@@ -473,10 +475,13 @@ class JamelStory extends TSStoryBase {
       float topY = getHead().y - headToHip/2;
       if (curY < topY) doInteraction = true;
       if (doInteraction) {
-        float y = map(curY, topY, getHip().y, -height, 0);
-        if (y>0) y = 0;
-        image(imgFlag, 0, y, width, height);
+        flagY = map(curY, topY, getHip().y, -height, 0);
+        if (flagY>0) {
+          flagY = 0;
+          doInteraction = false;
+        }
       }
+       image(imgFlag, 0, flagY, width, height);
       drawMaskedUser();
     }
   };
@@ -521,9 +526,9 @@ class JamelStory extends TSStoryBase {
         }
       } 
       else {
-        //        float w = width * 0.15;
-        //        float h = w * imgHair1.height / imgHair1.width;
-        //        image(imgHair2, headPos.x, headPos.y, w, h);
+        float w = width * 0.15;
+        float h = w * imgHair1.height / imgHair1.width;
+        image(imgHair2, headPos.x, headPos.y, w, h);
       }
       popStyle();
 
