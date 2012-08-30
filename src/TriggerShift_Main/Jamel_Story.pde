@@ -1,5 +1,18 @@
 class JamelStory extends TSStoryBase {
-
+  MSAAudioPlayer audioFlagRip = new MSAAudioPlayer("jamel/audio/beep+smash-new.mp3");
+  MSAAudioPlayer audioMelody = new MSAAudioPlayer("jamel/audio/jamel-melody.mp3");
+  MSAAudioPlayers audioGraph = new MSAAudioPlayers("jamel/audio/graph ting.mp3", 10);
+  MSAAudioPlayer audioTramp = new MSAAudioPlayer("jamel/audio/tramp.mp3");
+  MSAAudioPlayer audioBusinessman = new MSAAudioPlayer("jamel/audio/businessman.mp3");
+  MSAAudioPlayer audioCatHappy = new MSAAudioPlayer("jamel/audio/happy cat-01.mp3");
+  MSAAudioPlayer audioCatAngry = new MSAAudioPlayer("jamel/audio/cat-angry.mp3");
+  MSAAudioPlayer audioHair = new MSAAudioPlayer("jamel/audio/hair.mp3");
+  MSAAudioPlayer audioPrison = new MSAAudioPlayer("jamel/audio/metaljail.mp3");
+  MSAAudioPlayer audioPages = new MSAAudioPlayer("jamel/audio/pages.mp3");
+  MSAAudioPlayer audioCashRegister = new MSAAudioPlayer("jamel/audio/cashregister.mp3");
+//  MSAAudioPlayer audioFor = new MSAAudioPlayer("jamel/audio/metaljail.mp3");
+//  MSAAudioPlayer audioFlagDown = new SAAudioPlayer("jamel/audio/jamel-melody.mp3");
+  
   JamelStory() {
     storyName = "JamelStory";
     println(storyName + "::" + storyName);
@@ -7,24 +20,19 @@ class JamelStory extends TSStoryBase {
     addScene(new Scene2());
     addScene(new Scene3());
     addScene(new Scene4());
-    addScene(new Scene5());
+//    addScene(new Scene5());
     addScene(new Scene6());
     addScene(new Scene7());
     addScene(new Scene8());
 //    addScene(new Scene9());
     addScene(new Scene10());
     addScene(new Scene11());
-     try{
-      storyPlayer.close();
-    }
-    catch (Exception e){
-      
-    }
   }
 
   //------------------------------------------------------------------------------------------------------
   void onEnd() {
     println(storyName + "::onEnd");
+    audioMelody.pause();
   }
 
 
@@ -77,13 +85,16 @@ class JamelStory extends TSStoryBase {
       }
 
       // play BEEP sound
-      if (keyPressed && key == ' ') {
-        println("BEEEP");
-      }
+//      if (keyPressed && key == ' ') {
+//        println("BEEEP");
+//      }
 
       popStyle();
 
-      if (getLeftHand().y < getHead().y && getRightHand().y < getHead().y && ripStartMillis == 0 ) ripStartMillis = millis();
+      if (getLeftHand().y < getHead().y && getRightHand().y < getHead().y && ripStartMillis == 0 ) {
+        ripStartMillis = millis();
+        audioFlagRip.play(0);
+      }
     }
   };
 
@@ -146,6 +157,12 @@ class JamelStory extends TSStoryBase {
       //      particleSystem.imgs = imgs;
     }
 
+    
+    //----------------
+    void onEnd() {
+      audioCashRegister.play(0);
+    }
+
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       drawMaskedUser();
@@ -162,6 +179,7 @@ class JamelStory extends TSStoryBase {
         //      if(frameCount % 10 == 0) {
         if (graph.pointIn(activeHand) && activeHand.x > lastPoint.x && PVector.sub(activeHand, lastPoint).mag() > units(20)) {
           posArray.add(activeHand.get());
+          audioGraph.play(0);
           if (posArray.size() > 100) posArray.remove(0);  // trim array
         }
         //      }
@@ -242,6 +260,9 @@ class JamelStory extends TSStoryBase {
       image(imgTrampMasked2, pos.x, pos.y, imgTrampMasked2.width * s, imgTrampMasked2.height * s);
 
       popStyle();
+      
+      audioTramp.setGain(1 - fillAmount);
+      audioBusinessman.setGain(fillAmount);
     }
   };
   Tramp tramp = new Tramp();
@@ -261,6 +282,14 @@ class JamelStory extends TSStoryBase {
       println(storyName + "::" + sceneName + "::onStart");
       doInteraction = false;
       tramp.fillAmount = 0;
+      audioTramp.loop();
+      audioBusinessman.loop();
+    }
+    
+    //----------------
+    void onEnd() {
+      audioTramp.pause();
+      audioBusinessman.pause();
     }
 
     //----------------
@@ -350,6 +379,7 @@ class JamelStory extends TSStoryBase {
     // cats in trees
   class Scene4 extends TSSceneBase {
     boolean throwCats;
+    boolean catchCats;
 
     Scene4() {
       sceneName = "Scene4 CATS";
@@ -360,6 +390,7 @@ class JamelStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       throwCats = false;
+      catchCats = false;
       for (int i=0; i<numTrees; i++) {
         Tree t = trees[i] = new Tree();
         float r = (i+0.5)/numTrees;
@@ -385,12 +416,20 @@ class JamelStory extends TSStoryBase {
       PVector rightHand = getRightHand();
       PVector leftHand = getLeftHand();
 
-      if (throwCats == false && getLeftHand().y < getHead().y && getRightHand().y < getHead().y) {
+      if(getElapsedSeconds() > 2 & !catchCats) {
+        audioCatHappy.play(0);
+        catchCats = true;
+      }
+      
+
+      if (throwCats == false && catchCats == true && getLeftHand().y < getHead().y && getRightHand().y < getHead().y) {
         throwCats = true;
+        audioCatAngry.play(0);
       } 
 
       pushStyle();
       imageMode(CENTER);
+      
       for (int i=0; i<numTrees; i++) {
         Tree t = trees[i];
         if (t.isGrown()) {
@@ -426,35 +465,35 @@ class JamelStory extends TSStoryBase {
 
   //------------------------------------------------------------------------------------------------------
   // lied (re-dress tramp)
-  class Scene5 extends TSSceneBase {
-    boolean doInteraction;
-
-    Scene5() {
-      sceneName = "Scene5 LIED";
-      println(storyName + "::" + sceneName);
-    }
-
-    //----------------
-    void onStart() {
-      println(storyName + "::" + sceneName + "::onStart");
-      doInteraction = false;
-      tramp.fillAmount = 1;
-    }
-
-    //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
-      drawMaskedUser();
-
-      // position of hand relative to waist->head
-      float newt = constrain(map(getLeftHand().y, getHip().y, getHead().y, 0.0, 1.0), 0.0, 1.0);
-      if (newt > 0.99) doInteraction = true;
-      if(tramp.fillAmount < 0.01) doInteraction = false;
-      if (doInteraction) tramp.fillAmount += (newt - tramp.fillAmount) * 0.5;
-//      else tramp.fillAmount = 1;
-
-      tramp.draw();
-    }
-  };
+//  class Scene5 extends TSSceneBase {
+//    boolean doInteraction;
+//
+//    Scene5() {
+//      sceneName = "Scene5 LIED";
+//      println(storyName + "::" + sceneName);
+//    }
+//
+//    //----------------
+//    void onStart() {
+//      println(storyName + "::" + sceneName + "::onStart");
+//      doInteraction = false;
+//      tramp.fillAmount = 1;
+//    }
+//
+//    //----------------
+//    void onDraw(PImage userImage, TSSkeleton skeleton) {
+//      drawMaskedUser();
+//
+//      // position of hand relative to waist->head
+//      float newt = constrain(map(getLeftHand().y, getHip().y, getHead().y, 0.0, 1.0), 0.0, 1.0);
+//      if (newt > 0.99) doInteraction = true;
+//      if(tramp.fillAmount < 0.01) doInteraction = false;
+//      if (doInteraction) tramp.fillAmount += (newt - tramp.fillAmount) * 0.5;
+////      else tramp.fillAmount = 1;
+//
+//      tramp.draw();
+//    }
+//  };
 
   PImage imgFlag = loadImage("jamel/flagjamelwave.png");
 
@@ -489,6 +528,7 @@ class JamelStory extends TSStoryBase {
         if (flagY>0) {
           flagY = 0;
           doInteraction = false;
+          audioMelody.play(0);
         }
       }
        image(imgFlag, 0, flagY, width, height);
@@ -542,7 +582,11 @@ class JamelStory extends TSStoryBase {
       }
       popStyle();
 
-      if (getHighestHand().y < getHead().y) isTriggered = true;
+      if (getHighestHand().y < getHead().y) {
+        isTriggered = true;
+        audioHair.play(0);
+      }
+        
     }
   };
 
@@ -586,13 +630,19 @@ class JamelStory extends TSStoryBase {
         if (x1 > width * 0.5) {
           // sound
           // shake
-          shut1 = true;
+          if(shut1 == false) {
+            audioPrison.play(0);
+            shut1 = true;
+          }
         }
 
         if (x2 < width * 0.5) {
           // sound
           // shake
-          shut2 = true;
+          if(shut2 == false) {
+            audioPrison.play(0);
+            shut2 = true;
+          }
         }
 
         if (shut1) x1 = width * 0.5;
@@ -642,8 +692,15 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
+      audioPages.loop();
+    }
+    
+    //----------------
+    void onEnd() {
+      audioPages.pause();
     }
 
+    //----------------
     void drawNumber(int number, int w) {
       pushStyle();
       pushMatrix();

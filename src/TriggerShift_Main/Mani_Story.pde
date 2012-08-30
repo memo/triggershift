@@ -37,6 +37,7 @@ class ManiStory extends TSStoryBase {
   //------------------------------------------------------------------------------------------------------
   void onEnd() {
     println(storyName + "::onEnd");
+    audioMelody.pause();
   }
 
 
