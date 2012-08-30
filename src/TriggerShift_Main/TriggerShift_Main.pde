@@ -41,7 +41,6 @@ AudioPlayer player;
 AudioPlayer player1;
 
 int lastUserId = 1;
-ArrayList activeUsers = new ArrayList();
 
 //for printing debug info to screen
 PFont debugFont;
@@ -301,15 +300,6 @@ void keyPressed() {
 //----------------------------------
 //----------------------------------
 
-void pickNewUser(int oldUserId) {
-  int index = activeUsers.indexOf(oldUserId);
-  if (index>=0) activeUsers.remove(index);
-  else println("*** pickNewUser: Could not find old user: " + oldUserId);;
-  if(activeUsers.size() > 0) lastUserId = ((Integer)activeUsers.get(activeUsers.size()-1)).intValue();
-  else println(" *** pickNewUser: no users left");
-  println("activeUsers: " + activeUsers.toString());
-}
-
 
 //OPENNI CALLBACKS
 void onNewUser(int userId)
@@ -318,34 +308,24 @@ void onNewUser(int userId)
 
   openNIContext.requestCalibrationSkeleton(userId, true);
   resetSkeletonStats();
-
-  activeUsers.add(userId);
-  lastUserId = userId;
-  println("activeUsers: " + activeUsers.toString());
 }
 
 void onLostUser(int userId)
 {
   println("onLostUser - userId: " + userId);
   resetSkeletonStats();
-  pickNewUser(userId);
 }
 
 void onExitUser(int userId)
 {
   println("onExitUser - userId: " + userId);
   resetSkeletonStats();
-  pickNewUser(userId);
 }
 
 void onReEnterUser(int userId)
 {
   println("onReEnterUser - userId: " + userId);
   resetSkeletonStats();
-
-  activeUsers.add(userId);
-  lastUserId = userId;
-  println("activeUsers: " + activeUsers.toString());
 }
 
 
