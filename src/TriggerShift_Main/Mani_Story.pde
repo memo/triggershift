@@ -23,7 +23,7 @@ class ManiStory extends TSStoryBase {
 
   //----------------
   class Sky {
-    MSAParticle p = new MSAParticle(loadImage("mani/daynight.png"));
+    MSAParticle p = new MSAParticle(loadImage("mani/nightandday.png"));
 
     void start() {
       p.alpha = 0;
@@ -31,7 +31,7 @@ class ManiStory extends TSStoryBase {
       p.alphaSpeed = 0.1;
       p.rot = 0;
       p.rotVel = 0;
-      p.radius = height * 1.2;
+      p.radius = height * 1.3;
       p.pos.set(width/2, height, 0);
     }
 
@@ -49,7 +49,7 @@ class ManiStory extends TSStoryBase {
     float a;    // alpha
     float ts;   // target scale
     float ta;   // target alpha
-    float speed = 0.05;
+    float speed = 0.1;
     float tintAmount = 1;
 
     City(String imgName) {
@@ -73,7 +73,7 @@ class ManiStory extends TSStoryBase {
       imageMode(CENTER);
       translate(width/2, height/2);
       scale(s);
-      image(img, 0, 0, width, height);
+      image(img, 0, (height-img.height)/2, width, width * img.height / img.width);
       popMatrix();
       popStyle();
     }
@@ -110,10 +110,15 @@ class ManiStory extends TSStoryBase {
       particleSystem.alphaSpeed.set(0.0, 0.0);
 
       particleSystem.drag.set(0, 0);
-      particleSystem.maxCount = 200;
+      particleSystem.maxCount = 50;
     }
     
     void end() {
+      for(int i=0; i<particleSystem.particles.size(); i++) {
+        MSAParticle p = (MSAParticle)particleSystem.particles.get(i);
+        p.posAcc.x = -random(units(20), units(50));
+        p.posAcc.y = -random(units(70), units(150));
+      }
     }
 
     void add(PVector _pos) {
@@ -133,11 +138,11 @@ class ManiStory extends TSStoryBase {
     MSAParticle p = new MSAParticle(loadImage("mani/colourwheel.png"));
 
     void start() {
-      p.pos = new PVector(width * 0.2, height * 0.3);
+      p.pos = new PVector(width * 0.3, height * 0.3);
       p.rot = 0;
       p.rotVel = 0;
       p.radius = 0;
-      p.targetRadius = width * 0.1;
+      p.targetRadius = units(90);
       p.radiusSpeed = 0.1;
       p.alpha = 0;
       p.targetAlpha = 1;
@@ -172,7 +177,7 @@ class ManiStory extends TSStoryBase {
       p.posVel = new PVector(units(100), 0);
       p.pos = colorWheel.p.pos.get();
       p.radius = colorWheel.p.targetRadius;
-      p.targetRadius = width * 0.07;
+      p.targetRadius = units(64);
       p.radiusSpeed = 0.2;
       p.rotVel = colorWheel.p.rotVel;
       p.posAcc.y = units(400);
@@ -231,7 +236,7 @@ class ManiStory extends TSStoryBase {
       loadImage("mani/trafficlight1.png"), loadImage("mani/trafficlight2.png"), loadImage("mani/trafficlight3.png")
       };
       float targetPosY = height * 0.55;
-    PVector pos = new PVector(width * 0.25, targetPosY);
+    PVector pos = new PVector(width * 0.3, targetPosY);
     int currentLight = 0;
 
     void start() {
@@ -273,7 +278,7 @@ class ManiStory extends TSStoryBase {
 
     MSAParticleSystem particleSystem = new MSAParticleSystem();
     PImage[] imgs = { 
-      loadImage("mani/note1.png"), loadImage("mani/note2.png"), loadImage("mani/note3.png"), loadImage("mani/note4.png"), loadImage("mani/note5.png"), loadImage("mani/note6.png")
+      loadImage("mani/note1.png"), loadImage("mani/note2.png"), loadImage("mani/note3.png"), loadImage("mani/note4.png"), loadImage("mani/note5.png")
       };
 
 
@@ -436,7 +441,7 @@ class ManiStory extends TSStoryBase {
       particleSystem.rotVel.set(0, 0);
 
       particleSystem.startRadius.set(0, 0);
-      particleSystem.targetRadius.set(units(8), units(3));
+      particleSystem.targetRadius.set(units(5), units(2));
       particleSystem.radiusSpeed.set(0.3, 0.0);
 
       particleSystem.startAlpha.set(0, 0);
@@ -444,7 +449,7 @@ class ManiStory extends TSStoryBase {
       particleSystem.alphaSpeed.set(0.5, 0.1);
 
       particleSystem.drag.set(0.02, 0.005);
-      particleSystem.maxCount = 500;
+      particleSystem.maxCount = 200;
       particleSystem.img = imgRain;
 
       particleSystem.alignToDir = true;
