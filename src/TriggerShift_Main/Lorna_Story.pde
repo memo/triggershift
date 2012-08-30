@@ -3,16 +3,24 @@ class LornaStory extends TSStoryBase {
   LornaStory() {
     storyName = "LornaStory";
     println(storyName + "::" + storyName);
-    addScene(new Scene_shadow());
     addScene(new Scene_Black_White());
-    addScene(new Scene_dream());
-    addScene(new Scene_reality());
     addScene(new Scene_Think_Straight());
     addScene(new Scene_maid());
     addScene(new Scene_colour_trees());
     addScene(new Scene_paper_chain());
+    addScene(new Scene_dream());
+    addScene(new Scene_reality());
     addScene(new Scene_rainbow());
+    addScene(new Scene_shadow());
     addScene(new Scene_reach_for_stars());
+     try{
+      storyPlayer.close();
+    }
+    catch (Exception e){
+      
+    }
+    storyPlayer = minim.loadFile("lorna/lorna-melody-new.mp3");
+    storyPlayer.loop();
   }
 
   //----------------------------------
@@ -24,7 +32,7 @@ class LornaStory extends TSStoryBase {
 // switch black and white from one side to the other (directly ripped off from JAmel prison bars
 class Scene_Black_White extends TSSceneBase {
   float x1, x2;
-
+  //TODO make the volume a base level and increase when arms are crossed
   Scene_Black_White() {
     sceneName = "Scene1 black and white";
     //println(storyName + "::" + sceneName);
@@ -68,6 +76,9 @@ class Scene_Think_Straight extends TSSceneBase {
   int imageWidth=500;
   int imageHeight=300;
   boolean handsOverHead;
+  boolean lock;
+  //TODO add 2 audio samples straight and bent when ed makes them
+
   Scene_Think_Straight() {
     sceneName = "Scene1 think straight";
     //println(storyName + "::" + sceneName);
@@ -79,8 +90,10 @@ class Scene_Think_Straight extends TSSceneBase {
     x1 = 0;
     x2 = width;
     player.close();
-    player = minim.loadFile("lorna/super8.mp3");
+    player = minim.loadFile("lorna/thinkstraight_sine.mp3");
+    player.loop();
     handsOverHead=false;
+    lock=false;
   }
 
   //----------------
@@ -99,9 +112,14 @@ class Scene_Think_Straight extends TSSceneBase {
 
     if (rightHand.y < head.y && leftHand.y <head.y) {
       handsOverHead=true;
+      if (!lock) {
+        player.close();
+        player = minim.loadFile("lorna/thinkstraight_wobbly.mp3");
+        player.loop();
+        lock=true;
+      }
     }
     if (handsOverHead) {
-      player.play();
       //draw triangular mask over left shoulder
       float hyp=imageHeight+imageWidth;
       //get angle between shoulder and hand
@@ -182,67 +200,161 @@ class Scene_Think_Straight extends TSSceneBase {
 
 
 
-//SCENE 13 2 HANDS UP ATTACTS STAR PARTICLES
-class Scene_reach_for_stars extends TSSceneBase {
-  int numStars=30;
-  StarParticle[] stars = new StarParticle[numStars];
-  boolean startAttract;
-  float amt;
-  Scene_reach_for_stars() {
-    sceneName="scene13 REACH FOR STARS";
+// Scene 5 hand (or maybe later crayon) colours background from b and white to colour
+class Scene_maid extends TSSceneBase {
 
-    println("Lorna::Scene_reach_for_stars");
+  PImage maid = loadImage("lorna/maidsoutfit.png");
+  PImage cap = loadImage("lorna/maidscap.png");
+  PImage duster = loadImage("lorna/featherduster.png");
+
+  int imageWidth=80;
+  int imageHeight=200;
+  Scene_maid() {
+    sceneName = "Scene5 maid";
+    //println(storyName + "::" + sceneName);
+    duster.resize(imageWidth, imageHeight);
   }
 
-  // this is called when the scene starts (i.e. is triggered)
+  //----------------
   void onStart() {
-    for (int i=0;i<stars.length;i++) {
-      stars[i]= new StarParticle(new PVector(random(width), random(height/2)), new PVector (0, 0, 0), random(TWO_PI), 0, random(3, 10));
-    }
-    startAttract=false;
-    println("Lorna::Scene_reach_for_stars::onStart");
-    amt=0.0;
+    //println(storyName + "::" + sceneName + "::onStart");
     player.close();
-    player = minim.loadFile("lorna/stars.mp3");
+    //possible switch to brush =sing triggered by sweepin gesture
+    player = minim.loadFile("lorna/brushing.mp3");
     player.loop();
   }
+
+  //----------------
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
-    PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
-    PVector head = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
-    //SKEL_WAIST is not working! 
-
-    //if both arms go above the head start linking the image pos to hands
-
-    if (leftHand.y<head.y && rightHand.y<head.y) startAttract = true;
     drawMaskedUser();
-    pushStyle();
-    pushMatrix();
-    //attract half the stars to the left hand and half to the right
-    if (startAttract) {
-      for (int i=0;i<stars.length/2;i++) {
-        stars[i].update(leftHand, amt);
-        if (dist(stars[i].pos.x, stars[i].pos.y, leftHand.x, leftHand.y)<20) {
-          stars[i].setAlive(false);
-        }
-      }
-      for (int i=stars.length/2;i<stars.length;i++) {
-        stars[i].update(rightHand, amt);
-        if (dist(stars[i].pos.x, stars[i].pos.y, rightHand.x, rightHand.y)<20) {
-          stars[i].setAlive(false);
-        }
-      }
-      if (amt<1) {
-        amt+=0.03;
-      }
-    }
-    for (int i=0;i<stars.length;i++) {
 
-      stars[i].draw();
-    }
+    pushStyle();
+
+    //if hand is over one image
+    PVector leftHand=getLeftHand();
+    PVector rightHand=getRightHand();
+    PVector head = getHead();
+    PVector waist = getHip();
+    PVector leftElbow=getLeftElbow();
+    PVector leftShoulder=getLeftShoulder();
+
+    PVector rightShoulder=getRightShoulder();
+
+    float rot = atan2(waist.y- head.y, waist.x-head.x );
+    float h =1.5* ( waist.y-head.y);
+    float w=2*( rightShoulder.x-leftShoulder.x );
+    //image(maid, leftShoulder.x - (0.25*w), leftShoulder.y -(0.1*h), w, h);
+    //TODO optimise this 
+
+
+    //DRAW MAID BODY
+    pushMatrix();
+    imageMode(CENTER);
+    translate(waist.x, waist.y);
+    rotate(rot-(0.5*PI)  );
+    image(maid, 0, 0, w, h);
+    popMatrix();
+
+    //DRAW CAP
+    pushMatrix();
+
+    float cw=0.7*(rightShoulder.x-leftShoulder.x  );
+    float ch =cw/2;
+    translate(head.x, head.y-(0.4*cap.height));
+    image(cap, 0, 0, cw, ch);
+    popMatrix();
+    pushMatrix();
+    imageMode(CORNER);
+
+    float angle = atan2( leftHand.y-leftElbow.y, leftHand.x - leftElbow.x );
+    translate(leftHand.x, leftHand.y);
+    rotate(angle);
+    image(duster, 0, 0);
 
     popMatrix();
+
     popStyle();
+  }
+};
+
+// Scene 5 hand (or maybe later crayon) colours background from b and white to colour
+class Scene_colour_trees extends TSSceneBase {
+
+  PImage colourTrees = loadImage("lorna/treescolour.png");
+  PImage bandwTrees = loadImage("lorna/treesbw.png");
+  PImage crayon = loadImage("lorna/crayon.png");
+  int imageWidth=width;
+  int imageHeight=height;
+
+  Scene_colour_trees() {
+    sceneName = "Scene5 colour trees";
+    //println(storyName + "::" + sceneName);
+    colourTrees.resize(imageWidth, imageHeight);
+    bandwTrees.resize(imageWidth, imageHeight);
+    float crayonLength=300;
+    crayon.resize(int(crayonLength/5), int(crayonLength));
+  }
+
+  //----------------
+  void onStart() {
+    //println(storyName + "::" + sceneName + "::onStart");
+    player.close();
+    player = minim.loadFile("lorna/crayon chalk.mp3");
+    player.loop();
+  }
+
+  //----------------
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+
+    pushStyle();
+
+    //if hand is over one image
+    PVector leftHand=getLeftHand();
+    PVector rightHand=getRightHand();
+
+    colourTrees.loadPixels();
+    bandwTrees.loadPixels();
+    int radius=40;
+    int x=0;
+    int y=0;
+
+    ArrayList indices = new ArrayList();
+    float thresh=0.01;
+    imageMode(CENTER);
+
+    //get pos of end of crayon
+
+
+
+    image(crayon, leftHand.x, leftHand.y);
+
+    //TODO optimise this 
+    int boxSize=2*radius;
+    int startPosX =int(leftHand.x - boxSize);
+    int endPosX =int(leftHand.x + boxSize);
+    int startPosY =int(leftHand.y- boxSize);
+    int endPosY =int(leftHand.y + boxSize);
+    for (int x1=startPosX; x1<endPosX; x1++) {
+      for (int y1=startPosY; y1<endPosY; y1++) {
+
+        int index = x1+ (colourTrees.width*y1);
+        if (index< bandwTrees.pixels.length &&index>0 ) {
+          if (dist(x1, y1, leftHand.x, leftHand.y  )<radius) {
+            //write into bandw image with colour data 
+            bandwTrees.pixels[index] = colourTrees.pixels[index];
+          }
+        }
+      }
+    }
+
+
+    colourTrees.updatePixels();
+    bandwTrees.updatePixels();
+    imageMode(CORNER);
+
+    image(bandwTrees, 0, 0);
+    popStyle();
+    drawMaskedUser();
   }
 };
 
@@ -349,94 +461,6 @@ class Scene_paper_chain extends TSSceneBase {
   }
 };
 
-// Scene 5 hand (or maybe later crayon) colours background from b and white to colour
-class Scene_colour_trees extends TSSceneBase {
-
-  PImage colourTrees = loadImage("lorna/treescolour.png");
-  PImage bandwTrees = loadImage("lorna/treesbw.png");
-
-  int imageWidth=width;
-  int imageHeight=height;
-
-  Scene_colour_trees() {
-    sceneName = "Scene5 colour trees";
-    //println(storyName + "::" + sceneName);
-    colourTrees.resize(imageWidth, imageHeight);
-    bandwTrees.resize(imageWidth, imageHeight);
-  }
-
-  //----------------
-  void onStart() {
-    //println(storyName + "::" + sceneName + "::onStart");
-    player.close();
-    player = minim.loadFile("lorna/crayon chalk.mp3");
-    player.loop();
-  }
-
-  //----------------
-  void onDraw(PImage userImage, TSSkeleton skeleton) {
-
-    pushStyle();
-
-    //if hand is over one image
-    PVector leftHand=getLeftHand();
-    PVector rightHand=getRightHand();
-
-    colourTrees.loadPixels();
-    bandwTrees.loadPixels();
-    int radius=40;
-    int x=0;
-    int y=0;
-
-    ArrayList indices = new ArrayList();
-    float thresh=0.01;
-
-
-
-    //leftHand.x, leftHand.y
-    //TODO optimise this 
-    int boxSize=2*radius;
-    int startPosX =int(leftHand.x - boxSize);
-    int endPosX =int(leftHand.x + boxSize);
-    int startPosY =int(leftHand.y- boxSize);
-    int endPosY =int(leftHand.y + boxSize);
-    for (int x1=startPosX; x1<endPosX; x1++) {
-      for (int y1=startPosY; y1<endPosY; y1++) {
-
-        int index = x1+ (colourTrees.width*y1);
-        if (index< bandwTrees.pixels.length &&index>0 ) {
-          if (dist(x1, y1, leftHand.x, leftHand.y  )<radius) {
-            //write into bandw image with colour data 
-            bandwTrees.pixels[index] = colourTrees.pixels[index];
-          }
-        }
-      }
-    }
-
-    startPosX =int(rightHand.x - boxSize);
-    endPosX =int(rightHand.x + boxSize);
-    startPosY =int(rightHand.y- boxSize);
-    endPosY =int(rightHand.y + boxSize);
-    for (int x1=startPosX; x1<endPosX; x1++) {
-      for (int y1=startPosY; y1<endPosY; y1++) {
-
-        int index = x1+ (colourTrees.width*y1);
-        if (index< bandwTrees.pixels.length &&index>0 ) {
-          if ( dist(x1, y1, rightHand.x, rightHand.y  )<radius) {
-            //write into bandw image with colour data 
-            bandwTrees.pixels[index] = colourTrees.pixels[index];
-          }
-        }
-      }
-    }
-    colourTrees.updatePixels();
-    bandwTrees.updatePixels();
-
-    image(bandwTrees, 0, 0);
-    popStyle();
-    drawMaskedUser();
-  }
-};
 
 
 // Scene 11 rainbow 
@@ -523,83 +547,6 @@ class Scene_rainbow extends TSSceneBase {
       popStyle();
     }
     drawMaskedUser();
-  }
-};
-
-
-// Scene 5 hand (or maybe later crayon) colours background from b and white to colour
-class Scene_maid extends TSSceneBase {
-
-  PImage maid = loadImage("lorna/maidsoutfit.png");
-  PImage cap = loadImage("lorna/maidscap.png");
-  PImage duster = loadImage("lorna/featherduster.png");
-
-  int imageWidth=80;
-  int imageHeight=200;
-  Scene_maid() {
-    sceneName = "Scene5 maid";
-    //println(storyName + "::" + sceneName);
-    duster.resize(imageWidth, imageHeight);
-  }
-
-  //----------------
-  void onStart() {
-    //println(storyName + "::" + sceneName + "::onStart");
-    player.close();
-    player = minim.loadFile("lorna/brushing.mp3");
-    player.loop();
-  }
-
-  //----------------
-  void onDraw(PImage userImage, TSSkeleton skeleton) {
-    drawMaskedUser();
-
-    pushStyle();
-
-    //if hand is over one image
-    PVector leftHand=getLeftHand();
-    PVector rightHand=getRightHand();
-    PVector head = getHead();
-    PVector waist = getHip();
-    PVector leftElbow=getLeftElbow();
-    PVector leftShoulder=getLeftShoulder();
-
-    PVector rightShoulder=getRightShoulder();
-
-    float rot = atan2(waist.y- head.y, waist.x-head.x );
-    float h =1.5* ( waist.y-head.y);
-    float w=2*( rightShoulder.x-leftShoulder.x );
-    //image(maid, leftShoulder.x - (0.25*w), leftShoulder.y -(0.1*h), w, h);
-    //TODO optimise this 
-
-
-    //DRAW MAID BODY
-    pushMatrix();
-    imageMode(CENTER);
-    translate(waist.x, waist.y);
-    rotate(rot-(0.5*PI)  );
-    image(maid, 0, 0, w, h);
-    popMatrix();
-
-    //DRAW CAP
-    pushMatrix();
-
-    float cw=0.7*(rightShoulder.x-leftShoulder.x  );
-    float ch =cw/2;
-    translate(head.x, head.y-(0.4*cap.height));
-    image(cap, 0, 0, cw, ch);
-    popMatrix();
-    pushMatrix();
-    imageMode(CORNER);
-
-    float angle = atan2( leftHand.y-leftElbow.y, leftHand.x - leftElbow.x );
-    translate(leftHand.x, leftHand.y);
-    rotate(angle);
-    image(duster, 0, 0);
-
-    popMatrix();
-
-    popStyle();
   }
 };
 
@@ -733,10 +680,10 @@ class Scene_shadow extends TSSceneBase {
 
   //----------------
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-     PVector head = getHead();
-     
-     if(head.x>width/2) isShadow=true;
-     
+    PVector head = getHead();
+
+    if (head.x>width/2) isShadow=true;
+
     if (!isShadow) {
       drawMaskedUser();
     }
@@ -744,12 +691,76 @@ class Scene_shadow extends TSSceneBase {
 
       drawUserDepthPlane();
       fill(0);
-       //tint(0, alpha);
-       //rect(0,0,width,height);
+      //tint(0, alpha);
+      //rect(0,0,width,height);
       alpha+=2;
     }
     pushStyle();
     pushMatrix();
+
+    popMatrix();
+    popStyle();
+  }
+};
+
+//SCENE 13 2 HANDS UP ATTACTS STAR PARTICLES
+class Scene_reach_for_stars extends TSSceneBase {
+  int numStars=30;
+  StarParticle[] stars = new StarParticle[numStars];
+  boolean startAttract;
+  float amt;
+  Scene_reach_for_stars() {
+    sceneName="scene13 REACH FOR STARS";
+
+    println("Lorna::Scene_reach_for_stars");
+  }
+
+  // this is called when the scene starts (i.e. is triggered)
+  void onStart() {
+    for (int i=0;i<stars.length;i++) {
+      stars[i]= new StarParticle(new PVector(random(width), random(height/2)), new PVector (0, 0, 0), random(TWO_PI), 0, random(3, 10));
+    }
+    startAttract=false;
+    println("Lorna::Scene_reach_for_stars::onStart");
+    amt=0.0;
+    player.close();
+    player = minim.loadFile("lorna/stars.mp3");
+    player.loop();
+  }
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
+    PVector head = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
+    //SKEL_WAIST is not working! 
+
+    //if both arms go above the head start linking the image pos to hands
+
+    if (leftHand.y<head.y && rightHand.y<head.y) startAttract = true;
+    drawMaskedUser();
+    pushStyle();
+    pushMatrix();
+    //attract half the stars to the left hand and half to the right
+    if (startAttract) {
+      for (int i=0;i<stars.length/2;i++) {
+        stars[i].update(leftHand, amt);
+        if (dist(stars[i].pos.x, stars[i].pos.y, leftHand.x, leftHand.y)<20) {
+          stars[i].setAlive(false);
+        }
+      }
+      for (int i=stars.length/2;i<stars.length;i++) {
+        stars[i].update(rightHand, amt);
+        if (dist(stars[i].pos.x, stars[i].pos.y, rightHand.x, rightHand.y)<20) {
+          stars[i].setAlive(false);
+        }
+      }
+      if (amt<1) {
+        amt+=0.03;
+      }
+    }
+    for (int i=0;i<stars.length;i++) {
+
+      stars[i].draw();
+    }
 
     popMatrix();
     popStyle();

@@ -29,6 +29,7 @@ class ManiStory extends TSStoryBase {
       addScene(new Scene10());
     }
 
+
   //------------------------------------------------------------------------------------------------------
   void onEnd() {
     println(storyName + "::onEnd");
