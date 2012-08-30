@@ -396,8 +396,7 @@ class ManiStory extends TSStoryBase {
               particleSystem.startPos.base = getHand(i);
               particleSystem.inheritVel.base = getHandVelocity(i);
               particleSystem.add();
-              audioNotes.randomIndex();
-              audioNotes.play(0);
+              audioNotes.playRandomIndex();
               audioNotes.setGain(random(0.5, 1.0));
             }
           }
@@ -454,8 +453,7 @@ class ManiStory extends TSStoryBase {
             particleSystem.startPos.base = getHand(i);
             particleSystem.inheritVel.base = getHandVelocity(i);
             particleSystem.add();
-            audioStars.randomIndex();
-            audioStars.play(0);
+            audioStars.playRandomIndex();
             audioStars.setGain(random(0.5, 1));
           }
         }
@@ -622,8 +620,7 @@ class ManiStory extends TSStoryBase {
       PVector rightHand = getRightHand();
       if (getRightHandVelocity().mag() > 0.01) {
         flowers.add(new PVector(width * 0.95, rightHand.y));
-        audioFlowers.randomIndex();
-        audioFlowers.play(0);
+        audioFlowers.playRandomIndex();
         audioFlowers.setGain(random(0.5, 1.0));
       }
       flowers.draw();

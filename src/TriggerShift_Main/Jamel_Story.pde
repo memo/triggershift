@@ -1,7 +1,6 @@
 class JamelStory extends TSStoryBase {
   MSAAudioPlayer audioFlagRip = new MSAAudioPlayer("jamel/audio/flagrip.mp3");
   MSAAudioPlayer audioMelody = new MSAAudioPlayer("jamel/audio/jamel-melody.mp3");
-  MSAAudioPlayers audioGraph = new MSAAudioPlayers("jamel/audio/graphdot.mp3", 10);
   MSAAudioPlayer audioTramp = new MSAAudioPlayer("jamel/audio/tramp.mp3");
   MSAAudioPlayer audioBusinessman = new MSAAudioPlayer("jamel/audio/businessman.mp3");
   MSAAudioPlayer audioCatHappy = new MSAAudioPlayer("jamel/audio/cathappy.mp3");
@@ -9,9 +8,10 @@ class JamelStory extends TSStoryBase {
   MSAAudioPlayer audioHair = new MSAAudioPlayer("jamel/audio/hair.mp3");
   MSAAudioPlayer audioPrison = new MSAAudioPlayer("jamel/audio/metaljail.mp3");
   MSAAudioPlayer audioPages = new MSAAudioPlayer("jamel/audio/pages.mp3");
-  MSAAudioPlayer audioCashRegister = new MSAAudioPlayer("jamel/audio/cashregister.mp3");
-  //  MSAAudioPlayer audioFor = new MSAAudioPlayer("jamel/audio/metaljail.mp3");
-  //  MSAAudioPlayer audioFlagDown = new SAAudioPlayer("jamel/audio/jamel-melody.mp3");
+//  MSAAudioPlayer audioCashRegister = new MSAAudioPlayer("jamel/audio/cashregister.mp3");
+  MSAAudioPlayers audioGraph = new MSAAudioPlayers( new String[] {
+    "jamel/audio/graph/1.mp3", "jamel/audio/graph/2.mp3", "jamel/audio/graph/3.mp3", "jamel/audio/graph/4.mp3", "jamel/audio/graph/5.mp3", "jamel/audio/graph/6.mp3"
+  } );
 
   JamelStory() {
     storyName = "JamelStory";
@@ -42,7 +42,7 @@ class JamelStory extends TSStoryBase {
     audioHair.close();
     audioPrison.close();
     audioPages.close();
-    audioCashRegister.close();
+//    audioCashRegister.close();
   }
 
     //------------------------------------------------------------------------------------------------------
@@ -169,7 +169,7 @@ class JamelStory extends TSStoryBase {
 
       //----------------
       void onEnd() {
-        audioCashRegister.play(0);
+//        audioCashRegister.play(0);
       }
 
       //----------------
@@ -188,8 +188,8 @@ class JamelStory extends TSStoryBase {
           //      if(frameCount % 10 == 0) {
           if (graph.pointIn(activeHand) && activeHand.x > lastPoint.x && PVector.sub(activeHand, lastPoint).mag() > units(20)) {
             posArray.add(activeHand.get());
-            audioGraph.play(0);
             if (posArray.size() > 100) posArray.remove(0);  // trim array
+            audioGraph.playRandomIndex();
           }
           //      }
 
@@ -425,7 +425,7 @@ class JamelStory extends TSStoryBase {
         PVector rightHand = getRightHand();
         PVector leftHand = getLeftHand();
 
-        if (getElapsedSeconds() > 2 & !catchCats) {
+        if (getElapsedSeconds() > 1.5 & !catchCats) {
           audioCatHappy.play(0);
           catchCats = true;
         }
@@ -537,7 +537,7 @@ class JamelStory extends TSStoryBase {
           if (flagY>0) {
             flagY = 0;
             doInteraction = false;
-            audioMelody.play(0);
+            audioMelody.loop();
           }
         }
         image(imgFlag, 0, flagY, width, height);
@@ -561,7 +561,7 @@ class JamelStory extends TSStoryBase {
       void onStart() {
         println(storyName + "::" + sceneName + "::onStart");
         isTriggered = false;
-        audioMelody.setGain(0.3);
+        audioMelody.setGain(0.5);
       }
 
       //----------------
@@ -594,7 +594,7 @@ class JamelStory extends TSStoryBase {
 
         if (getHighestHand().y < getHead().y) {
           isTriggered = true;
-          audioHair.play(0);
+          if(audioHair.isPlaying() == false) audioHair.play(0);
         }
       }
     };

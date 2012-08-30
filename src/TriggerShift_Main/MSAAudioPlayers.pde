@@ -14,13 +14,13 @@ class MSAAudioPlayers {
     for(int i=0; i<s.length; i++) player[i] = new MSAAudioPlayer(s[i]);
   }
   
-  MSAAudioPlayers(String []s, int count, boolean doRandom) {
-    player = new MSAAudioPlayer[count];
-    for(int i=0; i<count; i++) {
-      int sampleIndex = doRandom ? (int)floor(random(s.length)) : i % s.length;
-      player[i] = new MSAAudioPlayer(s[sampleIndex]);
-    }
-  }
+//  MSAAudioPlayers(String []s, int count, boolean doRandom) {
+//    player = new MSAAudioPlayer[count];
+//    for(int i=0; i<count; i++) {
+//      int sampleIndex = doRandom ? (int)floor(random(s.length)) : i % s.length;
+//      player[i] = new MSAAudioPlayer(s[sampleIndex]);
+//    }
+//  }
   
   void nextIndex() {
     currentIndex = (currentIndex + 1) % player.length;
@@ -47,6 +47,12 @@ class MSAAudioPlayers {
     currentIndex = i;
     play(fromTime);
   }
+  
+  void playRandomIndex() {
+    randomIndex();
+    play(0);
+  }
+  
   
 //  
 //  void play(AudioEffect effect) {
