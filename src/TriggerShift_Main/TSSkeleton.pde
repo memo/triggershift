@@ -25,8 +25,26 @@ class TSSkeleton {
     }
   }
 
+  int findMostConfidentSkeleton(SimpleOpenNI context) {
+    int mostConfident = 0;
+    float maxConfidence = 0;
+    PVector p = new PVector();
+    int[] userList = context.getUsers();
+    for(int i=0; i<userList.length; i++) {
+      float c = context.getJointPositionSkeleton(userList[i], SimpleOpenNI.SKEL_HEAD, p);
+      if(c > maxConfidence) {
+        maxConfidence = c;
+        mostConfident = userList[i];
+      }
+    }
+    return mostConfident;
+  }
+
+
   //----------------------------------
   void update(SimpleOpenNI context) {
+    lastUserId = findMostConfidentSkeleton(context);
+
     if (context != null) {
       userCount = context.getNumberOfUsers();
       updateVelocities(context);
