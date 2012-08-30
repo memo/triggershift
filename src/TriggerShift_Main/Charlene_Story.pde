@@ -680,7 +680,7 @@ class Scene_drop_set extends TSSceneBase {
   boolean startDrop;
   boolean endDrop;
   float sizeMult=2.0;
-
+  float lock;
   Scene_drop_set() {
     sceneName="scene10 DROP SET";
 
@@ -697,6 +697,7 @@ class Scene_drop_set extends TSSceneBase {
     player = minim.loadFile("charlene/question.mp3");
     //TODO add gotitwrong on drop
     player.loop();
+    lock=false;
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     drawMaskedUser();
