@@ -12,9 +12,11 @@ class ManiStory extends TSStoryBase {
     MSAAudioPlayer audioBallet = new MSAAudioPlayer("mani/audio/swan lake.mp3");
   MSAAudioPlayer audioNight = new MSAAudioPlayer("mani/audio/world-turn.mp3");
   MSAAudioPlayer audioMelody = new MSAAudioPlayer("mani/audio/mani-melody.mp3");
-  
-  String []audioNoteNames = {"mani/audio/notes/1.mp3", "mani/audio/notes/2.mp3", "mani/audio/notes/3.mp3", "mani/audio/notes/4.mp3", "mani/audio/notes/5.mp3", "mani/audio/notes/6.mp3" };
-  
+
+  String []audioNoteNames = {
+    "mani/audio/notes/1.mp3", "mani/audio/notes/2.mp3", "mani/audio/notes/3.mp3", "mani/audio/notes/4.mp3", "mani/audio/notes/5.mp3", "mani/audio/notes/6.mp3"
+  };
+
   MSAAudioPlayers audioNotes = new MSAAudioPlayers( audioNoteNames, 20 );
 
 
@@ -37,7 +39,17 @@ class ManiStory extends TSStoryBase {
   //------------------------------------------------------------------------------------------------------
   void onEnd() {
     println(storyName + "::onEnd");
-    audioMelody.pause();
+    audioRain.close();
+    audioForward.close();
+    audioWheel.close();
+    audioBallBounce.close();
+    audioBallCatch.close();
+    audioFlowers.close();
+    audioStars.close();
+    for(int i=0; i<audioTraffic.length; i++) audioTraffic[i].close();
+    audioNight.close();
+    audioMelody.close();
+    audioNotes.close();
   }
 
 
@@ -508,7 +520,7 @@ class ManiStory extends TSStoryBase {
 
       audioRain.loop();
     }
-    
+
     //----------------
     void onEnd() {
       audioRain.pause();
@@ -739,7 +751,7 @@ class ManiStory extends TSStoryBase {
       println(storyName + "::" + sceneName + "::onStart");
       ballerina.start();
     }
-    
+
     //----------------
     void onEnd() {
       ballerina.end();
@@ -783,7 +795,7 @@ class ManiStory extends TSStoryBase {
       cityColor.tintAmount = 1;
     }
 
-    
+
     //----------------
     void onEnd() {
       audioNight.pause();
@@ -842,10 +854,10 @@ class ManiStory extends TSStoryBase {
       cityColor.tintAmount = 0.2;
     }
 
-    
+
     //----------------
     void onEnd() {
-       audioMelody.pause();
+      audioMelody.pause();
     }
 
     //----------------
