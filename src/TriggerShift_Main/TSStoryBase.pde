@@ -16,6 +16,12 @@ class TSStoryBase {
   // OVERRIDE THIS FUNCTION
   void onEnd() {
     println("TSStoryBase::onEnd");
+     try{
+      storyPlayer.close();
+    }
+    catch (Exception e){
+      
+    }
   }
   
   //----------------------------------
