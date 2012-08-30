@@ -39,6 +39,7 @@ TSMasker masker = null;
 Minim minim;
 AudioPlayer player;
 AudioPlayer player1;
+AudioPlayer storyPlayer;
 
 int lastUserId = 1;
 ArrayList activeUsers = new ArrayList();
@@ -159,7 +160,7 @@ void setup() {
 
   setupAudio();
   stroke(255, 255, 255);
-  
+
   hint(DISABLE_DEPTH_TEST);
   // smooth();
 }
@@ -304,8 +305,9 @@ void keyPressed() {
 void pickNewUser(int oldUserId) {
   int index = activeUsers.indexOf(oldUserId);
   if (index>=0) activeUsers.remove(index);
-  else println("*** pickNewUser: Could not find old user: " + oldUserId);;
-  if(activeUsers.size() > 0) lastUserId = ((Integer)activeUsers.get(activeUsers.size()-1)).intValue();
+  else println("*** pickNewUser: Could not find old user: " + oldUserId);
+  ;
+  if (activeUsers.size() > 0) lastUserId = ((Integer)activeUsers.get(activeUsers.size()-1)).intValue();
   else println(" *** pickNewUser: no users left");
   println("activeUsers: " + activeUsers.toString());
 }
@@ -399,3 +401,12 @@ void stop()
   super.stop();
 }
 
+void mouseMoved(){
+    float volume = map(mouseX, 0, width, -80.0, -13.9794);
+    try{
+     storyPlayer.setGain(volume);
+    }
+    catch(Exception e){
+    }
+  
+}

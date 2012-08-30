@@ -12,7 +12,6 @@ class TSStoryBase {
   protected boolean reachedEnd = false;
   
   public String storyName = "TSStoryBase";  // fill this in with correct name in subclass
-
   //----------------------------------
   // OVERRIDE THIS FUNCTION
   void onEnd() {
