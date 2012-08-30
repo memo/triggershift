@@ -41,6 +41,8 @@ AudioPlayer player;
 AudioPlayer player1;
 
 int lastUserId = 1;
+ArrayList activeUsers = new ArrayList();
+
 //for printing debug info to screen
 PFont debugFont;
 PFont smallFont;
@@ -141,7 +143,7 @@ void setupOpenNI() {
 
 //----------------------------------
 void setup() {
-  size(1024, 768, P3D);
+  size(1280, 768, P3D);
 
   frameRate(30);
   masker = new TSMasker();
@@ -214,7 +216,7 @@ void draw() {
     //    if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
   }
 
-  if(doShowGUI) cp5.draw();
+  if (doShowGUI) cp5.draw();
 
   if (doDrawDebugInfo) {
     pushStyle();
@@ -289,7 +291,6 @@ void keyPressed() {
   case 'g':
     doShowGUI ^= true;
     break;
-   
   }
 }
 
@@ -298,35 +299,51 @@ void keyPressed() {
 //----------------------------------
 //----------------------------------
 
-// ARE THESE NEEDED HERE?
+void pickNewUser(int oldUserId) {
+  int index = activeUsers.indexOf(oldUserId);
+  if (index>=0) activeUsers.remove(index);
+  else println("*** pickNewUser: Could not find old user: " + oldUserId);;
+  if(activeUsers.size() > 0) lastUserId = ((Integer)activeUsers.get(activeUsers.size()-1)).intValue();
+  else println(" *** pickNewUser: no users left");
+  println("activeUsers: " + activeUsers.toString());
+}
+
+
 //OPENNI CALLBACKS
 void onNewUser(int userId)
 {
   println("onNewUser - userId: " + userId);
-  println("  start pose detection");
 
-  lastUserId = userId;
   openNIContext.requestCalibrationSkeleton(userId, true);
   resetSkeletonStats();
+
+  activeUsers.add(userId);
+  lastUserId = userId;
+  println("activeUsers: " + activeUsers.toString());
 }
 
 void onLostUser(int userId)
 {
   println("onLostUser - userId: " + userId);
   resetSkeletonStats();
+  pickNewUser(userId);
 }
 
 void onExitUser(int userId)
 {
   println("onExitUser - userId: " + userId);
   resetSkeletonStats();
+  pickNewUser(userId);
 }
 
 void onReEnterUser(int userId)
 {
-  lastUserId = userId;
   println("onReEnterUser - userId: " + userId);
   resetSkeletonStats();
+
+  activeUsers.add(userId);
+  lastUserId = userId;
+  println("activeUsers: " + activeUsers.toString());
 }
 
 
