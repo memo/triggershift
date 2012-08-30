@@ -41,8 +41,9 @@ class Scene_flickBook extends TSSceneBase {
       book[i].resize(imageWidth, imageHeight);
     }
     player.close();
-    player = minim.loadFile("charlene/pages.mp3");
-    player.loop();
+    //TODO take to one flick (use array index)
+    player = minim.loadFile("charlene/page-flick.mp3");
+    //player.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
@@ -50,7 +51,7 @@ class Scene_flickBook extends TSSceneBase {
     image(book[frameIndex], picturePos.x, picturePos.y);
 
     float thresh=0.01;
-
+   //TODO if (frameIndex==0) player.play();
     //if the left hand is moving to the right increment the page index
     if (skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext).x >0+thresh) {
       frameIndex++;
@@ -82,7 +83,6 @@ class Scene_clock_hands extends TSSceneBase {
     hourHand.resize(imageWidth, imageHeight);
     minuteHand.resize(int(0.8*imageWidth), int( 0.6*imageHeight));
     book.resize(bookImageWidth, bookImageHeight);
-
   }
 
   // this is called when the scene starts (i.e. is triggered)
@@ -127,7 +127,7 @@ class Scene_throw_coffee extends TSSceneBase {
   int imageHeight;
 
   PVector startPos;
-
+  //TODO change clip to ropestretch when isThrown
   //the blobs of coffee
   int  numBlobs= 30;
   String[] words= new String[numBlobs];
@@ -184,7 +184,7 @@ class Scene_throw_coffee extends TSSceneBase {
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     pushStyle();
-    textFont(_font,24);
+    textFont(_font, 24);
     drawMaskedUser();
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
     //PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
@@ -202,6 +202,9 @@ class Scene_throw_coffee extends TSSceneBase {
     if (isThrown) {
       //the first time we have thrown the coffee, set a velocity to the particles
       if (!lock) {
+      //TODO  player = minim.loadFile("charlene/ropestretch.mp3");
+        //no loop for this one
+        //TODO player.play();
         for (int i=0;i<blobs.length;i++) {
           blobs[i].setPosVel(new PVector(random(-3, 3), random(-8, -2), 0));
           blobs[i].setRotVel(random(-3, 3));
@@ -268,7 +271,6 @@ class Scene_mortar_board_on_head extends TSSceneBase {
     player = minim.loadFile("charlene/mortarboard.mp3");
     player.play();
   }
-
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     drawMaskedUser();
     PVector endPos= skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
@@ -281,7 +283,7 @@ class Scene_mortar_board_on_head extends TSSceneBase {
 
     w=(rightShoulder.x-leftShoulder.x  );
     h =w*0.7;
-    image(mortarBoard, currentX-(0.5*w), currentY-(0.7*h), w, h);
+    image(mortarBoard, currentX-(0.5*w), currentY - h, w, h);
     if (inc<1.0) {
       inc+=speed;
     }
@@ -298,12 +300,11 @@ class Scene_zoom_from_space extends TSSceneBase {
 
   int imageWidth;
   int imageHeight;
-
+  //TODO add volume
   Scene_zoom_from_space() {
     sceneName="scene5 ZOOM FROM SPACE";
 
     //println(storyName + "::" + sceneName + "::onStart");
-
   }
 
   // this is called when the scene starts (i.e. is triggered)
@@ -331,6 +332,10 @@ class Scene_zoom_from_space extends TSSceneBase {
     //scale the image according to the mapped distance between hands
     float imageScale =  map(distBetweenHands, 0, maxDist, 0.0, 1);
     imageScale=constrain(imageScale, 0.01, 0.96);
+
+
+//TODO float volume = map(distBetweenHands, 0, getMaxArmLength()*2, -13.9794, -80.0);
+   //TODO player.setGain(volume);
 
     if (imageScale >= 0.0 && imageScale < 0.5 ) {
       blended= lerpImage(city, country, imageScale *map(imageScale, 0.0, 0.5, 0, 1)   );
@@ -463,7 +468,6 @@ class Scene_power_hands extends TSSceneBase {
 
     //println(storyName + "::" + sceneName + "::onStart");
     orb.resize(imageWidth, imageHeight);
-
   }
 
   // this is called when the scene starts (i.e. is triggered)
@@ -487,10 +491,10 @@ class Scene_power_hands extends TSSceneBase {
 
     //width is the distance between hands
     float _width=rightHand.x-leftHand.x;
-    
+
     //set the volume to be louder when hands are far apart
-    float volume = map(_width, 0, getMaxArmLength()*2,-13.9794, -80.0);
-    player.setGain(volume);
+   // float volume = map(_width, 0, getMaxArmLength()*2, -13.9794, -80.0);
+   // player.setGain(volume);
     //get the height in proportion so we don't squash the image
     float proportion = _width/imageWidth;
     float _height=imageHeight*proportion;
@@ -529,28 +533,34 @@ class Scene_spin_right_wrong extends TSSceneBase {
     //println(storyName + "::" + sceneName + "::onStart");
     right.resize(imageWidth, imageHeight);
     wrong.resize(imageWidth, imageHeight);
-
   }
 
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("Charlene::Scene_spin_right_wrong::onStart");
     player.close();
-    player = minim.loadFile("charlene/turnwrong.mp3");
-    player.loop();
+    //TODO replace loop with single hit on each half rotation
+    player = minim.loadFile("charlene/right-wrong.mp3");
+   // player.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
+    pushStyle();
     pushMatrix();
     PVector leftHand = skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_HAND);
     PVector leftShoulder = skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_SHOULDER);
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.2, 0.2, 0));
     //get the angle between the left shoulder and the left hand as if looking down from above ie at the x z plane
     float angle = atan2( leftShoulder.z- leftHand.z, leftShoulder.x- leftHand.x);
+    //if we are at the right point of the rotation
+  //  if(angle>0.0 && angle< (TWO_PI * 0.1)) {
+    //  player.play();
+   // }
     translate(picturePos.x+(0.5*imageWidth), picturePos.y);
     //draw the front
     pushMatrix();
     rotateY(angle);
     translate(-0.5*imageWidth, 0, 0);
+    fill(255);
     rect(0, 0, imageWidth, imageHeight);
     translate(0, 0, 1);
     image(right, 0, 0);
@@ -566,6 +576,7 @@ class Scene_spin_right_wrong extends TSSceneBase {
     popMatrix();
     popMatrix();
     drawMaskedUser();
+    popStyle();
   }
 };
 
@@ -636,13 +647,13 @@ class Scene_shatter_image extends TSSceneBase {
       }
       moveShards=true;
     }
-    if(handOver){
-    for (int i=0;i<numShards;i++) {
-      shards[i].draw(shardImages[i]);
+    if (handOver) {
+      for (int i=0;i<numShards;i++) {
+        shards[i].draw(shardImages[i]);
+      }
     }
-    }
-    else{
-      image(scream, picturePos.x,picturePos.y);
+    else {
+      image(scream, picturePos.x, picturePos.y);
     }
     drawMaskedUser();
   }
@@ -666,7 +677,6 @@ class Scene_drop_set extends TSSceneBase {
 
     println("Charlene::Scene_drop_set");
     theatre.resize(imageWidth, imageHeight);
-
   }
 
   // this is called when the scene starts (i.e. is triggered)
@@ -676,6 +686,7 @@ class Scene_drop_set extends TSSceneBase {
     endDrop=false;
     player.close();
     player = minim.loadFile("charlene/question.mp3");
+    //TODO add gotitwrong on drop
     player.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {

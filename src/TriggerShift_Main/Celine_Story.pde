@@ -131,7 +131,7 @@ class Scene_ripPaper extends TSSceneBase {
 
 
 
-    if (getElapsedSeconds()>1) {
+   // if (getElapsedSeconds()>1) {
 
 
       pushMatrix();
@@ -268,7 +268,7 @@ class Scene_ripPaper extends TSSceneBase {
         leftP.drawWithoutTranslation(leftHalf);
         popMatrix();
       }
-    }
+    //}
     drawMaskedUser();
   }
 };
@@ -563,13 +563,12 @@ class Scene_flick_through_images extends TSSceneBase {
   boolean firstTime=true;
   Scene_flick_through_images() {
     //println(storyName + "::" + sceneName + "::onStart");
-
     images[0]=loadImage("celine/house.png");
     images[1]=loadImage("celine/bubbles.png");
-    images[2]=loadImage("celine/money.png");
-    images[3]=loadImage("celine/banker.png");
-    images[4]=loadImage("celine/beach.png");
-    images[5]=loadImage("celine/atm.png");
+    images[2]=loadImage("celine/banker.png");
+    images[3]=loadImage("celine/beach.png");
+    images[4]=loadImage("celine/atm.png");
+    images[5]=loadImage("celine/money.png");
 
     for (int i=0;i<numImages;i++) {
       //get the longest dimension
@@ -589,6 +588,7 @@ class Scene_flick_through_images extends TSSceneBase {
     }
     topImageXShift=0;
     player.close();
+    //TODO replace with single hit thing when ed has made it
     player = minim.loadFile("celine/whyisitinteresting.mp3");
     player.loop();
   }
@@ -632,7 +632,8 @@ class Scene_flick_through_images extends TSSceneBase {
     counter++;
 
     if (frameIndex>=images.length) {
-      frameIndex=0; // frameIndex=images.length-1;
+      // frameIndex=0; //
+      frameIndex=images.length-1;
     }
     drawMaskedUser();
   }
