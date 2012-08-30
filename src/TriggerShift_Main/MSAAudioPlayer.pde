@@ -1,28 +1,43 @@
 class MSAAudioPlayer {
-  AudioPlayer []player;
-  int currentIndex = 0;
-  
-  MSAAudioPlayer(String s, int count) {
-    player = new AudioPlayer[count];
-    for(int i=0; i<count; i++) {
-      player[i] = minim.loadFile(s);
-    }
+  AudioPlayer audioPlayer;
+
+  MSAAudioPlayer(String s) {
+//    loadFile(s);
+    audioPlayer = minim.loadFile(s);
+  }
+
+//  void loadFile(String s) {
+//    audioPlayer = minim.loadFile(s);
+//  }
+
+  void setGain( float volume) {
+    float kAudioMax = -13.9794;
+    float kAudioMin = -80.0;
+    volume = constrain(volume, 0, 1);
+    volume = 1 - volume;
+    volume *= volume * volume * volume * volume * volume;
+    volume = 1 - volume;
+    audioPlayer.setGain(map(volume, 0, 1, kAudioMin, kAudioMax));
   }
   
   void play() {
-    player[currentIndex].play(0);
-    currentIndex = (currentIndex + 1) % player.length;
+    audioPlayer.play();
   }
   
-  void play(AudioEffect effect) {
-    player[currentIndex].addEffect(effect);
-    play();
+  void loop() {
+    audioPlayer.loop();
   }
-
+  
+  void play(float f) {
+    audioPlayer.play((int)(f * 1000));
+  }
+  
+  void pause() {
+    audioPlayer.pause();
+  }
   
   void close() {
-    for(int i=0; i<player.length; i++) {
-      player[i].close();
-    }
+    audioPlayer.close();
   }
-};
+}
+

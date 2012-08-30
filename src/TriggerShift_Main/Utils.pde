@@ -1,14 +1,3 @@
-float kAudioMax = -13.9794;
-float kAudioMin = -80.0;
-
-// volume: 0...1
-void setGain(AudioPlayer p, float volume) {
-  volume = 1 - volume;
-  volume *= volume * volume * volume * volume * volume;
-  volume = 1 - volume;
-  p.setGain(map(volume, 0, 1, kAudioMin, kAudioMax));
-}
-
 
 PVector getHead() {
   if (skeleton == null) return new PVector(width * 0.5, height * 0.25, 0);
