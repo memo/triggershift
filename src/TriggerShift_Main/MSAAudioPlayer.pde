@@ -1,11 +1,11 @@
 class MSAAudioPlayer {
   AudioPlayer audioPlayer;
-
+  
   MSAAudioPlayer(String s) {
 //    loadFile(s);
     audioPlayer = minim.loadFile(s);
   }
-
+  
 //  void loadFile(String s) {
 //    audioPlayer = minim.loadFile(s);
 //  }

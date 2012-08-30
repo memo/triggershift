@@ -12,6 +12,10 @@ class ManiStory extends TSStoryBase {
     MSAAudioPlayer audioBallet = new MSAAudioPlayer("mani/audio/swan lake.mp3");
   MSAAudioPlayer audioNight = new MSAAudioPlayer("mani/audio/world-turn.mp3");
   MSAAudioPlayer audioMelody = new MSAAudioPlayer("mani/audio/mani-melody.mp3");
+  
+  String []audioNoteNames = {"mani/audio/notes/1.mp3", "mani/audio/notes/2.mp3", "mani/audio/notes/3.mp3", "mani/audio/notes/4.mp3", "mani/audio/notes/5.mp3", "mani/audio/notes/6.mp3" };
+  
+  MSAAudioPlayers audioNotes = new MSAAudioPlayers( audioNoteNames, 20 );
 
 
   ManiStory() {
@@ -297,7 +301,7 @@ class ManiStory extends TSStoryBase {
         int newLight = (int)round(map(leftHand.y, topY, bottomY, 0, 2));
         if (newLight != currentLight) {
           currentLight = newLight;
-          audioTraffic[currentLight].play();
+          audioTraffic[currentLight].play(0);
         }
       }
 
@@ -364,6 +368,8 @@ class ManiStory extends TSStoryBase {
               particleSystem.startPos.base = getHand(i);
               particleSystem.inheritVel.base = getHandVelocity(i);
               particleSystem.add();
+              audioNotes.play(0);
+              audioNotes.setGain(random(1.0));
             }
           }
         }
@@ -419,7 +425,7 @@ class ManiStory extends TSStoryBase {
             particleSystem.startPos.base = getHand(i);
             particleSystem.inheritVel.base = getHandVelocity(i);
             particleSystem.add();
-            audioStars.play();
+            audioStars.play(0);
           }
         }
       }
@@ -540,7 +546,7 @@ class ManiStory extends TSStoryBase {
       cityGrey.set(1, 0, 1, 0);
       cityColor.set(5, 1, 0, 1);
       sky.start();
-      audioForward.play();
+      audioForward.play(0);
     }
 
     //----------------
@@ -583,7 +589,8 @@ class ManiStory extends TSStoryBase {
       PVector rightHand = getRightHand();
       if (getRightHandVelocity().mag() > 0.01) {
         flowers.add(new PVector(width * 0.95, rightHand.y));
-        audioFlowers.play();
+        audioFlowers.play(0);
+        audioFlowers.setGain(random(1.0));
       }
       flowers.draw();
     }
