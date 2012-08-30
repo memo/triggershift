@@ -10,7 +10,7 @@ import SimpleOpenNI.*;
 import controlP5.*;
 
 // SET THIS TO TRUE OR FALSE
-boolean useOpenNI = true;
+boolean useOpenNI = false;
 
 // params
 boolean doDrawKinectRGB = false;
@@ -143,9 +143,9 @@ void setupOpenNI() {
 
 //----------------------------------
 void setup() {
-  size(1280, 768, P3D);
+  size(1280, 768, OPENGL);
 
-  frameRate(30);
+  frameRate(60);
   masker = new TSMasker();
   transform2D = new TSTransform2D();
 
@@ -159,6 +159,8 @@ void setup() {
 
   setupAudio();
   stroke(255, 255, 255);
+  
+  hint(DISABLE_DEPTH_TEST);
   // smooth();
 }
 

@@ -24,8 +24,10 @@ class ManiStory extends TSStoryBase {
   //----------------
   class Sky {
     MSAParticle p = new MSAParticle(loadImage("mani/nightandday.png"));
+    float targetRot;
 
     void start() {
+      targetRot = 0;
       p.alpha = 0;
       p.targetAlpha = 1;
       p.alphaSpeed = 0.1;
@@ -35,7 +37,17 @@ class ManiStory extends TSStoryBase {
       p.pos.set(width/2, height, 0);
     }
 
+    void startDay() {
+      targetRot = 0;
+    }
+
+    void startNight() {
+      targetRot = 180;
+    }
+
+
     void draw() {
+      sky.p.rot += (targetRot - sky.p.rot) * 0.2;
       p.draw();
     }
   };
@@ -110,11 +122,11 @@ class ManiStory extends TSStoryBase {
       particleSystem.alphaSpeed.set(0.0, 0.0);
 
       particleSystem.drag.set(0, 0);
-      particleSystem.maxCount = 50;
+      particleSystem.maxCount = 100;
     }
-    
+
     void end() {
-      for(int i=0; i<particleSystem.particles.size(); i++) {
+      for (int i=0; i<particleSystem.particles.size(); i++) {
         MSAParticle p = (MSAParticle)particleSystem.particles.get(i);
         p.posAcc.x = -random(units(20), units(50));
         p.posAcc.y = -random(units(70), units(150));
@@ -154,8 +166,8 @@ class ManiStory extends TSStoryBase {
     }
 
     void draw() {
-      if (getLeftHand().x < p.pos.x + p.radius) {
-        p.rotVel *= 0.9;
+      if (p.pointIn(getLeftHand())) {
+        p.rotVel *= 0.98;
         p.rotVel += getLeftHandVelocity().y * 50;
       }
 
@@ -182,7 +194,7 @@ class ManiStory extends TSStoryBase {
       p.rotVel = colorWheel.p.rotVel;
       p.posAcc.y = units(400);
     }
-    
+
     void end() {
       p.targetRadius = 0;
     }
@@ -235,8 +247,8 @@ class ManiStory extends TSStoryBase {
     PImage[] imgs = { 
       loadImage("mani/trafficlight1.png"), loadImage("mani/trafficlight2.png"), loadImage("mani/trafficlight3.png")
       };
-      float targetPosY = height * 0.55;
-    PVector pos = new PVector(width * 0.3, targetPosY);
+      float targetPosY = height * 0.5;
+    PVector pos = new PVector(units(420), targetPosY);
     int currentLight = 0;
 
     void start() {
@@ -262,7 +274,7 @@ class ManiStory extends TSStoryBase {
       pushStyle();
       pushMatrix();
       imageMode(CENTER);
-      pos.y += (targetPosY - pos.y) * 0.2;
+      pos.y += (targetPosY - pos.y) * 0.1;
       translate(pos.x, pos.y);
       image(imgs[currentLight], 0, 0, w, h);
       popMatrix();
@@ -300,11 +312,11 @@ class ManiStory extends TSStoryBase {
 
         particleSystem.startAlpha.set(1, 0);
         particleSystem.targetAlpha.set(0, 0);
-        particleSystem.alphaSpeed.set(0.05, 0.01);
+        particleSystem.alphaSpeed.set(0.005, 0.001);
 
         particleSystem.drag.set(0.01, 0.001);
 
-        particleSystem.maxCount = 30;
+        particleSystem.maxCount = 100;
         particleSystem.imgs = imgs;
 
         doCreate = true;
@@ -433,7 +445,7 @@ class ManiStory extends TSStoryBase {
 
       particleSystem.startPos.set(new PVector(0, 0, 0), new PVector(units(50), units(0), units(0)));
       particleSystem.startVel.set(new PVector(0, units(150), 0), new PVector(units(0), units(150), units(150)));
-      particleSystem.acc.set(new PVector(0, units(100), 0), new PVector(0, 0, 0));
+      particleSystem.acc.set(new PVector(0, units(200), 0), new PVector(0, 0, 0));
       particleSystem.inheritVel.set(new PVector(0, 0, 0), new PVector(0, 0, 0));
       particleSystem.inheritVelMult.set(new PVector(width*0.2, height*0.2, 0), new PVector(0, 0, 0));
 
@@ -449,7 +461,7 @@ class ManiStory extends TSStoryBase {
       particleSystem.alphaSpeed.set(0.5, 0.1);
 
       particleSystem.drag.set(0.02, 0.005);
-      particleSystem.maxCount = 200;
+      particleSystem.maxCount = 300;
       particleSystem.img = imgRain;
 
       particleSystem.alignToDir = true;
@@ -577,7 +589,7 @@ class ManiStory extends TSStoryBase {
       sky.draw();
       drawMaskedUser();
       cityColor.draw();
-//      flowers.draw();
+      //      flowers.draw();
       colorWheel.draw();
       basketball.draw();
     }
@@ -607,7 +619,7 @@ class ManiStory extends TSStoryBase {
       drawMaskedUser();
       trafficLights.draw();
       cityColor.draw();
-//      flowers.draw();
+      //      flowers.draw();
       colorWheel.draw();
       basketball.draw();
     }
@@ -637,9 +649,9 @@ class ManiStory extends TSStoryBase {
       drawMaskedUser();
       trafficLights.draw();
       cityColor.draw();
-//      flowers.draw();
+      //      flowers.draw();
       colorWheel.draw();
-//      basketball.draw();
+      //      basketball.draw();
       musicNotes.draw();
     }
   };
@@ -667,9 +679,9 @@ class ManiStory extends TSStoryBase {
       //      trafficLights.draw();
       cityColor.draw();
       ballerina.draw();
-//      flowers.draw();
+      //      flowers.draw();
       colorWheel.draw();
-//      basketball.draw();
+      //      basketball.draw();
       musicNotes.draw();
     }
   };
@@ -691,27 +703,29 @@ class ManiStory extends TSStoryBase {
       println(storyName + "::" + sceneName + "::onStart");
       doInteraction = false;
       ballerina.end();
+      sky.startDay();
+      cityColor.tintAmount = 1;
     }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       PVector hand = getLeftHand();
       float nightAmount = map(degrees(atan2(hand.y - height/2, hand.x - width/2)), -180, 0, 0, 1);
-//      println(nightAmount);
+      //      println(nightAmount);
       if (nightAmount > 1.5) {
         nightAmount = 0;
         doInteraction = true;
       } 
       else if (nightAmount > 1) {
         nightAmount = 1;
-        if(sky.p.rot > 179) {
+        if (sky.p.rot > 179) {
           doInteraction = false;
           nextScene();
         }
       }
 
       if (doInteraction) {
-        sky.p.rot += (nightAmount * 180 - sky.p.rot) * 0.25;
+        sky.targetRot = nightAmount * 180;
         cityColor.tintAmount = 1 - nightAmount * 0.8;
       }
 
@@ -721,9 +735,9 @@ class ManiStory extends TSStoryBase {
       //      trafficLights.draw();
       cityColor.draw();
       ballerina.draw();
-//      flowers.draw();
+      //      flowers.draw();
       //      colorWheel.draw();
-//      basketball.draw();
+      //      basketball.draw();
     }
   };    
 
@@ -741,23 +755,26 @@ class ManiStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       stars.start();
+      sky.startNight();
+      cityColor.tintAmount = 0.2;
     }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
-      for(int i=0; i<stars.particleSystem.particles.size(); i++) {
+      for (int i=0; i<stars.particleSystem.particles.size(); i++) {
         MSAParticle p = (MSAParticle)stars.particleSystem.particles.get(i);
         p.alpha = random(1.0);
-        p.radius = random(units(5), units(10));
+        p.radius = random(units(1), units(10));
       }
       background(0);
+
       sky.draw();
       stars.draw();
       drawMaskedUser();
       //      trafficLights.draw();
       cityColor.draw();
-//      ballerina.draw();
-//      flowers.draw();
+      //      ballerina.draw();
+      //      flowers.draw();
       //      colorWheel.draw();
       basketball.draw();
     }
