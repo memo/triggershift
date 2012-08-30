@@ -9,7 +9,12 @@ class CelineStory extends TSStoryBase {
     addScene(new Scene_shrink_grow_image());
     addScene(new Scene_turn_cards());
     addScene(new Scene_flick_through_images());
-
+    try{
+      storyPlayer.close();
+    }
+    catch (Exception e){
+      
+    }
     storyPlayer = minim.loadFile("celine/celine-melody.mp3");
     storyPlayer.loop();
   }

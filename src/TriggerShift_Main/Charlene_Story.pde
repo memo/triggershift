@@ -14,6 +14,15 @@ class CharleneStory extends TSStoryBase {
     addScene(new Scene_spin_right_wrong());
     addScene(new Scene_shatter_image());
     addScene(new Scene_drop_set());
+    
+    try{
+      storyPlayer.close();
+    }
+    catch (Exception e){
+      
+    }
+    storyPlayer = minim.loadFile("charlene/charlene-melody.mp3");
+    storyPlayer.loop();
   }
 }
 // SCENE 1

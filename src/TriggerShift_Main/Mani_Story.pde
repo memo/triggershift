@@ -13,6 +13,12 @@ class ManiStory extends TSStoryBase {
     addScene(new Scene8());
     addScene(new Scene9());
     addScene(new Scene10());
+     try{
+      storyPlayer.close();
+    }
+    catch (Exception e){
+      
+    }
   }
 
   //------------------------------------------------------------------------------------------------------

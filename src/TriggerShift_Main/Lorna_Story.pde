@@ -13,6 +13,14 @@ class LornaStory extends TSStoryBase {
     addScene(new Scene_rainbow());
     addScene(new Scene_shadow());
     addScene(new Scene_reach_for_stars());
+     try{
+      storyPlayer.close();
+    }
+    catch (Exception e){
+      
+    }
+    storyPlayer = minim.loadFile("lorna/lorna-melody-new.mp3");
+    storyPlayer.loop();
   }
 
   //----------------------------------
