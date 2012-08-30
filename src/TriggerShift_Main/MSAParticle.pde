@@ -21,19 +21,19 @@ class MSAParticle {
   }
   
   float x1() {
-    return pos.x - radius;
+    return pos.x - targetRadius;
   }
   
   float y1() {
-    return pos.y - radius * img.height / img.width;
+    return pos.y - targetRadius * img.height / img.width;
   }
     
   float x2() {
-    return pos.x + radius;
+    return pos.x + targetRadius;
   }
   
   float y2() {
-    return pos.y + radius * img.height / img.width;
+    return pos.y + targetRadius * img.height / img.width;
   }
   
   boolean pointXIn(PVector p) {
