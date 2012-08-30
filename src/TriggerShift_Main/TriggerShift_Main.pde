@@ -39,6 +39,7 @@ TSMasker masker = null;
 Minim minim;
 AudioPlayer player;
 AudioPlayer player1;
+AudioPlayer storyPlayer;
 
 int lastUserId = 1;
 
@@ -158,7 +159,7 @@ void setup() {
 
   setupAudio();
   stroke(255, 255, 255);
-  
+
   hint(DISABLE_DEPTH_TEST);
   // smooth();
 }
@@ -379,3 +380,12 @@ void stop()
   super.stop();
 }
 
+void mouseMoved(){
+    float volume = map(mouseX, 0, width, -80.0, -13.9794);
+    try{
+     storyPlayer.setGain(volume);
+    }
+    catch(Exception e){
+    }
+  
+}

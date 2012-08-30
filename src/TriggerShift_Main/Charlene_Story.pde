@@ -487,6 +487,10 @@ class Scene_power_hands extends TSSceneBase {
 
     //width is the distance between hands
     float _width=rightHand.x-leftHand.x;
+    
+    //set the volume to be louder when hands are far apart
+    float volume = map(_width, 0, getMaxArmLength()*2,-13.9794, -80.0);
+    player.setGain(volume);
     //get the height in proportion so we don't squash the image
     float proportion = _width/imageWidth;
     float _height=imageHeight*proportion;

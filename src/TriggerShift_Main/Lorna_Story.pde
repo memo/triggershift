@@ -3,8 +3,11 @@ class LornaStory extends TSStoryBase {
   LornaStory() {
     storyName = "LornaStory";
     println(storyName + "::" + storyName);
+    addScene(new Scene_shadow());
     addScene(new Scene_Black_White());
-
+    addScene(new Scene_dream());
+    addScene(new Scene_reality());
+    addScene(new Scene_Think_Straight());
     addScene(new Scene_maid());
     addScene(new Scene_colour_trees());
     addScene(new Scene_paper_chain());
@@ -55,6 +58,124 @@ class Scene_Black_White extends TSSceneBase {
     fill(0);
     rect(x2, 0, w, h);
     popStyle();
+    drawMaskedUser();
+  }
+};
+
+// SCENE 2 can't think straight
+class Scene_Think_Straight extends TSSceneBase {
+  float x1, x2;
+  int imageWidth=500;
+  int imageHeight=300;
+  boolean handsOverHead;
+  Scene_Think_Straight() {
+    sceneName = "Scene1 think straight";
+    //println(storyName + "::" + sceneName);
+  }
+
+  //----------------
+  void onStart() {
+    //println(storyName + "::" + sceneName + "::onStart");
+    x1 = 0;
+    x2 = width;
+    player.close();
+    player = minim.loadFile("lorna/super8.mp3");
+    handsOverHead=false;
+  }
+
+  //----------------
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+    stroke(0, 0, 255);
+    strokeWeight(10);
+    noFill();
+    pushStyle();
+
+    //if hand is over one image
+    PVector leftHand=getLeftHand();
+    PVector rightHand=getRightHand();
+    PVector head=getHead();
+    PVector leftShoulder=getLeftShoulder();
+    PVector rightShoulder=getRightShoulder();
+
+    if (rightHand.y < head.y && leftHand.y <head.y) {
+      handsOverHead=true;
+    }
+    if (handsOverHead) {
+      player.play();
+      //draw triangular mask over left shoulder
+      float hyp=imageHeight+imageWidth;
+      //get angle between shoulder and hand
+      float angle = atan2( leftHand.y-leftShoulder.y, leftHand.x - leftShoulder.x );
+      pushMatrix();
+      translate( leftShoulder.x, leftShoulder.y);
+      rotate(angle);
+      // noStroke();
+      //SOHCAHTOA
+
+
+      int numPoints = 10;
+      beginShape();
+      float x =0;
+      float y=20;
+      for (int i=0;i<numPoints;i++) {
+        curveVertex(x, y);
+        y*=-1;
+        x+=hyp/numPoints;
+      }
+      endShape();
+      popMatrix();
+      //get angle between shoulder and hand
+      angle = atan2( rightHand.y-rightShoulder.y, rightHand.x - rightShoulder.x );
+      pushMatrix();
+      translate( rightShoulder.x, rightShoulder.y);
+      rotate(angle);
+
+      beginShape();
+      x =0;
+      y=20;
+      for (int i=0;i<numPoints;i++) {
+        curveVertex(x, y);
+        y*=-1;
+        x+=hyp/numPoints;
+      }
+      endShape();
+
+      popMatrix();
+      popStyle();
+    }
+    //draw straight
+    else {
+
+      player.play();
+      //draw triangular mask over left shoulder
+      float hyp=imageHeight+imageWidth;
+      //get angle between shoulder and hand
+      float angle = atan2( leftHand.y-leftShoulder.y, leftHand.x - leftShoulder.x );
+      pushMatrix();
+      translate( leftShoulder.x, leftShoulder.y);
+      // noStroke();
+      //SOHCAHTOA
+
+      float x=hyp*cos(angle);
+      float y=hyp*sin  (angle);
+
+      line(0, 0, x, y);
+
+      popMatrix();
+
+
+      //draw triangular mask over right shoulder
+      //get angle between shoulder and hand
+      angle = atan2( rightHand.y-rightShoulder.y, rightHand.x - rightShoulder.x );
+      pushMatrix();
+      translate( rightShoulder.x, rightShoulder.y);
+      x=hyp*cos(angle);
+      y=hyp*sin  (angle);
+      line(0, 0, x, y);
+
+      popMatrix();
+      popStyle();
+    }
     drawMaskedUser();
   }
 };
@@ -269,7 +390,7 @@ class Scene_colour_trees extends TSSceneBase {
 
     ArrayList indices = new ArrayList();
     float thresh=0.01;
-   
+
 
 
     //leftHand.x, leftHand.y
@@ -478,6 +599,159 @@ class Scene_maid extends TSSceneBase {
 
     popMatrix();
 
+    popStyle();
+  }
+};
+
+
+// Scene 7
+class Scene_dream extends TSSceneBase {
+
+  PImage bubbles = loadImage("lorna/thoughtbubble.png");
+  boolean dreamStarted;
+
+  int imageWidth=300;
+  int imageHeight=200;
+  float wScale=0.0;
+  float hScale=0.0;
+
+  Scene_dream() {
+    sceneName = "Scene7 bubbles";
+    //println(storyName + "::" + sceneName);
+    bubbles.resize(imageWidth, imageHeight);
+  }
+
+  //----------------
+  void onStart() {
+    //println(storyName + "::" + sceneName + "::onStart");
+    player.close();
+    player = minim.loadFile("lorna/brushing.mp3");
+    player.loop();
+    dreamStarted=false;
+  }
+
+  //----------------
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+    drawMaskedUser();
+    PVector head = getHead();
+    PVector rightHand=getRightHand();
+
+    pushStyle();
+    pushMatrix();
+    int thresh =80;
+    //start dream by touching head
+    if (dist(head.x, head.y, rightHand.x, rightHand.y)<thresh) dreamStarted = true;
+    if (dreamStarted) {
+      image(bubbles, head.x, head.y-(bubbles.height * hScale), bubbles.width * wScale, bubbles.height * hScale);
+
+      if (hScale<=1.0) {
+        hScale+=0.05;
+        wScale+=0.05;
+      }
+    }
+    popMatrix();
+    popStyle();
+  }
+};
+
+
+// Scene 10
+class Scene_reality extends TSSceneBase {
+
+  PImage bubbles = loadImage("lorna/thoughtbubble.png");
+  boolean dreamStarted;
+
+  int imageWidth=300;
+  int imageHeight=200;
+  float wScale=1.0;
+  float hScale=1.0;
+  float alpha;
+  boolean isPopped;
+  Scene_reality() {
+    sceneName = "Scene7 reality";
+    //println(storyName + "::" + sceneName);
+    bubbles.resize(imageWidth, imageHeight);
+  }
+
+  //----------------
+  void onStart() {
+    //println(storyName + "::" + sceneName + "::onStart");
+    player.close();
+    player = minim.loadFile("lorna/brushing.mp3");
+    player.loop();
+    alpha=255;
+    isPopped=false;
+  }
+
+  //----------------
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+    drawMaskedUser();
+    PVector head = getHead();
+    PVector rightHand=getRightHand();
+    PVector centreOfImage= new PVector ( head.x +(bubbles.width*0.5), head.y -(bubbles.height*0.5));
+
+    int thresh=50;
+    if (dist(centreOfImage.x, centreOfImage.y, rightHand.x, rightHand.y )<thresh) isPopped=true;
+
+    pushStyle();
+    pushMatrix();
+    tint(255, alpha);
+    image(bubbles, head.x, head.y-(bubbles.height), bubbles.width * wScale, bubbles.height);
+
+    if (isPopped &&alpha>=0) alpha-=10;
+    println(dist(head.x, head.y, rightHand.x, rightHand.y)+" "+alpha );
+
+    popMatrix();
+    popStyle();
+  }
+};
+
+
+class Scene_shadow extends TSSceneBase {
+
+  PImage bubbles = loadImage("lorna/thoughtbubble.png");
+  boolean dreamStarted;
+
+  int imageWidth=300;
+  int imageHeight=200;
+  float wScale=1.0;
+  float hScale=1.0;
+  float alpha;
+  boolean isShadow;
+  Scene_shadow() {
+    sceneName = "Scene7 shadow";
+    //println(storyName + "::" + sceneName);
+    bubbles.resize(imageWidth, imageHeight);
+  }
+
+  //----------------
+  void onStart() {
+    //println(storyName + "::" + sceneName + "::onStart");
+    isShadow=false;
+    alpha=0;
+  }
+
+  //----------------
+  void onDraw(PImage userImage, TSSkeleton skeleton) {
+     PVector head = getHead();
+     
+     if(head.x>width/2) isShadow=true;
+     
+    if (!isShadow) {
+      drawMaskedUser();
+    }
+    else {
+
+      drawUserDepthPlane();
+      fill(0);
+       //tint(0, alpha);
+       //rect(0,0,width,height);
+      alpha+=2;
+    }
+    pushStyle();
+    pushMatrix();
+
+    popMatrix();
     popStyle();
   }
 };
