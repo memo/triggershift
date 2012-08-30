@@ -2,6 +2,7 @@
 class MSAParticle {
   PVector pos = new PVector(), posVel = new PVector(), posAcc = new PVector();
   float rot = 0;
+  float rotY = 0;
   float rotVel = 0;
   float rotDrag = 0;
   float radius = 1;
@@ -68,6 +69,7 @@ class MSAParticle {
     pushMatrix();
     translate(pos.x, pos.y, pos.z);
     rotate(radians(rot));
+    rotateY(radians(rotY));
     scale(radius * 2 / img.width);
     imageMode(CENTER);
     tint(255, alpha * 255);

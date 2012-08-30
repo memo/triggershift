@@ -403,7 +403,6 @@ class ManiStory extends TSStoryBase {
   //----------------
   class Ballerina {
     MSAParticle p = new MSAParticle(loadImage("mani/ballerina.png"));
-
     void start() {
       p.radius = 0;
       p.targetRadius = units(150);
@@ -673,6 +672,9 @@ class ManiStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      PVector handToHand = PVector.sub(getLeftHand3D(), getRightHand3D());
+      ballerina.p.rotY += (180 + degrees(atan2(handToHand.y, handToHand.x)) - ballerina.p.rotY) * 0.1;
+      
       background(0);
       sky.draw();
       drawMaskedUser();
