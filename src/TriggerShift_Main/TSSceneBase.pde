@@ -17,6 +17,13 @@ class TSSceneBase {
 
   //----------------------------------
   // OVERRIDE THIS FUNCTION
+  void onEnd() {
+    println("Override TSSceneBase::onEnd");
+  }
+
+
+  //----------------------------------
+  // OVERRIDE THIS FUNCTION
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     println("Override TSSceneBase::onDraw");
   }
@@ -35,6 +42,15 @@ class TSSceneBase {
     startTime = millis();
     onStart();
   }
+  
+  
+  //----------------------------------
+  void endScene() {
+    println(sceneName + "::endScene");
+    println("--------------------");
+    onEnd();
+  }
+
 
   //----------------------------------
   float getElapsedSeconds() {

@@ -7,7 +7,7 @@
 class TSStoryBase {
 
   protected ArrayList scenes = new ArrayList();
-  protected int currentSceneIndex = 0;
+  protected int currentSceneIndex;
   protected TSSceneBase currentScene = null;
   protected boolean reachedEnd = false;
   
@@ -64,6 +64,8 @@ class TSStoryBase {
       return;
     }
 
+    if(currentScene != null) currentScene.endScene();
+    
     currentSceneIndex = i;
     currentScene = (TSSceneBase) scenes.get(i);
     currentScene.startScene();

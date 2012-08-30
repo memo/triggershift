@@ -9,25 +9,25 @@ class ManiStory extends TSStoryBase {
   MSAAudioPlayer []audioTraffic = { 
     new MSAAudioPlayer("mani/audio/trafficlight3.mp3"), new MSAAudioPlayer("mani/audio/trafficlight2.mp3"), new MSAAudioPlayer("mani/audio/trafficlight1.mp3")
     };
-  MSAAudioPlayer audioBallet = new MSAAudioPlayer("mani/audio/swan lake.mp3");
+    MSAAudioPlayer audioBallet = new MSAAudioPlayer("mani/audio/swan lake.mp3");
   MSAAudioPlayer audioNight = new MSAAudioPlayer("mani/audio/world-turn.mp3");
   MSAAudioPlayer audioMelody = new MSAAudioPlayer("mani/audio/mani-melody.mp3");
 
 
-    ManiStory() {
-      storyName = "ManiStory";
-      println(storyName + "::" + storyName);
-      addScene(new Scene1());
-      addScene(new Scene2());
-      addScene(new Scene3());
-      addScene(new Scene4());
-      addScene(new Scene5());
-      addScene(new Scene6());
-      addScene(new Scene7());
-      addScene(new Scene8());
-      addScene(new Scene9());
-      addScene(new Scene10());
-    }
+  ManiStory() {
+    storyName = "ManiStory";
+    println(storyName + "::" + storyName);
+    addScene(new Scene1());
+    addScene(new Scene2());
+    addScene(new Scene3());
+    addScene(new Scene4());
+    addScene(new Scene5());
+    addScene(new Scene6());
+    addScene(new Scene7());
+    addScene(new Scene8());
+    addScene(new Scene9());
+    addScene(new Scene10());
+  }
 
 
   //------------------------------------------------------------------------------------------------------
@@ -501,6 +501,11 @@ class ManiStory extends TSStoryBase {
 
       audioRain.loop();
     }
+    
+    //----------------
+    void onEnd() {
+      audioRain.pause();
+    }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -535,8 +540,6 @@ class ManiStory extends TSStoryBase {
       cityGrey.set(1, 0, 1, 0);
       cityColor.set(5, 1, 0, 1);
       sky.start();
-
-      audioRain.pause();
       audioForward.play();
     }
 
@@ -563,6 +566,11 @@ class ManiStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       flowers.start();
+    }
+
+    //----------------
+    void onEnd() {
+      flowers.end();
     }
 
     //----------------
@@ -594,7 +602,11 @@ class ManiStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       colorWheel.start();
-      flowers.end();
+    }
+
+    //----------------
+    void onEnd() {
+      colorWheel.end();
     }
 
     //----------------
@@ -621,7 +633,11 @@ class ManiStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       basketball.start();
-      colorWheel.end();
+    }
+
+    //----------------
+    void onEnd() {
+      basketball.end();
     }
 
     //----------------
@@ -650,7 +666,11 @@ class ManiStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       trafficLights.start();
-      basketball.end();
+    }
+
+    //----------------
+    void onEnd() {
+      trafficLights.end();
     }
 
     //----------------
@@ -680,7 +700,6 @@ class ManiStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       musicNotes.start();
-      trafficLights.end();
       audioMelody.loop();
     }
 
@@ -711,7 +730,11 @@ class ManiStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       ballerina.start();
-      audioMelody.pause();
+    }
+    
+    //----------------
+    void onEnd() {
+      ballerina.end();
     }
 
     //----------------
@@ -748,9 +771,14 @@ class ManiStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       doInteraction = false;
-      ballerina.end();
       sky.startDay();
       cityColor.tintAmount = 1;
+    }
+
+    
+    //----------------
+    void onEnd() {
+      audioNight.pause();
     }
 
     //----------------
@@ -760,7 +788,7 @@ class ManiStory extends TSStoryBase {
       //      println(nightAmount);
       if (nightAmount > 1.5) {
         nightAmount = 0;
-        if(!doInteraction) audioNight.loop();
+        if (!doInteraction) audioNight.loop();
         doInteraction = true;
       } 
       else if (nightAmount > 1) {
@@ -803,8 +831,13 @@ class ManiStory extends TSStoryBase {
       println(storyName + "::" + sceneName + "::onStart");
       stars.start();
       sky.startNight();
-      audioNight.pause();
       cityColor.tintAmount = 0.2;
+    }
+
+    
+    //----------------
+    void onEnd() {
+       audioMelody.pause();
     }
 
     //----------------

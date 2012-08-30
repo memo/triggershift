@@ -36,6 +36,10 @@ class MSAAudioPlayer {
     audioPlayer.pause();
   }
   
+  boolean isPlaying() {
+    return audioPlayer.isPlaying();
+  }
+  
   void close() {
     audioPlayer.close();
   }
