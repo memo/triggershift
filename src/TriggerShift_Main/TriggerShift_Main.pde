@@ -60,7 +60,7 @@ void setupAudio() {
   //a default song to load - if we don't have this calling .close() gives null pointer
   player = minim.loadFile("song1.mp3");
   player1 = minim.loadFile("song1.mp3");
-  player1.play();
+//  player1.play();
   player.printControls();
 }
 //----------------------------------
@@ -145,7 +145,7 @@ void setupOpenNI() {
 
 //----------------------------------
 void setup() {
-  size(1280, 768, OPENGL);
+  size(1280, 768, P3D);
 
   frameRate(60);
   masker = new TSMasker();
@@ -169,7 +169,7 @@ void setup() {
 
 //----------------------------------
 void draw() {
-  setGain(player1, 1 - mouseY * 1.0/height);
+//  setGain(player1, 1 - mouseY * 1.0/height);
   
   // update timing
   secondsSinceLastFrame = (millis() - lastFrameMillis) * 0.001;

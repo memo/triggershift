@@ -1,27 +1,33 @@
 class ManiStory extends TSStoryBase {
   MSAAudioPlayer audioRain = new MSAAudioPlayer("mani/audio/rain-loop.mp3");
-  MSAAudioPlayer audioForward = new MSAAudioPlayer("mani/audio/goforward.mp3");
+  MSAAudioPlayer audioForward = new MSAAudioPlayer("mani/audio/goforwards_02.mp3");
   MSAAudioPlayer audioWheel = new MSAAudioPlayer("mani/audio/wheel loop.mp3");
   MSAAudioPlayer audioBallBounce = new MSAAudioPlayer("mani/audio/basketball-catch.mp3");
   MSAAudioPlayer audioBallCatch = new MSAAudioPlayer("mani/audio/basketball-single-01.mp3");
-  MSAAudioPlayers audioFlowers = new MSAAudioPlayers("mani/audio/flower.mp3", 5);
+  MSAAudioPlayers audioFlowers = new MSAAudioPlayers("mani/audio/single-flower.mp3", 5);
   MSAAudioPlayers audioStars = new MSAAudioPlayers("mani/audio/stars.mp3", 5);
+  MSAAudioPlayer []audioTraffic = { 
+    new MSAAudioPlayer("mani/audio/trafficlight3.mp3"), new MSAAudioPlayer("mani/audio/trafficlight2.mp3"), new MSAAudioPlayer("mani/audio/trafficlight1.mp3")
+    };
+  MSAAudioPlayer audioBallet = new MSAAudioPlayer("mani/audio/swan lake.mp3");
+  MSAAudioPlayer audioNight = new MSAAudioPlayer("mani/audio/world-turn.mp3");
+  MSAAudioPlayer audioMelody = new MSAAudioPlayer("mani/audio/mani-melody.mp3");
 
 
-  ManiStory() {
-    storyName = "ManiStory";
-    println(storyName + "::" + storyName);
-    addScene(new Scene1());
-    addScene(new Scene2());
-    addScene(new Scene3());
-    addScene(new Scene4());
-    addScene(new Scene5());
-    addScene(new Scene6());
-    addScene(new Scene7());
-    addScene(new Scene8());
-    addScene(new Scene9());
-    addScene(new Scene10());
-  }
+    ManiStory() {
+      storyName = "ManiStory";
+      println(storyName + "::" + storyName);
+      addScene(new Scene1());
+      addScene(new Scene2());
+      addScene(new Scene3());
+      addScene(new Scene4());
+      addScene(new Scene5());
+      addScene(new Scene6());
+      addScene(new Scene7());
+      addScene(new Scene8());
+      addScene(new Scene9());
+      addScene(new Scene10());
+    }
 
   //------------------------------------------------------------------------------------------------------
   void onEnd() {
@@ -156,7 +162,7 @@ class ManiStory extends TSStoryBase {
   //----------------
   class ColorWheel {
     MSAParticle p = new MSAParticle(loadImage("mani/colourwheel.png"));
-    
+
     void start() {
       p.pos = new PVector(width * 0.3, height * 0.3);
       p.rot = 0;
@@ -183,7 +189,7 @@ class ManiStory extends TSStoryBase {
       }
 
       p.draw();
-      audioWheel.setGain(abs(p.rotVel) * 100);
+      audioWheel.setGain(abs(p.rotVel));
     }
   };
   ColorWheel colorWheel = new ColorWheel();
@@ -212,45 +218,46 @@ class ManiStory extends TSStoryBase {
     }
 
     void draw() {
-      // bounce off edges
-      if (p.pos.y > height - p.radius) {
-        p.pos.y = height - p.radius;
-        p.posVel.y = -abs(p.posVel.y * bounce);
-        audioBallBounce.play(0);
-      } 
-      else if (p.pos.y < p.radius) {
-        p.pos.y = p.radius;
-        p.posVel.y = abs(p.posVel.y * bounce);
-        audioBallBounce.play(0);
-      }
-      if (p.pos.x > width - p.radius) {
-        p.pos.x = width - p.radius;
-        p.posVel.x = -abs(p.posVel.x * bounce);
-        audioBallBounce.play(0);
-      } 
-      else if (p.pos.x < p.radius) {
-        p.pos.x = p.radius;
-        p.posVel.x = abs(p.posVel.x * bounce);
-        audioBallBounce.play(0);
-      }
+      if (p.radius > 0.1) {
+        // bounce off edges
+        if (p.pos.y > height - p.radius) {
+          p.pos.y = height - p.radius;
+          p.posVel.y = -abs(p.posVel.y * bounce);
+          audioBallBounce.play(0);
+        } 
+        else if (p.pos.y < p.radius) {
+          p.pos.y = p.radius;
+          p.posVel.y = abs(p.posVel.y * bounce);
+          audioBallBounce.play(0);
+        }
+        if (p.pos.x > width - p.radius) {
+          p.pos.x = width - p.radius;
+          p.posVel.x = -abs(p.posVel.x * bounce);
+          audioBallBounce.play(0);
+        } 
+        else if (p.pos.x < p.radius) {
+          p.pos.x = p.radius;
+          p.posVel.x = abs(p.posVel.x * bounce);
+          audioBallBounce.play(0);
+        }
 
-      // collide with hand
-      for (int i=0; i<2; i++) {
-        PVector handPos = getHand(i);
-        PVector handVel = getHandVelocity(i);
-        PVector diff = PVector.sub(p.pos, handPos);
-        float distance = diff.mag();
-        if (distance < p.radius) {
-          PVector normDiff = diff.get();
-          normDiff.normalize();
-          p.pos.add(PVector.mult(normDiff, p.radius-distance));
-          float speeddot = p.posVel.dot(normDiff);  // component of speed into hand
-          PVector veldot = PVector.mult(normDiff, speeddot);  // component of velocity into hand
-          PVector veltan = PVector.sub(p.posVel, veldot); // comopnent of velocty tangent to hand
-          veldot.mult(-bounce);  // flip velocity
-          p.posVel = PVector.add(veldot, veltan);
-          audioBallCatch.play(0);
-
+        // collide with hand
+        for (int i=0; i<2; i++) {
+          PVector handPos = getHand(i);
+          PVector handVel = getHandVelocity(i);
+          PVector diff = PVector.sub(p.pos, handPos);
+          float distance = diff.mag();
+          if (distance < p.radius) {
+            PVector normDiff = diff.get();
+            normDiff.normalize();
+            p.pos.add(PVector.mult(normDiff, p.radius-distance));
+            float speeddot = p.posVel.dot(normDiff);  // component of speed into hand
+            PVector veldot = PVector.mult(normDiff, speeddot);  // component of velocity into hand
+            PVector veltan = PVector.sub(p.posVel, veldot); // comopnent of velocty tangent to hand
+            veldot.mult(-bounce);  // flip velocity
+            p.posVel = PVector.add(veldot, veltan);
+            audioBallCatch.play(0);
+          }
         }
       }
 
@@ -286,7 +293,11 @@ class ManiStory extends TSStoryBase {
       float topY = pos.y - h * 0.45;
       float bottomY = pos.y + h * 0.2;
       if (leftHand.x < pos.x + w * 0.2 && leftHand.y > topY && leftHand.y < bottomY) {
-        currentLight = (int)round(map(leftHand.y, topY, bottomY, 0, 2));
+        int newLight = (int)round(map(leftHand.y, topY, bottomY, 0, 2));
+        if (newLight != currentLight) {
+          currentLight = newLight;
+          audioTraffic[currentLight].play();
+        }
       }
 
       pushStyle();
@@ -427,11 +438,13 @@ class ManiStory extends TSStoryBase {
       p.targetRadius = units(150);
       p.radiusSpeed = 0.05;
       p.pos = new PVector(width * 0.75, height * 0.5);
+      audioBallet.loop();
     }
 
     void end() {
       p.targetRadius = 0;
       p.radiusSpeed = 0.2;
+      audioBallet.pause();
     } 
 
     void draw() {
@@ -446,7 +459,7 @@ class ManiStory extends TSStoryBase {
   //------------------------------------------------------------------------------------------------------
   // grey city
   class Scene1 extends TSSceneBase {
-    
+
     PImage imgRain = loadImage("mani/raindrop.png");
     MSAParticleSystem particleSystem = new MSAParticleSystem();
 
@@ -667,6 +680,7 @@ class ManiStory extends TSStoryBase {
       println(storyName + "::" + sceneName + "::onStart");
       musicNotes.start();
       trafficLights.end();
+      audioMelody.loop();
     }
 
     //----------------
@@ -696,6 +710,7 @@ class ManiStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       ballerina.start();
+      audioMelody.pause();
     }
 
     //----------------
@@ -744,6 +759,7 @@ class ManiStory extends TSStoryBase {
       //      println(nightAmount);
       if (nightAmount > 1.5) {
         nightAmount = 0;
+        if(!doInteraction) audioNight.loop();
         doInteraction = true;
       } 
       else if (nightAmount > 1) {
@@ -786,6 +802,7 @@ class ManiStory extends TSStoryBase {
       println(storyName + "::" + sceneName + "::onStart");
       stars.start();
       sky.startNight();
+      audioNight.pause();
       cityColor.tintAmount = 0.2;
     }
 
