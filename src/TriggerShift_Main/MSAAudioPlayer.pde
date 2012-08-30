@@ -15,7 +15,7 @@ class MSAAudioPlayer {
     float kAudioMin = -80.0;
     volume = constrain(volume, 0, 1);
     volume = 1 - volume;
-    volume *= volume * volume * volume * volume * volume;
+    volume *= volume * volume * volume;
     volume = 1 - volume;
     audioPlayer.setGain(map(volume, 0, 1, kAudioMin, kAudioMax));
   }

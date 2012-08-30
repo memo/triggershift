@@ -1,23 +1,37 @@
 class ManiStory extends TSStoryBase {
-  MSAAudioPlayer audioRain = new MSAAudioPlayer("mani/audio/rain-loop.mp3");
-  MSAAudioPlayer audioForward = new MSAAudioPlayer("mani/audio/goforwards_02.mp3");
-  MSAAudioPlayer audioWheel = new MSAAudioPlayer("mani/audio/wheel loop.mp3");
+  MSAAudioPlayer audioRain = new MSAAudioPlayer("mani/audio/rain.mp3");
+
+  MSAAudioPlayer audioForward = new MSAAudioPlayer("mani/audio/goforwards.mp3");
+
+  MSAAudioPlayer audioWheel = new MSAAudioPlayer("mani/audio/colorwheel.mp3");
+
   MSAAudioPlayer audioBallBounce = new MSAAudioPlayer("mani/audio/basketball-catch.mp3");
-  MSAAudioPlayer audioBallCatch = new MSAAudioPlayer("mani/audio/basketball-single-01.mp3");
-  MSAAudioPlayers audioFlowers = new MSAAudioPlayers("mani/audio/single-flower.mp3", 5);
-  MSAAudioPlayers audioStars = new MSAAudioPlayers("mani/audio/stars.mp3", 5);
-  MSAAudioPlayer []audioTraffic = { 
-    new MSAAudioPlayer("mani/audio/trafficlight3.mp3"), new MSAAudioPlayer("mani/audio/trafficlight2.mp3"), new MSAAudioPlayer("mani/audio/trafficlight1.mp3")
-    };
-    MSAAudioPlayer audioBallet = new MSAAudioPlayer("mani/audio/swan lake.mp3");
-  MSAAudioPlayer audioNight = new MSAAudioPlayer("mani/audio/world-turn.mp3");
+
+  MSAAudioPlayer audioBallCatch = new MSAAudioPlayer("mani/audio/basketball-bounce.mp3");
+
+  MSAAudioPlayers audioFlowers = new MSAAudioPlayers( new String[] {
+    "mani/audio/flowers/1.mp3", "mani/audio/flowers/2.mp3", "mani/audio/flowers/3.mp3", "mani/audio/flowers/4.mp3", "mani/audio/flowers/5.mp3", "mani/audio/flowers/6.mp3"
+  } );
+
+  MSAAudioPlayers audioStars = new MSAAudioPlayers( new String[] {
+    "mani/audio/stars/1.mp3", "mani/audio/stars/2.mp3", "mani/audio/stars/3.mp3", "mani/audio/stars/4.mp3", "mani/audio/stars/5.mp3", "mani/audio/stars/6.mp3"
+  } );
+
+  MSAAudioPlayers audioTraffic = new MSAAudioPlayers( new String[] {
+    "mani/audio/trafficlights/red.mp3", "mani/audio/trafficlights/yellow.mp3", "mani/audio/trafficlights/green.mp3"
+  } );
+
+  MSAAudioPlayer audioBallet = new MSAAudioPlayer("mani/audio/swan lake.mp3");
+
+  MSAAudioPlayer audioNightSky = new MSAAudioPlayer("mani/audio/world-turn.mp3");
+
   MSAAudioPlayer audioMelody = new MSAAudioPlayer("mani/audio/mani-melody.mp3");
 
-  String []audioNoteNames = {
-    "mani/audio/notes/1.mp3", "mani/audio/notes/2.mp3", "mani/audio/notes/3.mp3", "mani/audio/notes/4.mp3", "mani/audio/notes/5.mp3", "mani/audio/notes/6.mp3"
-  };
+  //  String []audioNoteNames = ;
 
-  MSAAudioPlayers audioNotes = new MSAAudioPlayers( audioNoteNames, 20 );
+  MSAAudioPlayers audioNotes = new MSAAudioPlayers( new String[] {
+    "mani/audio/notes/1.mp3", "mani/audio/notes/2.mp3", "mani/audio/notes/3.mp3", "mani/audio/notes/4.mp3", "mani/audio/notes/5.mp3", "mani/audio/notes/6.mp3"
+  } );
 
 
   ManiStory() {
@@ -46,8 +60,8 @@ class ManiStory extends TSStoryBase {
     audioBallCatch.close();
     audioFlowers.close();
     audioStars.close();
-    for(int i=0; i<audioTraffic.length; i++) audioTraffic[i].close();
-    audioNight.close();
+    audioTraffic.close();
+    audioNightSky.close();
     audioMelody.close();
     audioNotes.close();
   }
@@ -79,7 +93,8 @@ class ManiStory extends TSStoryBase {
 
 
     void draw() {
-      sky.p.rot += (targetRot - sky.p.rot) * 0.2;
+      p.rotVel = (targetRot - p.rot) * 0.2 / secondsSinceLastFrame;
+//      sky.p.rot += ;
       p.draw();
     }
   };
@@ -207,7 +222,7 @@ class ManiStory extends TSStoryBase {
       }
 
       p.draw();
-      audioWheel.setGain(abs(p.rotVel));
+      audioWheel.setGain(abs(p.rotVel) * 0.003);
     }
   };
   ColorWheel colorWheel = new ColorWheel();
@@ -274,7 +289,7 @@ class ManiStory extends TSStoryBase {
             PVector veltan = PVector.sub(p.posVel, veldot); // comopnent of velocty tangent to hand
             veldot.mult(-bounce);  // flip velocity
             p.posVel = PVector.add(veldot, veltan);
-            audioBallCatch.play(0);
+            if(!audioBallCatch.isPlaying()) audioBallCatch.play(0);
           }
         }
       }
@@ -314,7 +329,7 @@ class ManiStory extends TSStoryBase {
         int newLight = (int)round(map(leftHand.y, topY, bottomY, 0, 2));
         if (newLight != currentLight) {
           currentLight = newLight;
-          audioTraffic[currentLight].play(0);
+          audioTraffic.playIndex(currentLight, 0);
         }
       }
 
@@ -381,8 +396,9 @@ class ManiStory extends TSStoryBase {
               particleSystem.startPos.base = getHand(i);
               particleSystem.inheritVel.base = getHandVelocity(i);
               particleSystem.add();
+              audioNotes.randomIndex();
               audioNotes.play(0);
-              audioNotes.setGain(random(1.0));
+              audioNotes.setGain(random(0.5, 1.0));
             }
           }
         }
@@ -438,7 +454,9 @@ class ManiStory extends TSStoryBase {
             particleSystem.startPos.base = getHand(i);
             particleSystem.inheritVel.base = getHandVelocity(i);
             particleSystem.add();
+            audioStars.randomIndex();
             audioStars.play(0);
+            audioStars.setGain(random(0.5, 1));
           }
         }
       }
@@ -528,6 +546,8 @@ class ManiStory extends TSStoryBase {
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
+      audioRain.setGain(1 - getHighestHand().y/height);
+
       background(0);
       cityGrey.draw();
       drawMaskedUser();
@@ -602,8 +622,9 @@ class ManiStory extends TSStoryBase {
       PVector rightHand = getRightHand();
       if (getRightHandVelocity().mag() > 0.01) {
         flowers.add(new PVector(width * 0.95, rightHand.y));
+        audioFlowers.randomIndex();
         audioFlowers.play(0);
-        audioFlowers.setGain(random(1.0));
+        audioFlowers.setGain(random(0.5, 1.0));
       }
       flowers.draw();
     }
@@ -771,7 +792,7 @@ class ManiStory extends TSStoryBase {
       //      flowers.draw();
       colorWheel.draw();
       //      basketball.draw();
-      musicNotes.draw();
+      //      musicNotes.draw();
     }
   };
 
@@ -793,12 +814,13 @@ class ManiStory extends TSStoryBase {
       doInteraction = false;
       sky.startDay();
       cityColor.tintAmount = 1;
+      audioNightSky.loop();
     }
 
 
     //----------------
     void onEnd() {
-      audioNight.pause();
+      audioNightSky.pause();
     }
 
     //----------------
@@ -808,7 +830,6 @@ class ManiStory extends TSStoryBase {
       //      println(nightAmount);
       if (nightAmount > 1.5) {
         nightAmount = 0;
-        if (!doInteraction) audioNight.loop();
         doInteraction = true;
       } 
       else if (nightAmount > 1) {
@@ -823,6 +844,9 @@ class ManiStory extends TSStoryBase {
         sky.targetRot = nightAmount * 180;
         cityColor.tintAmount = 1 - nightAmount * 0.8;
       }
+
+
+      audioNightSky.setGain(abs(sky.p.rotVel) * 1);
 
       background(0);
       sky.draw();
@@ -854,11 +878,6 @@ class ManiStory extends TSStoryBase {
       cityColor.tintAmount = 0.2;
     }
 
-
-    //----------------
-    void onEnd() {
-      audioMelody.pause();
-    }
 
     //----------------
     void onDraw(PImage userImage, TSSkeleton skeleton) {
