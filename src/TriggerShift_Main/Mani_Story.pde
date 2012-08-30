@@ -148,6 +148,14 @@ class ManiStory extends TSStoryBase {
   //----------------
   class ColorWheel {
     MSAParticle p = new MSAParticle(loadImage("mani/colourwheel.png"));
+    AudioPlayer audioPlayer = minim.loadFile("mani/audio/wheel loop.mp3");
+    
+          player.close();
+      player = 
+      player.loop();
+      float volume = map(color, 0, getMaxArmLength()*2, , -80.0);
+      player.setGain(volume);
+
 
     void start() {
       p.pos = new PVector(width * 0.3, height * 0.3);
@@ -159,6 +167,9 @@ class ManiStory extends TSStoryBase {
       p.alpha = 0;
       p.targetAlpha = 1;
       p.alphaSpeed = 0.5;
+      
+      audioPlayer.play(0);
+      audioPlayer.setGain(
     }
 
     void end() {
@@ -464,6 +475,10 @@ class ManiStory extends TSStoryBase {
       particleSystem.img = imgRain;
 
       particleSystem.alignToDir = true;
+
+      player.close();
+      player = minim.loadFile("mani/audio/rain-loop.mp3");
+      player.loop();
     }
 
     //----------------
@@ -499,6 +514,10 @@ class ManiStory extends TSStoryBase {
       cityGrey.set(1, 0, 1, 0);
       cityColor.set(5, 1, 0, 1);
       sky.start();
+
+      player.close();
+      player = minim.loadFile("mani/audio/goforward.mp3");
+      player.play();
     }
 
     //----------------
@@ -514,6 +533,8 @@ class ManiStory extends TSStoryBase {
   //------------------------------------------------------------------------------------------------------
   // flowers
   class Scene3 extends TSSceneBase {
+    MSAAudioPlayer players;
+
     Scene3() {
       sceneName = "Scene3 FLOWERS";
       println(storyName + "::" + sceneName);
@@ -524,6 +545,8 @@ class ManiStory extends TSStoryBase {
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
       flowers.start();
+      //      player.close();
+      players = new MSAAudioPlayer("mani/audio/stars.mp3", 10);
     }
 
     //----------------
@@ -534,7 +557,10 @@ class ManiStory extends TSStoryBase {
       cityColor.draw();
       //      PVector leftHand = getLeftHand();
       PVector rightHand = getRightHand();
-      if (getRightHandVelocity().mag() > 0.01) flowers.add(new PVector(width * 0.95, rightHand.y));
+      if (getRightHandVelocity().mag() > 0.01) {
+        flowers.add(new PVector(width * 0.95, rightHand.y));
+        players.play();
+      }
       flowers.draw();
     }
   };
@@ -674,7 +700,7 @@ class ManiStory extends TSStoryBase {
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       PVector handToHand = PVector.sub(getLeftHand3D(), getRightHand3D());
       ballerina.p.rotY += (180 + degrees(atan2(handToHand.y, handToHand.x)) - ballerina.p.rotY) * 0.1;
-      
+
       background(0);
       sky.draw();
       drawMaskedUser();

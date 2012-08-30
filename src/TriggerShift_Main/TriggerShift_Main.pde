@@ -10,7 +10,7 @@ import SimpleOpenNI.*;
 import controlP5.*;
 
 // SET THIS TO TRUE OR FALSE
-boolean useOpenNI = true;
+boolean useOpenNI = false;
 
 // params
 boolean doDrawKinectRGB = false;
@@ -60,6 +60,8 @@ void setupAudio() {
   //a default song to load - if we don't have this calling .close() gives null pointer
   player = minim.loadFile("song1.mp3");
   player1 = minim.loadFile("song1.mp3");
+  player1.play();
+  player.printControls();
 }
 //----------------------------------
 void setupUI() {
@@ -143,7 +145,7 @@ void setupOpenNI() {
 
 //----------------------------------
 void setup() {
-  size(1280, 768, P3D);
+  size(1280, 768, OPENGL);
 
   frameRate(60);
   masker = new TSMasker();
@@ -167,6 +169,8 @@ void setup() {
 
 //----------------------------------
 void draw() {
+  setGain(player1, 1 - mouseY * 1.0/height);
+  
   // update timing
   secondsSinceLastFrame = (millis() - lastFrameMillis) * 0.001;
   lastFrameMillis = millis();
