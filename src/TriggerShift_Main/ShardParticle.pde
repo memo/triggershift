@@ -86,7 +86,13 @@ class ShardParticle extends MSAParticle {
     //tint(255, alpha * 255);
     if (showWord) {
       fill(255);
+      
+      pushMatrix();
+      translate( textWidth(word)/2,0);
+      scale(-1,1);
       text(word, 0, 0);
+      
+      popMatrix();
     }
     else {
       beginShape();

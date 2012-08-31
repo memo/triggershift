@@ -3,6 +3,7 @@ class LornaStory extends TSStoryBase {
   LornaStory() {
     storyName = "LornaStory";
     println(storyName + "::" + storyName);
+
     addScene(new Scene_Black_White());
     addScene(new Scene_Think_Straight());
     addScene(new Scene_maid());
@@ -37,7 +38,7 @@ class Scene_Black_White extends TSSceneBase {
     //println(storyName + "::" + sceneName + "::onStart");
     x1 = 0;
     x2 = width;
-    player = minim.loadFile("lorna/super8.mp3");
+    player = minim.loadFile("lorna/super8-loop.mp3");
     maxArm = getMaxArmLength();
     lock = false;
   }
@@ -308,6 +309,8 @@ class Scene_colour_trees extends TSSceneBase {
 
   PImage colourTrees = loadImage("lorna/treescolour.png");
   PImage bandwTrees = loadImage("lorna/treesbw.png");
+  PImage source = createImage(width, height, ARGB);
+  PImage target = createImage(width, height, ARGB);
   PImage crayon = loadImage("lorna/crayon.png");
   int imageWidth=width;
   int imageHeight=height;
@@ -315,8 +318,8 @@ class Scene_colour_trees extends TSSceneBase {
   Scene_colour_trees() {
     sceneName = "Scene5 colour trees";
     //println(storyName + "::" + sceneName);
-    colourTrees.resize(imageWidth, imageHeight);
-    bandwTrees.resize(imageWidth, imageHeight);
+    // colourTrees.resize(imageWidth, imageHeight);
+    // bandwTrees.resize(imageWidth, imageHeight);
     float crayonLength=300;
     crayon.resize(int(crayonLength/5), int(crayonLength));
   }
@@ -327,6 +330,9 @@ class Scene_colour_trees extends TSSceneBase {
     //player.close();
     player = minim.loadFile("lorna/crayon chalk.mp3");
     player.loop();
+
+    source.copy(colourTrees, 0, 0, colourTrees.width, colourTrees.height, 0, 0, width, height);
+    target.copy(bandwTrees, 0, 0, colourTrees.width, colourTrees.height, 0, 0, width, height);
   }
 
   //----------------
@@ -334,12 +340,14 @@ class Scene_colour_trees extends TSSceneBase {
 
     pushStyle();
 
+
+
     //if hand is over one image
     PVector leftHand=getLeftHand();
     PVector rightHand=getRightHand();
 
-    colourTrees.loadPixels();
-    bandwTrees.loadPixels();
+    source.loadPixels();
+    target.loadPixels();
     int radius=40;
     int x=0;
     int y=0;
@@ -363,22 +371,22 @@ class Scene_colour_trees extends TSSceneBase {
     for (int x1=startPosX; x1<endPosX; x1++) {
       for (int y1=startPosY; y1<endPosY; y1++) {
 
-        int index = x1+ (colourTrees.width*y1);
-        if (index< bandwTrees.pixels.length &&index>0 ) {
+        int index = x1+ (source.width*y1);
+        if (index< target.pixels.length &&index>0 ) {
           if (dist(x1, y1, leftHand.x, leftHand.y  )<radius) {
             //write into bandw image with colour data 
-            bandwTrees.pixels[index] = colourTrees.pixels[index];
+            target.pixels[index] = source.pixels[index];
           }
         }
       }
     }
 
 
-    colourTrees.updatePixels();
-    bandwTrees.updatePixels();
+    source.updatePixels();
+    target.updatePixels();
     imageMode(CORNER);
 
-    image(bandwTrees, 0, 0);
+    image(target, 0, 0, imageWidth, imageHeight);
     popStyle();
     drawMaskedUser();
   }
@@ -423,8 +431,9 @@ class Scene_paper_chain extends TSSceneBase {
     touchCount=0;
     pChain=new ArrayList();
     //player.close();
-    player = minim.loadFile("lorna/paper crumple loop.mp3");
-   
+    player = minim.loadFile("lorna/paper crumple loop-LITE.mp3");
+    player.loop();
+    player.pause();
   }
 
   //----------------
@@ -448,8 +457,8 @@ class Scene_paper_chain extends TSSceneBase {
     if (isTouching!=pIsTouching && isTouching) {
       chainHasStarted=true;
       touchCount++;
-      player.rewind();
-      player.play();
+      // player.rewind();
+      player.loop();
       //if this is the second touch make the particles fall and restart everything
       if (touchCount>=2) {
         fall=true;
@@ -646,7 +655,7 @@ class Scene_dream extends TSSceneBase {
     if (dist(head.x, head.y, rightHand.x, rightHand.y)<thresh) dreamStarted = true;
     if (dreamStarted) {
       if (!lock) {
-        player.loop();
+        player.play();
         lock=true;
       }
       image(bubbles, head.x, head.y-(bubbles.height * hScale), bubbles.width * wScale, bubbles.height * hScale);
@@ -707,7 +716,7 @@ class Scene_reality extends TSSceneBase {
     int thresh=50;
     if (dist(centreOfImage.x, centreOfImage.y, rightHand.x, rightHand.y )<thresh) isPopped=true;
     if (isPopped&&!lock) {
-      player.loop();
+      player.play();
       lock=true;
     }
     pushStyle();
@@ -716,17 +725,12 @@ class Scene_reality extends TSSceneBase {
     image(bubbles, head.x, head.y-(bubbles.height), bubbles.width * wScale, bubbles.height);
 
     if (isPopped &&alpha>=0) alpha-=10;
-    println(dist(head.x, head.y, rightHand.x, rightHand.y)+" "+alpha );
-
+    
     popMatrix();
     popStyle();
   }
   void onEnd() {
-    try {
-      player.close();
-    }
-    catch(Exception e) {
-    }
+    player.close();
   }
 };
 
@@ -764,9 +768,9 @@ class Scene_shadow extends TSSceneBase {
 
     if (head.x>width/2) {
       isShadow=true;
-      if(!lock){
-       player.play(); 
-       lock=true;
+      if (!lock) {
+        player.play(); 
+        lock=true;
       }
     }
 

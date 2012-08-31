@@ -124,8 +124,8 @@ class Scene_ripPaper extends TSSceneBase {
 
 
     float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
-    
-    
+
+
     pushMatrix();
     image(easel, picturePos.x- (easel.width*0.85), picturePos.y-(easel.height*0.66));
     popMatrix();
@@ -289,8 +289,13 @@ class Scene_fade_in_colour extends TSSceneBase {
   PImage easel = loadImage("celine/easel.png");
   PImage picture = loadImage("celine/skyscraper1.png");
   PImage sepia = loadImage("celine/skyscraper1.png");
+
   int imageWidth=150;
   int imageHeight=262;
+
+  PImage source = createImage(imageWidth/2, imageHeight/2, ARGB);
+  PImage target = createImage(imageWidth/2, imageHeight/2, ARGB);
+
   float angle;
   MSAAudioPlayer msaPlayer;
   MSAAudioPlayer msaPlayer1;
@@ -298,15 +303,21 @@ class Scene_fade_in_colour extends TSSceneBase {
   Scene_fade_in_colour() {
     sceneName = "Scene3 FADE IN COLOUR";
     //println(storyName + "::" + sceneName + "::onStart");
-    sepia.filter(GRAY);
-    picture.resize(imageWidth, imageHeight);
-    sepia.resize(imageWidth, imageHeight);
+
+    source.copy(picture, 0, 0, picture.width, picture.height, 0, 0, imageWidth/2, imageHeight/2);
+    target.copy(sepia, 0, 0, sepia.width, sepia.height, 0, 0, imageWidth/2, imageHeight/2);
+    target.filter(GRAY);
+    // picture.resize(imageWidth, imageHeight);
+    // sepia.resize(imageWidth, imageHeight);
     easel.resize(int(2.2*imageWidth), int(2.8*imageHeight));
+    //println("finsihed constructor");
   }
 
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("CelineStory::Scene_fade_in_colour::onStart");
+
+
 
     angle=0;
 
@@ -347,17 +358,17 @@ class Scene_fade_in_colour extends TSSceneBase {
 
     translate(-imageWidth*0.5, -imageHeight*0.5);
 
-    image(picture, 0, 0, sW, sH);
+    image(source, 0, 0, sW, sH);
 
     //tint a sepia -ish colour
     tint(232, 222, 48, alp);
-    sepia.loadPixels();
-    for (int i=0;i<sepia.pixels.length;i++) {
-      sepia.pixels[i]=color(red(sepia.pixels[i]), green(sepia.pixels[i] ), blue( sepia.pixels[i] ), alp ) ;
+    target.loadPixels();
+    for (int i=0;i<target.pixels.length;i++) {
+      target.pixels[i]=color(red(source.pixels[i]), green(source.pixels[i] ), blue( source.pixels[i] ), alp ) ;
     }
-    sepia.updatePixels();
+    target.updatePixels();
 
-    image(sepia, 0, 0, sW, sH);
+    image(target, 0, 0, sW, sH);
     popMatrix();
 
     popStyle();
@@ -593,6 +604,7 @@ class Scene_flick_through_images extends TSSceneBase {
   int timeOutThresh=30;
   int counter=timeOutThresh+1;
   boolean firstTime=true;
+  
   Scene_flick_through_images() {
     //println(storyName + "::" + sceneName + "::onStart");
     images[0]=loadImage("celine/house.png");

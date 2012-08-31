@@ -51,7 +51,7 @@ class Scene_flickBook extends TSSceneBase {
     //player.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    PVector leftHand = getLeftHand();
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
     image(book[frameIndex], picturePos.x, picturePos.y);
 
@@ -175,7 +175,7 @@ class Scene_throw_coffee extends TSSceneBase {
     imageHeight = 200;
     isThrown=false;
     lock=false;
-    mug.resize(imageWidth, imageHeight);
+    //mug.resize(imageWidth, imageHeight);
     //  setupWorld();
     //   setupPhysicsObjects();
     words[0]="biology";
@@ -210,7 +210,7 @@ class Scene_throw_coffee extends TSSceneBase {
     pushStyle();
     textFont(_font, 24);
     drawMaskedUser();
-    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    PVector leftHand = getLeftHand();
     //PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
 
     pushMatrix();
@@ -257,7 +257,7 @@ class Scene_throw_coffee extends TSSceneBase {
     //turn the particles into words
     //ellipse(leftHand.x, leftHand.y, 20, 20);
 
-    image(mug, leftHand.x-(0.7*mug.width), leftHand.y-(0.7*mug.height));
+    image(mug, leftHand.x-(0.7*imageWidth), leftHand.y-(0.7*imageHeight),imageWidth, imageHeight);
 
     popMatrix();
     popStyle();
@@ -304,7 +304,7 @@ class Scene_mortar_board_on_head extends TSSceneBase {
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     drawMaskedUser();
-    PVector endPos= skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
+    PVector endPos= getHead();
 
     float currentX = lerp(startPos.x, endPos.x, inc);
     float currentY = lerp(startPos.y, endPos.y, inc);
@@ -341,11 +341,12 @@ class Scene_zoom_from_space extends TSSceneBase {
   PImage country= loadImage("charlene/country.png");
   PImage city= loadImage("charlene/city1.png");
   PImage blended = loadImage("charlene/world.png");
-
+  PImage composite =  loadImage("charlene/world.png");
   int imageWidth;
   int imageHeight;
   //TODO add volume
   MSAAudioPlayer msaPlayer;
+
   Scene_zoom_from_space() {
     sceneName="scene5 ZOOM FROM SPACE";
 
@@ -367,8 +368,9 @@ class Scene_zoom_from_space extends TSSceneBase {
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
-    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    pushStyle();
+    PVector rightHand = getRightHand();
+    PVector leftHand = getLeftHand();
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
 
     float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
@@ -378,6 +380,7 @@ class Scene_zoom_from_space extends TSSceneBase {
     imageScale=constrain(imageScale, 0.01, 0.96);
 
     float volume = map(distBetweenHands, 0, getMaxArmLength()*2, 0.0, 1.0);
+    volume=constrain(volume, 0.0, 1.0);
     // player.setGain(volume);
     //get the height in proportion so we don't squash the image
 
@@ -385,15 +388,16 @@ class Scene_zoom_from_space extends TSSceneBase {
     //TODO float volume = map(distBetweenHands, 0, getMaxArmLength()*2, -13.9794, -80.0);
     //TODO player.setGain(volume);
 
-    if (imageScale >= 0.0 && imageScale < 0.5 ) {
-      blended= lerpImage(city, country, imageScale *map(imageScale, 0.0, 0.5, 0, 1)   );
-    }
-    else if (imageScale >= 0.5 && imageScale < 1.0) {
-      blended= lerpImage(country, world, imageScale *map(imageScale, 0.5, 1.0, 0, 1) );
-    }
-
-    image(blended, picturePos.x, picturePos.y);
+    /* if (imageScale >= 0.0 && imageScale < 0.5 ) {
+     blended= lerpImage(city, country, imageScale *map(imageScale, 0.0, 0.5, 0, 1)   );
+     }
+     else if (imageScale >= 0.5 && imageScale < 1.0) {
+     blended= lerpImage(country, world, imageScale *map(imageScale, 0.5, 1.0, 0, 1) );
+     }*/
+    imageMode(CENTER);
+    image(composite, width/2, height/2, width*volume*3, height*volume*3);
     drawMaskedUser();
+    popStyle();
   }
 
   PImage lerpImage(PImage image1, PImage image2, float amt) {
@@ -414,7 +418,7 @@ class Scene_zoom_from_space extends TSSceneBase {
   }
   void onEnd() {
     try {
-      player.close();
+      msaPlayer.close();
     }
     catch (Exception e) {
     }
@@ -539,7 +543,7 @@ class Scene_power_hands extends TSSceneBase {
     alpha=0;
     inc=2;
     rot=0;
-    msaPlayer = new MSAAudioPlayer("charlene/orb.mp3");
+    msaPlayer = new MSAAudioPlayer("charlene/orb-new.mp3");
     msaPlayer.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -594,7 +598,7 @@ class Scene_spin_right_wrong extends TSSceneBase {
 
   PImage right=loadImage("charlene/right.png");
   PImage wrong=loadImage("charlene/wrong.png");
-
+  float pAngle;
   Scene_spin_right_wrong() {
     sceneName="scene8 SPING RIGHT OR WRONG";
 
@@ -609,6 +613,7 @@ class Scene_spin_right_wrong extends TSSceneBase {
     //TODO replace loop with single hit on each half rotation
     player = minim.loadFile("charlene/right-wrong.mp3");
     hint(ENABLE_DEPTH_TEST);
+    pAngle=0;
     // player.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -630,11 +635,15 @@ class Scene_spin_right_wrong extends TSSceneBase {
     translate(-0.5*imageWidth, 0, 0);
     fill(255, 255);
     //rect(0, 0, imageWidth, imageHeight);
-    translate(0, 0, 0.7);
-    if (angle==0) {
+    translate(0, 0, -0.7);
+    float diff = pAngle * angle;
+    
+    
+    if (diff<0) {
       player.rewind();
       player.play();
     }
+    pAngle=angle;
     //if(angle>=-(0.5*PI) && angle < (0.5*PI) ) image(right, 0, 0);
     image(right, 0, 0);
     popMatrix();
@@ -642,7 +651,7 @@ class Scene_spin_right_wrong extends TSSceneBase {
     pushMatrix();
 
     rotateY(angle+PI);
-    translate(0, 0, upShift);
+    translate(0, 0, -0.7);
     translate(-0.5*imageWidth, 0, 0);
     image(wrong, 0, 0);
     //if(angle>(0.5*PI) && angle < (1.5*PI) )  image(wrong, 0, 0);
@@ -653,6 +662,7 @@ class Scene_spin_right_wrong extends TSSceneBase {
     popStyle();
   }
   void onEnd() {
+    hint(DISABLE_DEPTH_TEST);
     try {
       player.close();
     }
