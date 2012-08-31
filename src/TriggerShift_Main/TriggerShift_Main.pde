@@ -10,7 +10,12 @@ import SimpleOpenNI.*;
 import controlP5.*;
 
 // SET THIS TO TRUE OR FALSE
-boolean useOpenNI = true;
+boolean useOpenNI = false;
+
+// SET THIS TO TRUE OR FALSE
+// IN INSTALLATION MODE, AUTOADVANCE, AND DISABLE SOME SCENES 
+boolean useInstallationMode = true;
+
 
 // params
 boolean doDrawKinectRGB = false;
@@ -54,6 +59,7 @@ float secondsSinceLastFrame = 1;
 
 // Stories
 TSStoryBase currentStory = null;
+int currentStoryIndex = 0;
 int numStorys = 6; // including test story
 //ArrayList stories = new ArrayList();
 
@@ -117,12 +123,20 @@ void setStory(int i) {
     currentStory = new AudioReactiveStory();
   }
 
+  currentStoryIndex = i;
   currentStory.startStory();
+}
+
+void nextStory() {
+  println("nextStory");
+  currentStoryIndex++;
+  if(currentStoryIndex>5) currentStoryIndex = 1;
+  setStory(currentStoryIndex);
 }
 
 //----------------------------------
 void setupStories() {
-  setStory(0);  // use keyboard 0-5 to choose story
+  setStory(0);//useInstallationMode ? 1 : 0);  // use keyboard 0-5 to choose story
 }
 
 //----------------------------------
@@ -288,6 +302,10 @@ void keyPressed() {
   case 'r': 
     currentStory.startStory(); 
     break;
+    
+   case 'n':
+   nextStory();
+   break;
 
   case 'c': 
     doDrawKinectRGB ^= true; 

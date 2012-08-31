@@ -23,11 +23,11 @@ class JamelStory extends TSStoryBase {
     addScene(new Scene3());
     addScene(new Scene4());
     //    addScene(new Scene5());
-    addScene(new Scene6());
-    addScene(new Scene7());
-    addScene(new Scene8());
+    if(useInstallationMode == false) addScene(new Scene6());
+    if(useInstallationMode == false) addScene(new Scene7());
+    if(useInstallationMode == false) addScene(new Scene8());
     //    addScene(new Scene9());
-    addScene(new Scene10());
+    if(useInstallationMode == false) addScene(new Scene10());
     addScene(new Scene11());
 
   }
@@ -95,6 +95,8 @@ class JamelStory extends TSStoryBase {
           image(imgFlagRip2, xpos-width, -height, width, height);
           popMatrix();
         }
+        
+        if(useInstallationMode && (millis() - ripStartMillis > 2000)) nextScene();
       }
 
       // play BEEP sound
@@ -108,6 +110,7 @@ class JamelStory extends TSStoryBase {
         ripStartMillis = millis();
         audioFlagRip.play(0);
       }
+      
     }
   };
 
@@ -190,7 +193,7 @@ class JamelStory extends TSStoryBase {
 
         // add latest hand
         //      if(frameCount % 10 == 0) {
-        if (graph.pointIn(activeHand) && activeHand.x > lastPoint.x && PVector.sub(activeHand, lastPoint).mag() > units(20)) {
+        if (graph.pointIn(activeHand) && /*activeHand.x > lastPoint.x && */PVector.sub(activeHand, lastPoint).mag() > units(20)) {
           posArray.add(activeHand.get());
           if (posArray.size() > 100) posArray.remove(0);  // trim array
           audioGraph.playRandomIndex();
@@ -238,6 +241,7 @@ class JamelStory extends TSStoryBase {
       //      }
       //
       //      particleSystem.draw();
+      
     }
   };
 
@@ -314,7 +318,9 @@ class JamelStory extends TSStoryBase {
       float newt = constrain(map(getLeftHand().y, getHip().y, getHead().y, 0.0, 1.0), 0.0, 1.0);
       if (newt < 0.01) doInteraction = true;
 
-      if (tramp.fillAmount > 0.99) doInteraction = false;
+      if (tramp.fillAmount > 0.99) {
+        if(useInstallationMode == false) doInteraction = false;
+      }
       if (doInteraction) tramp.fillAmount += (newt - tramp.fillAmount) * 0.5;
       //      else tramp.fillAmount = 0;
       tramp.draw();
@@ -394,6 +400,7 @@ class JamelStory extends TSStoryBase {
   class Scene4 extends TSSceneBase {
     boolean throwCats;
     boolean catchCats;
+    float throwCatsMillis  = 0;
 
     Scene4() {
       sceneName = "Scene4 CATS";
@@ -439,6 +446,7 @@ class JamelStory extends TSStoryBase {
       if (throwCats == false && catchCats == true && getLeftHand().y < getHead().y && getRightHand().y < getHead().y) {
         throwCats = true;
         audioCatAngry.play(0);
+        throwCatsMillis = millis();
       } 
 
       pushStyle();
@@ -452,6 +460,7 @@ class JamelStory extends TSStoryBase {
             diff = PVector.sub(t.currentPos, t.cat.pos);
             diff.mult(catSpeedUp);
             t.cat.pos.add(diff);
+            if(useInstallationMode && millis() - throwCatsMillis > 3000) onStart();
           } 
           else {
             // find closest hand
