@@ -11,7 +11,7 @@ class MSAAudioPlayer {
 //  }
 
   void setGain( float volume) {
-    float kAudioMax = -13.9794;
+    float kAudioMax = 0;
     float kAudioMin = -80.0;
     volume = constrain(volume, 0, 1);
     volume = 1 - volume;
