@@ -10,7 +10,7 @@ import SimpleOpenNI.*;
 import controlP5.*;
 
 // SET THIS TO TRUE OR FALSE
-boolean useOpenNI = false;
+boolean useOpenNI = true;
 
 // params
 boolean doDrawKinectRGB = false;
@@ -144,7 +144,7 @@ void setupOpenNI() {
 
 //----------------------------------
 void setup() {
-  size(1280, 768, P3D);
+  size(1280, 768, OPENGL);
 
   frameRate(60);
   masker = new TSMasker();
