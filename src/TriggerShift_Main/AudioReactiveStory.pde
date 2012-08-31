@@ -50,8 +50,8 @@ class AudioReactiveStory extends TSStoryBase {
       volume *= 0.95;
       
       noStroke();
-      fill(0, 255, 0, 50);
-      rect(width/2-units(50), height - height * volume, units(100), height * volume);
+      fill(0, 255, 0, 100);
+      rect(0, height - height * volume, width, height * volume);
       
       fill(255, 0, 0, 255);
       rect(0, height - height * maxVolume, width, units(20));
