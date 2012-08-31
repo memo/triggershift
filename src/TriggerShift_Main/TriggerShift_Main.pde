@@ -144,7 +144,7 @@ void setupOpenNI() {
 
 //----------------------------------
 void setup() {
-  size(1280, 768, OPENGL);
+  size(1280, 768, P3D);
 
   frameRate(60);
   masker = new TSMasker();
