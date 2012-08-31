@@ -4,7 +4,7 @@ import ddf.minim.analysis.*;
 import ddf.minim.effects.*;
 
 import processing.opengl.*;
-import fisica.*;
+//import fisica.*;
 
 import SimpleOpenNI.*;
 import controlP5.*;
@@ -113,6 +113,8 @@ void setStory(int i) {
   case 5: 
     currentStory = new CharleneStory(this); 
     break;
+  case 6:
+    currentStory = new AudioReactiveStory();
   }
 
   currentStory.startStory();
@@ -120,13 +122,6 @@ void setStory(int i) {
 
 //----------------------------------
 void setupStories() {
-  //  stories.add(new StoryTest());  // 0
-  //  stories.add(new ManiStory());  // 1
-  //  stories.add(new LornaStory());  // 2
-  //  stories.add(new JamelStory());  // 3
-  //  stories.add(new CelineStory());  // 4
-  //  stories.add(new CharleneStory(this));  // 5
-  //  
   setStory(0);  // use keyboard 0-5 to choose story
 }
 
@@ -278,6 +273,9 @@ void keyPressed() {
     break;
   case '5': 
     setStory(5); 
+    break;
+  case '6':
+    setStory(6);
     break;
   case ' ': 
     currentStory.nextScene(); 

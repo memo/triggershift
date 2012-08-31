@@ -133,10 +133,11 @@ class Scene_clock_hands extends TSSceneBase {
     
   }
 };
+
 //SCENE 3 THROW COFFEE
 class Scene_throw_coffee extends TSSceneBase {
-  FWorld world;
-  FMouseJoint joint;
+//  FWorld world;
+//  FMouseJoint joint;
   PApplet ref;
   PFont _font;
   PImage mug=loadImage("charlene/mugUpright.png");

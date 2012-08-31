@@ -1,21 +1,21 @@
 class MSAAudioPlayer {
   AudioPlayer audioPlayer;
-
+  
   MSAAudioPlayer(String s) {
 //    loadFile(s);
     audioPlayer = minim.loadFile(s);
   }
-
+  
 //  void loadFile(String s) {
 //    audioPlayer = minim.loadFile(s);
 //  }
 
   void setGain( float volume) {
-    float kAudioMax = -13.9794;
+    float kAudioMax = 0;
     float kAudioMin = -80.0;
     volume = constrain(volume, 0, 1);
     volume = 1 - volume;
-    volume *= volume * volume * volume * volume * volume;
+    volume *= volume * volume * volume;
     volume = 1 - volume;
     audioPlayer.setGain(map(volume, 0, 1, kAudioMin, kAudioMax));
   }
@@ -41,7 +41,12 @@ class MSAAudioPlayer {
   }
   
   void close() {
-    audioPlayer.close();
+     try{
+      audioPlayer.close();
+    }
+    catch (Exception e){
+    }
+    
   }
 }
 
