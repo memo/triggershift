@@ -221,7 +221,7 @@ class ManiStory extends TSStoryBase {
     void draw() {
       if (p.pointIn(getLeftHand())) {
         p.rotVel *= 0.98;
-        p.rotVel += getLeftHandVelocity().y * 50;
+        p.rotVel += getLeftHandVelocity().y * 50 * (getLeftHand().x > p.pos.x ? 1 : -1);
       }
 
       p.draw();
