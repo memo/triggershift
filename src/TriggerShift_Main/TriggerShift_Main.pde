@@ -4,7 +4,7 @@ import ddf.minim.analysis.*;
 import ddf.minim.effects.*;
 
 import processing.opengl.*;
-import fisica.*;
+//import fisica.*;
 
 import SimpleOpenNI.*;
 import controlP5.*;
