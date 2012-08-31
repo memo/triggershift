@@ -33,7 +33,7 @@ class MSAAudioPlayer {
   }
   
   void pause() {
-    audioPlayer.pause();
+    if(audioPlayer.isPlaying()) audioPlayer.pause();
   }
   
   boolean isPlaying() {
