@@ -61,16 +61,16 @@ class TimeTrigger implements TSTriggerBaseI {
 
 
 //----------------returns true if selected joint is in front of threshold position on z axis------------------
-class ZAxisThreshTrigger implements TSTriggerBaseI {
-  float zThresh;
-  int jointType;
-  ZAxisThreshTrigger(float _zThresh, int _jointType, TSSkeleton skeleton) { 
-    zThresh = _zThresh;
-    jointType = _jointType;
-  }
-
-  boolean check() {
-    return skeleton.getWorldCoords(openNIContext, 1, jointType).z < zThresh;
-  }
-};
+//class ZAxisThreshTrigger implements TSTriggerBaseI {
+//  float zThresh;
+//  int jointType;
+//  ZAxisThreshTrigger(float _zThresh, int _jointType, TSSkeleton skeleton) { 
+//    zThresh = _zThresh;
+//    jointType = _jointType;
+//  }
+//
+//  boolean check() {
+//    return skeleton.getWorldCoords(openNIContext, 1, jointType).z < zThresh;
+//  }
+//};
 

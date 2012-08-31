@@ -49,7 +49,7 @@ class LornaStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
 
       pushStyle();
       imageMode(CORNER);
@@ -116,7 +116,7 @@ class LornaStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       stroke(0, 0, 255);
       strokeWeight(10);
       noFill();
@@ -250,7 +250,7 @@ class LornaStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       drawMaskedUser();
 
       pushStyle();
@@ -341,7 +341,7 @@ class LornaStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
 
       pushStyle();
 
@@ -443,7 +443,7 @@ class LornaStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       drawMaskedUser();
 
       PVector rightHand=getRightHand();
@@ -546,7 +546,7 @@ class LornaStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
 
 
 
@@ -649,7 +649,7 @@ class LornaStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       drawMaskedUser();
       PVector head = getHead();
       PVector rightHand=getRightHand();
@@ -713,7 +713,7 @@ class LornaStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       drawMaskedUser();
       PVector head = getHead();
       PVector rightHand=getRightHand();
@@ -769,7 +769,7 @@ class LornaStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       PVector head = getHead();
 
       if (head.x>width/2) {
@@ -825,7 +825,7 @@ class LornaStory extends TSStoryBase {
       //player.close();
       player = minim.loadFile("lorna/stars.mp3");
     }
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       PVector leftHand = getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
       PVector rightHand = getRightHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
       PVector head = getHead();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);

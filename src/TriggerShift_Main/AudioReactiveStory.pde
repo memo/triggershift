@@ -32,7 +32,7 @@ class AudioReactiveStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       drawMaskedUser();
       pushStyle();
       pushMatrix();

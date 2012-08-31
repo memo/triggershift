@@ -24,7 +24,7 @@ class TSSceneBase {
 
   //----------------------------------
   // OVERRIDE THIS FUNCTION
-  void onDraw(PImage userImage, TSSkeleton skeleton) {
+  void onDraw() {
     println("Override TSSceneBase::onDraw");
   }
 

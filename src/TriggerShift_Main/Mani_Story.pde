@@ -549,7 +549,7 @@ class ManiStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       audioRain.setGain(1 - getHighestHand().y/height);
 
       background(0);
@@ -587,7 +587,7 @@ class ManiStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       background(0);
       sky.draw();
       cityGrey.draw();
@@ -618,7 +618,7 @@ class ManiStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       background(0);
       sky.draw();
       drawMaskedUser();
@@ -655,7 +655,7 @@ class ManiStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       background(0);
       sky.draw();
       drawMaskedUser();
@@ -686,7 +686,7 @@ class ManiStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       background(0);
       sky.draw();
       drawMaskedUser();
@@ -719,7 +719,7 @@ class ManiStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       background(0);
       sky.draw();
       drawMaskedUser();
@@ -755,7 +755,7 @@ class ManiStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       audioBees.setGain(1 - getHighestHand().y/height);
       background(0);
       sky.draw();
@@ -790,7 +790,7 @@ class ManiStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       PVector handToHand = PVector.sub(getLeftHand3D(), getRightHand3D());
       ballerina.p.rotY += (180 + degrees(atan2(handToHand.y, handToHand.x)) - ballerina.p.rotY) * 0.1;
 
@@ -835,7 +835,7 @@ class ManiStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       PVector hand = getLeftHand();
       float nightAmount = map(degrees(atan2(hand.y - height/2, hand.x - width/2)), -180, 0, 0, 1);
       //      println(nightAmount);
@@ -891,7 +891,7 @@ class ManiStory extends TSStoryBase {
 
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       for (int i=0; i<stars.particleSystem.particles.size(); i++) {
         MSAParticle p = (MSAParticle)stars.particleSystem.particles.get(i);
         p.alpha = random(1.0);

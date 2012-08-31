@@ -57,9 +57,9 @@ class CharleneStory extends TSStoryBase {
       player = minim.loadFile("charlene/page-flick.mp3");
       //player.loop();
     }
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       PVector leftHand = getLeftHand();
-      PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
+      PVector picturePos = new PVector(0.1 * width, 0.1 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
       image(book[frameIndex], picturePos.x, picturePos.y);
 
       float thresh=0.01;
@@ -116,8 +116,8 @@ class CharleneStory extends TSStoryBase {
       player = minim.loadFile("charlene/clock.mp3");
       player.loop();
     }
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
-      PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
+    void onDraw() {
+      PVector picturePos = new PVector(0.1 * width, 0.1 * height, 0);//=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
       image(book, picturePos.x, picturePos.y);
       pushMatrix();
       translate(picturePos.x+(0.5*bookImageWidth), picturePos.y+(0.5*bookImageHeight));
@@ -154,7 +154,7 @@ class CharleneStory extends TSStoryBase {
     PApplet ref;
     PFont _font;
     PImage mug=loadImage("charlene/mugUpright.png");
-    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.01, 0.5, 0));
+    PVector picturePos = new PVector(0.01 * width, 0.5 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.01, 0.5, 0));
     int imageWidth;
     int imageHeight;
 
@@ -213,7 +213,7 @@ class CharleneStory extends TSStoryBase {
       player.play();
     }
 
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       pushStyle();
       textFont(_font, 24);
       drawMaskedUser();
@@ -293,7 +293,7 @@ class CharleneStory extends TSStoryBase {
     Scene_mortar_board_on_head() {
       sceneName="scene4 MORTAR BOARD ON HEAD";
       //println(storyName + "::" + sceneName + "::onStart");
-      startPos=transform2D.getWorldCoordsForInputNorm(new PVector(0.5, 0.0, 0));
+      startPos = new PVector(0.5 * width, 0.0 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.5, 0.0, 0));
     }
 
     // this is called when the scene starts (i.e. is triggered)
@@ -309,7 +309,7 @@ class CharleneStory extends TSStoryBase {
       player = minim.loadFile("charlene/mortarboard.mp3");
       lock=false;
     }
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       drawMaskedUser();
       PVector endPos= getHead();
 
@@ -374,11 +374,11 @@ class CharleneStory extends TSStoryBase {
       msaPlayer.loop();
     }
 
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       pushStyle();
       PVector rightHand = getRightHand();
       PVector leftHand = getLeftHand();
-      PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
+      PVector picturePos = new PVector(0.1 * width, 0.1 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
 
       float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
       float maxDist= 300;
@@ -480,13 +480,13 @@ class CharleneStory extends TSStoryBase {
       player = minim.loadFile("charlene/paper.mp3");
     }
 
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       if (inBox) {
         player.play();
       }
       drawMaskedUser();
       PVector leftHand= getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
-      PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.01, 0.5, 0));
+      PVector picturePos = new PVector(0.01 * width, 0.5 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.01, 0.5, 0));
 
       PVector centreOfVote= new PVector(leftHand.x - (0.5*vote.width), leftHand.y   );
       PVector slotPos = new PVector(picturePos.x+(ballotBoxFront.width * 0.2), picturePos.y+(ballotBoxFront.height * 0.1));
@@ -553,7 +553,7 @@ class CharleneStory extends TSStoryBase {
       msaPlayer = new MSAAudioPlayer("charlene/orb-new.mp3");
       msaPlayer.loop();
     }
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       drawMaskedUser();
       pushStyle();
       pushMatrix();
@@ -623,12 +623,12 @@ class CharleneStory extends TSStoryBase {
       pAngle=0;
       // player.loop();
     }
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       pushStyle();
       pushMatrix();
       PVector leftHand = getLeftHand();//skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_HAND);
       PVector leftShoulder = getLeftShoulder();//skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_SHOULDER);
-      PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.2, 0.2, 0));
+      PVector picturePos = new PVector(0.2 * width, 0.2 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.2, 0.2, 0));
       //get the angle between the left shoulder and the left hand as if looking down from above ie at the x z plane
       float angle = atan2( leftShoulder.z- leftHand.z, leftShoulder.x- leftHand.x);
       //if we are at the right point of the rotation
@@ -699,7 +699,7 @@ class CharleneStory extends TSStoryBase {
 
       //println(storyName + "::" + sceneName + "::onStart");
 
-      picturePos =transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
+      picturePos = new PVector(0.1 * width, 0.2 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.2, 0));
       for (int i=0;i<numShards;i++) {
         shardImages[i]=loadImage("charlene/scream_"+str(i)+".png");
         shardImages[i].resize(imageWidth, imageHeight);
@@ -727,7 +727,7 @@ class CharleneStory extends TSStoryBase {
         }
       }
     }
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       if (handOver) {
         player.play();
       }
@@ -796,7 +796,7 @@ class CharleneStory extends TSStoryBase {
 
       lock=false;
     }
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       drawMaskedUser();
       pushStyle();
       pushMatrix();

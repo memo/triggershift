@@ -6,11 +6,11 @@ import ddf.minim.effects.*;
 import processing.opengl.*;
 //import fisica.*;
 
-import SimpleOpenNI.*;
+//import SimpleOpenNI.*;
 import controlP5.*;
 
 // SET THIS TO TRUE OR FALSE
-boolean useOpenNI = true;
+boolean useOpenNI = false;
 
 // SET THIS TO TRUE OR FALSE
 // IN INSTALLATION MODE, AUTOADVANCE, AND DISABLE SOME SCENES 
@@ -37,10 +37,9 @@ float upShift = 0.7;
 
 // vars
 ControlP5 cp5 = null;
-SimpleOpenNI  openNIContext = null;
-TSSkeleton skeleton = null;
-TSTransform2D transform2D = null;
-TSMasker masker = null;
+//SimpleOpenNI  openNIContext = null;
+//TSTransform2D transform2D = null;
+//TSMasker masker = null;
 Minim minim;
 AudioPlayer player;
 AudioPlayer player1;
@@ -140,20 +139,18 @@ void setupStories() {
 }
 
 //----------------------------------
-void setupOpenNI() {
-  //setup openNI context
-  openNIContext = new SimpleOpenNI(this);
-
-  openNIContext.enableDepth();
-  openNIContext.enableRGB();
-  openNIContext.enableScene();
-  openNIContext.enableUser(SimpleOpenNI.SKEL_PROFILE_ALL);
-
-  openNIContext.setMirror(true);
-  openNIContext.alternativeViewPointDepthToImage();
-
-  skeleton = new TSSkeleton();
-}
+//void setupOpenNI() {
+//  //setup openNI context
+//  openNIContext = new SimpleOpenNI(this);
+//
+//  openNIContext.enableDepth();
+//  openNIContext.enableRGB();
+//  openNIContext.enableScene();
+//  openNIContext.enableUser(SimpleOpenNI.SKEL_PROFILE_ALL);
+//
+//  openNIContext.setMirror(true);
+//  openNIContext.alternativeViewPointDepthToImage();
+//}
 
 
 //----------------------------------
@@ -161,10 +158,10 @@ void setup() {
   size(1280, 768, OPENGL);
 
   frameRate(60);
-  masker = new TSMasker();
-  transform2D = new TSTransform2D();
+//  masker = new TSMasker();
+//  transform2D = new TSTransform2D();
 
-  if (useOpenNI) setupOpenNI();
+//  if (useOpenNI) setupOpenNI();
   setupStories();
 
   setupUI();
@@ -193,49 +190,34 @@ void draw() {
   background(0, 0, 0);
 
   // get kinect color image
-  if (openNIContext != null) {
-    openNIContext.update();
+//  if (openNIContext != null) {
+//    openNIContext.update();
 
     // apply mask
-    masker.update(openNIContext, maskBlurAmount);
+//    masker.update(openNIContext, maskBlurAmount);
 
     // update skeleton
-    skeleton.update(openNIContext);
-    updateSkeletonStats();
+//    skeleton.update(openNIContext);
+    skeletonManager.update();
+//    updateSkeletonStats();
 
     // update transform2d
-    transform2D.inputSizePixels = new PVector(openNIContext.depthImage().width, openNIContext.depthImage().height);
-  }
+//    transform2D.inputSizePixels = new PVector(depthWidth, depthHeight);
+//  }
 
-  transform2D.outputSizePixels = new PVector(width, height);
-  transform2D.targetSize = new PVector(videoSizeX, videoSizeY);
-  transform2D.targetCenter = new PVector(videoPosX, videoPosY);
-  transform2D.update();
+//  transform2D.outputSizePixels = new PVector(width, height);
+//  transform2D.targetSize = new PVector(videoSizeX, videoSizeY);
+//  transform2D.targetCenter = new PVector(videoPosX, videoPosY);
+//  transform2D.update();
 
-  /* 
-   PVector rHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_RIGHT_HAND) ;
-   PVector lHand = skeleton.getScreenCoords(1, SimpleOpenNI.SKEL_LEFT_HAND) ;
-   fill(255, 0, 0);
-   ellipse(rHand.x, rHand.y, 20, 20);
-   ellipse(lHand.x, lHand.y, 20, 20);
-   
-   image(context.depthImage(), 640, 0, 320, 240); 
-   rHand = skeleton.getMappedCoords(1, SimpleOpenNI.SKEL_RIGHT_HAND, 640, 0, 320, 240 ) ;
-   lHand = skeleton.getMappedCoords(1, SimpleOpenNI.SKEL_LEFT_HAND, 640, 0, 320, 240) ;
-   fill(255, 0, 0);
-   ellipse(rHand.x, rHand.y, 20, 20);
-   ellipse(lHand.x, lHand.y, 20, 20);
-   */
+  currentStory.draw();
 
-  currentStory.draw(masker.getImage(), skeleton);
-
-  if (openNIContext != null) {
-    if (doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
-    if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
-    if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
-    if (doDrawSkeletons) skeleton.drawAllSkeletons( openNIContext, transform2D);
-    //    if (doDrawDebugInfo) skeleton.drawDebugInfo(openNIContext);
-  }
+//  if (openNIContext != null) {
+//    if (doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
+//    if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
+//    if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
+    if (doDrawSkeletons) skeletonManager.draw2d();
+//  }
 
   if (doShowGUI) cp5.draw();
 
@@ -344,71 +326,73 @@ void keyPressed() {
 //----------------------------------
 
 
-//OPENNI CALLBACKS
-void onNewUser(int userId)
-{
-  println("onNewUser - userId: " + userId);
+////OPENNI CALLBACKS
+//void onNewUser(int userId)
+//{
+//  println("onNewUser - userId: " + userId);
+//
+//  openNIContext.requestCalibrationSkeleton(userId, true);
+//  resetSkeletonStats();
+//}
+//
+//void onLostUser(int userId)
+//{
+//  println("onLostUser - userId: " + userId);
+//  resetSkeletonStats();
+//}
+//
+//void onExitUser(int userId)
+//{
+//  println("onExitUser - userId: " + userId);
+//  resetSkeletonStats();
+//}
+//
+//void onReEnterUser(int userId)
+//{
+//  println("onReEnterUser - userId: " + userId);
+//  resetSkeletonStats();
+//}
+//
+//
+//void onStartCalibration(int userId)
+//{
+//  println("onStartCalibration - userId: " + userId);
+//  resetSkeletonStats();
+//}
+//
+//void onEndCalibration(int userId, boolean successfull)
+//{
+//  println("onEndCalibration - userId: " + userId + ", successfull: " + successfull);
+//
+//  if (successfull) 
+//  { 
+//    println("  User calibrated !!!");
+//    openNIContext.startTrackingSkeleton(userId);
+//  } 
+//  else 
+//  { 
+//    println("  Failed to calibrate user !!!");
+//    println("  Start pose detection");
+//    openNIContext.startPoseDetection("Psi", userId);
+//  }
+//  resetSkeletonStats();
+//}
+//
+//void onStartPose(String pose, int userId)
+//{
+//  println("onStartdPose - userId: " + userId + ", pose: " + pose);
+//  println(" stop pose detection");
+//
+//  openNIContext.stopPoseDetection(userId); 
+//  openNIContext.requestCalibrationSkeleton(userId, true);
+//}
+//
+//void onEndPose(String pose, int userId)
+//{
+//  println("onEndPose - userId: " + userId + ", pose: " + pose);
+//}
 
-  openNIContext.requestCalibrationSkeleton(userId, true);
-  resetSkeletonStats();
-}
 
-void onLostUser(int userId)
-{
-  println("onLostUser - userId: " + userId);
-  resetSkeletonStats();
-}
-
-void onExitUser(int userId)
-{
-  println("onExitUser - userId: " + userId);
-  resetSkeletonStats();
-}
-
-void onReEnterUser(int userId)
-{
-  println("onReEnterUser - userId: " + userId);
-  resetSkeletonStats();
-}
-
-
-void onStartCalibration(int userId)
-{
-  println("onStartCalibration - userId: " + userId);
-  resetSkeletonStats();
-}
-
-void onEndCalibration(int userId, boolean successfull)
-{
-  println("onEndCalibration - userId: " + userId + ", successfull: " + successfull);
-
-  if (successfull) 
-  { 
-    println("  User calibrated !!!");
-    openNIContext.startTrackingSkeleton(userId);
-  } 
-  else 
-  { 
-    println("  Failed to calibrate user !!!");
-    println("  Start pose detection");
-    openNIContext.startPoseDetection("Psi", userId);
-  }
-  resetSkeletonStats();
-}
-
-void onStartPose(String pose, int userId)
-{
-  println("onStartdPose - userId: " + userId + ", pose: " + pose);
-  println(" stop pose detection");
-
-  openNIContext.stopPoseDetection(userId); 
-  openNIContext.requestCalibrationSkeleton(userId, true);
-}
-
-void onEndPose(String pose, int userId)
-{
-  println("onEndPose - userId: " + userId + ", pose: " + pose);
-}
 void stop()
 {
   // the AudioPlayer you got from Minim.loadFile()
@@ -422,12 +406,12 @@ void stop()
   super.stop();
 }
 
-void mouseMoved() {
-  float volume = map(mouseX, 0, width, -80.0, -13.9794);
-  try {
-    storyPlayer.setGain(volume);
-  }
-  catch(Exception e) {
-  }
-}
+//void mouseMoved() {
+//  float volume = map(mouseX, 0, width, -80.0, -13.9794);
+//  try {
+//    storyPlayer.setGain(volume);
+//  }
+//  catch(Exception e) {
+//  }
+//}
 
