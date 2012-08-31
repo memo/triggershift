@@ -47,7 +47,7 @@ class AudioReactiveStory extends TSStoryBase {
       popMatrix();
       
       if(volume > maxVolume) maxVolume = volume;
-      volume *= 0.9;
+      volume *= 0.95;
       
       noStroke();
       fill(0, 255, 0, 50);
