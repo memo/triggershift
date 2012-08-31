@@ -10,7 +10,11 @@ import SimpleOpenNI.*;
 import controlP5.*;
 
 // SET THIS TO TRUE OR FALSE
-boolean useOpenNI = true;
+boolean useOpenNI = false;
+
+// SET THIS TO TRUE OR FALSE
+// IN INSTALLATION MODE, AUTOADVANCE, AND DISABLE SOME SCENES 
+boolean useInstallationMode = true;
 
 // params
 boolean doDrawKinectRGB = false;
