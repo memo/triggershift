@@ -1,6 +1,8 @@
 class MSAAudioPlayers {
   MSAAudioPlayer []player;
   int currentIndex = 0;
+  float minIntervalTime = 0.2;  // minimum time (Seconds) between triggers
+  float lastTriggerTime = -1000;
   
   MSAAudioPlayers(String s, int count) {
     player = new MSAAudioPlayer[count];
@@ -31,10 +33,14 @@ class MSAAudioPlayers {
   }
   
   void play() {
+    if(millis()*0.001 -lastTriggerTime <  minIntervalTime) return;
+    lastTriggerTime = millis() * 0.001;
     player[currentIndex].play();
   }
   
   void play(float fromTime) {
+    if(millis()*0.001 -lastTriggerTime <  minIntervalTime) return;
+    lastTriggerTime = millis() * 0.001;
     player[currentIndex].play(fromTime);
   }
   
@@ -53,6 +59,9 @@ class MSAAudioPlayers {
     play(0);
   }
   
+  boolean isPlaying() {
+    return player[currentIndex].isPlaying();
+  }
   
 //  
 //  void play(AudioEffect effect) {
@@ -62,6 +71,10 @@ class MSAAudioPlayers {
 
   void setGain(float volume) {
     player[currentIndex].setGain(volume);
+  }
+  
+  void randomGain() {
+    setGain(random(0.3, 1));
   }
   
   void close() {

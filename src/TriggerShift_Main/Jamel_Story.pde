@@ -10,10 +10,11 @@ class JamelStory extends TSStoryBase {
   MSAAudioPlayer audioPages = new MSAAudioPlayer("jamel/audio/pages.mp3");
   //  MSAAudioPlayer audioCashRegister = new MSAAudioPlayer("jamel/audio/cashregister.mp3");
   MSAAudioPlayers audioGraph = new MSAAudioPlayers( new String[] {
-    "jamel/audio/graph/1.mp3", "jamel/audio/graph/2.mp3", "jamel/audio/graph/3.mp3", "jamel/audio/graph/4.mp3", "jamel/audio/graph/5.mp3", "jamel/audio/graph/6.mp3"
+    "jamel/audio/graph/1.mp3", "jamel/audio/graph/2.mp3", "jamel/audio/graph/3.mp3", "jamel/audio/graph/4.mp3"
   } 
   );
-
+  MSAAudioPlayer audioDuplicate = new MSAAudioPlayer("jamel/audio/duplicate.mp3");
+  
   JamelStory() {
     storyName = "JamelStory";
     println(storyName + "::" + storyName);
@@ -44,6 +45,7 @@ class JamelStory extends TSStoryBase {
     audioHair.close();
     audioPrison.close();
     audioPages.close();
+    audioDuplicate.close();
     //    audioCashRegister.close();
   }
 
@@ -52,9 +54,9 @@ class JamelStory extends TSStoryBase {
   //------------------------------------------------------------------------------------------------------
   // jump through flag
   class Scene1 extends TSSceneBase {
-    PImage imgFlag = loadImage("jamel/flag.png");
-    PImage imgFlagRip1 = loadImage("jamel/flagrip1.png");
-    PImage imgFlagRip2 = loadImage("jamel/flagrip2.png");
+    PImage imgFlag = loadImage("jamel/ukflag.png");
+    PImage imgFlagRip1 = loadImage("jamel/ukflagrip1.png");
+    PImage imgFlagRip2 = loadImage("jamel/ukflagrip2.png");
     int ripStartMillis = 0;
 
     Scene1() {
@@ -192,6 +194,7 @@ class JamelStory extends TSStoryBase {
           posArray.add(activeHand.get());
           if (posArray.size() > 100) posArray.remove(0);  // trim array
           audioGraph.playRandomIndex();
+          audioGraph.randomGain();
         }
         //      }
 
@@ -564,6 +567,7 @@ class JamelStory extends TSStoryBase {
       println(storyName + "::" + sceneName + "::onStart");
       isTriggered = false;
       audioMelody.setGain(0.5);
+      if(audioMelody.isPlaying() == false) audioMelody.loop();
     }
 
     //----------------
@@ -762,6 +766,7 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
+      audioDuplicate.play(0);
     }
 
     //----------------
