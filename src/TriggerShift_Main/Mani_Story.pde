@@ -47,7 +47,7 @@ class ManiStory extends TSStoryBase {
     addScene(new Scene6());
     addScene(new Scene7());
     addScene(new Scene8());
-    addScene(new Scene9());
+    if(useInstallationMode == false) addScene(new Scene9());
     addScene(new Scene10());
   }
 
@@ -593,6 +593,7 @@ class ManiStory extends TSStoryBase {
       cityGrey.draw();
       drawMaskedUser();
       cityColor.draw();
+      if(useInstallationMode && getElapsedSeconds() > 5) nextScene();
     }
   };
 
