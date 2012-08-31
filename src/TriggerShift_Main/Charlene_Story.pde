@@ -1,5 +1,6 @@
 class CharleneStory extends TSStoryBase {
   //TODO change scene names
+  //TODO page flick
   CharleneStory(PApplet ref) {
     storyName = "CharleneStory";
     println(storyName + "::" + storyName);
@@ -14,13 +15,7 @@ class CharleneStory extends TSStoryBase {
     addScene(new Scene_spin_right_wrong());
     addScene(new Scene_shatter_image());
     addScene(new Scene_drop_set());
-    
-    try{
-      storyPlayer.close();
-    }
-    catch (Exception e){
-      
-    }
+
     storyPlayer = minim.loadFile("charlene/charlene-melody.mp3");
     storyPlayer.loop();
   }
@@ -34,7 +29,7 @@ class Scene_flickBook extends TSSceneBase {
   int imageWidth = 500;
   int imageHeight = 500;
   int frameIndex=0;
-
+  int pFrameIndex=0;
   Scene_flickBook() {
     sceneName = "scene1 FLICK THROUGH PAGES";
     //println(storyName + "::" + sceneName + "::onStart");
@@ -49,26 +44,40 @@ class Scene_flickBook extends TSSceneBase {
     for (int i=0;i<numPageCells;i++) {
       book[i].resize(imageWidth, imageHeight);
     }
-    player.close();
+    frameIndex=0;
+    pFrameIndex=0;
     //TODO take to one flick (use array index)
     player = minim.loadFile("charlene/page-flick.mp3");
     //player.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    PVector leftHand = getLeftHand();
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
     image(book[frameIndex], picturePos.x, picturePos.y);
 
     float thresh=0.01;
-   //TODO if (frameIndex==0) player.play();
+    //TODO if (frameIndex==0) player.play();
     //if the left hand is moving to the right increment the page index
-    if (skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext).x >0+thresh) {
+    if (-skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext).x >0+thresh) {
       frameIndex++;
     }
     if (frameIndex>=book.length) {
+      //if (frameIndex!=pFrameIndex) {
+      player.rewind();
+      player.play();
+      pFrameIndex = frameIndex;
+      println("play!");
+      //}
       frameIndex=0; // frameIndex=book.length-1;
     }
     drawMaskedUser();
+  }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
   }
 };
 
@@ -97,7 +106,6 @@ class Scene_clock_hands extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     //println(storyName + "::" + sceneName + "::onStart");
-    player.close();
     player = minim.loadFile("charlene/clock.mp3");
     player.loop();
   }
@@ -106,12 +114,12 @@ class Scene_clock_hands extends TSSceneBase {
     image(book, picturePos.x, picturePos.y);
     pushMatrix();
     translate(picturePos.x+(0.5*bookImageWidth), picturePos.y+(0.5*bookImageHeight));
-    rotate(angle*60.0);
+    rotate(-angle*60.0);
     image(hourHand, -0.5*hourHand.width, -hourHand.height);
     popMatrix();
     pushMatrix();
     translate(picturePos.x+(0.5*bookImageWidth), picturePos.y+(0.5*bookImageHeight));
-    rotate(angle);
+    rotate(-angle);
     image(minuteHand, -0.5*minuteHand.width, -minuteHand.height);
     popMatrix();
     pushStyle();
@@ -123,12 +131,19 @@ class Scene_clock_hands extends TSSceneBase {
 
     angle+=0.005;
   }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+  }
 };
 
 //SCENE 3 THROW COFFEE
 class Scene_throw_coffee extends TSSceneBase {
-//  FWorld world;
-//  FMouseJoint joint;
+  //  FWorld world;
+  //  FMouseJoint joint;
   PApplet ref;
   PFont _font;
   PImage mug=loadImage("charlene/mugUpright.png");
@@ -160,7 +175,7 @@ class Scene_throw_coffee extends TSSceneBase {
     imageHeight = 200;
     isThrown=false;
     lock=false;
-    mug.resize(imageWidth, imageHeight);
+    //mug.resize(imageWidth, imageHeight);
     //  setupWorld();
     //   setupPhysicsObjects();
     words[0]="biology";
@@ -186,7 +201,6 @@ class Scene_throw_coffee extends TSSceneBase {
       }
     }
 
-    player.close();
     player = minim.loadFile("charlene/coffee.mp3");
     //no loop for this one
     player.play();
@@ -196,7 +210,7 @@ class Scene_throw_coffee extends TSSceneBase {
     pushStyle();
     textFont(_font, 24);
     drawMaskedUser();
-    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    PVector leftHand = getLeftHand();
     //PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
 
     pushMatrix();
@@ -212,7 +226,7 @@ class Scene_throw_coffee extends TSSceneBase {
     if (isThrown) {
       //the first time we have thrown the coffee, set a velocity to the particles
       if (!lock) {
-      //TODO  player = minim.loadFile("charlene/ropestretch.mp3");
+        //TODO  player = minim.loadFile("charlene/ropestretch.mp3");
         //no loop for this one
         //TODO player.play();
         for (int i=0;i<blobs.length;i++) {
@@ -243,10 +257,17 @@ class Scene_throw_coffee extends TSSceneBase {
     //turn the particles into words
     //ellipse(leftHand.x, leftHand.y, 20, 20);
 
-    image(mug, leftHand.x-(0.7*mug.width), leftHand.y-(0.7*mug.height));
+    image(mug, leftHand.x-(0.7*imageWidth), leftHand.y-(0.7*imageHeight),imageWidth, imageHeight);
 
     popMatrix();
     popStyle();
+  }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
   }
 };
 
@@ -261,6 +282,7 @@ class Scene_mortar_board_on_head extends TSSceneBase {
   //scale for imagee
   float w;
   float h;
+  boolean lock;
   Scene_mortar_board_on_head() {
     sceneName="scene4 MORTAR BOARD ON HEAD";
     //println(storyName + "::" + sceneName + "::onStart");
@@ -277,13 +299,12 @@ class Scene_mortar_board_on_head extends TSSceneBase {
     //scale for imagee
     w=120;
     h=120;
-    player.close();
     player = minim.loadFile("charlene/mortarboard.mp3");
-    player.play();
+    lock=false;
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     drawMaskedUser();
-    PVector endPos= skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
+    PVector endPos= getHead();
 
     float currentX = lerp(startPos.x, endPos.x, inc);
     float currentY = lerp(startPos.y, endPos.y, inc);
@@ -291,11 +312,24 @@ class Scene_mortar_board_on_head extends TSSceneBase {
     PVector leftShoulder=getLeftShoulder();
     PVector rightShoulder=getRightShoulder();
 
+    int thresh = 100;
+
+    if (dist(currentX, currentY, getHead().x, getHead().y)<thresh) {
+      player.play();
+      lock=true;
+    }
     w=(rightShoulder.x-leftShoulder.x  );
     h =w*0.7;
     image(mortarBoard, currentX-(0.5*w), currentY - h, w, h);
     if (inc<1.0) {
       inc+=speed;
+    }
+  }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
     }
   }
 };
@@ -307,10 +341,12 @@ class Scene_zoom_from_space extends TSSceneBase {
   PImage country= loadImage("charlene/country.png");
   PImage city= loadImage("charlene/city1.png");
   PImage blended = loadImage("charlene/world.png");
-
+  PImage composite =  loadImage("charlene/world.png");
   int imageWidth;
   int imageHeight;
   //TODO add volume
+  MSAAudioPlayer msaPlayer;
+
   Scene_zoom_from_space() {
     sceneName="scene5 ZOOM FROM SPACE";
 
@@ -327,14 +363,14 @@ class Scene_zoom_from_space extends TSSceneBase {
     world.resize(imageWidth, imageHeight);
     city.resize(imageWidth, imageHeight);
     blended.resize(imageWidth, imageHeight);
-    player.close();
-    player = minim.loadFile("charlene/zoom.mp3");
-    player.loop();
+    msaPlayer = new MSAAudioPlayer("charlene/zoom.mp3");
+    msaPlayer.loop();
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
-    PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
-    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+    pushStyle();
+    PVector rightHand = getRightHand();
+    PVector leftHand = getLeftHand();
     PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
 
     float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
@@ -343,19 +379,25 @@ class Scene_zoom_from_space extends TSSceneBase {
     float imageScale =  map(distBetweenHands, 0, maxDist, 0.0, 1);
     imageScale=constrain(imageScale, 0.01, 0.96);
 
+    float volume = map(distBetweenHands, 0, getMaxArmLength()*2, 0.0, 1.0);
+    volume=constrain(volume, 0.0, 1.0);
+    // player.setGain(volume);
+    //get the height in proportion so we don't squash the image
 
-//TODO float volume = map(distBetweenHands, 0, getMaxArmLength()*2, -13.9794, -80.0);
-   //TODO player.setGain(volume);
+    msaPlayer.setGain(volume);
+    //TODO float volume = map(distBetweenHands, 0, getMaxArmLength()*2, -13.9794, -80.0);
+    //TODO player.setGain(volume);
 
-    if (imageScale >= 0.0 && imageScale < 0.5 ) {
-      blended= lerpImage(city, country, imageScale *map(imageScale, 0.0, 0.5, 0, 1)   );
-    }
-    else if (imageScale >= 0.5 && imageScale < 1.0) {
-      blended= lerpImage(country, world, imageScale *map(imageScale, 0.5, 1.0, 0, 1) );
-    }
-
-    image(blended, picturePos.x, picturePos.y);
+    /* if (imageScale >= 0.0 && imageScale < 0.5 ) {
+     blended= lerpImage(city, country, imageScale *map(imageScale, 0.0, 0.5, 0, 1)   );
+     }
+     else if (imageScale >= 0.5 && imageScale < 1.0) {
+     blended= lerpImage(country, world, imageScale *map(imageScale, 0.5, 1.0, 0, 1) );
+     }*/
+    imageMode(CENTER);
+    image(composite, width/2, height/2, width*volume*3, height*volume*3);
     drawMaskedUser();
+    popStyle();
   }
 
   PImage lerpImage(PImage image1, PImage image2, float amt) {
@@ -373,6 +415,13 @@ class Scene_zoom_from_space extends TSSceneBase {
     image2.updatePixels();
     blendImage.updatePixels();
     return blendImage;
+  }
+  void onEnd() {
+    try {
+      msaPlayer.close();
+    }
+    catch (Exception e) {
+    }
   }
 };
 
@@ -421,7 +470,6 @@ class Scene_vote_in_box extends TSSceneBase {
     //scale for imagee
 
       yInc=0;
-    player.close();
     player = minim.loadFile("charlene/paper.mp3");
   }
 
@@ -461,6 +509,13 @@ class Scene_vote_in_box extends TSSceneBase {
       image(ballotBoxFront, picturePos.x, picturePos.y);
     }
   }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+  }
 };
 
 //SCENE 7 circling left hand gesture above the shoulder rotates one image to another on the flip side
@@ -473,6 +528,8 @@ class Scene_power_hands extends TSSceneBase {
   float alpha;
   float inc;
   float rot;
+
+  MSAAudioPlayer msaPlayer;
   Scene_power_hands() {
     sceneName="scene7 POWER HANDS";
 
@@ -486,9 +543,8 @@ class Scene_power_hands extends TSSceneBase {
     alpha=0;
     inc=2;
     rot=0;
-    player.close();
-    player = minim.loadFile("charlene/orb.mp3");
-    player.loop();
+    msaPlayer = new MSAAudioPlayer("charlene/orb-new.mp3");
+    msaPlayer.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     drawMaskedUser();
@@ -503,9 +559,12 @@ class Scene_power_hands extends TSSceneBase {
     float _width=rightHand.x-leftHand.x;
 
     //set the volume to be louder when hands are far apart
-   // float volume = map(_width, 0, getMaxArmLength()*2, -13.9794, -80.0);
-   // player.setGain(volume);
+    float volume = map(_width, 0, getMaxArmLength()*2, 0.0, 1.0);
+    // player.setGain(volume);
     //get the height in proportion so we don't squash the image
+
+    msaPlayer.setGain(volume);
+
     float proportion = _width/imageWidth;
     float _height=imageHeight*proportion;
     //translate to drawing point
@@ -525,6 +584,9 @@ class Scene_power_hands extends TSSceneBase {
     popMatrix();
     popStyle();
   }
+  void onEnd() {
+    msaPlayer.close();
+  }
 };
 
 
@@ -536,7 +598,7 @@ class Scene_spin_right_wrong extends TSSceneBase {
 
   PImage right=loadImage("charlene/right.png");
   PImage wrong=loadImage("charlene/wrong.png");
-
+  float pAngle;
   Scene_spin_right_wrong() {
     sceneName="scene8 SPING RIGHT OR WRONG";
 
@@ -548,10 +610,11 @@ class Scene_spin_right_wrong extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("Charlene::Scene_spin_right_wrong::onStart");
-    player.close();
     //TODO replace loop with single hit on each half rotation
     player = minim.loadFile("charlene/right-wrong.mp3");
-   // player.loop();
+    hint(ENABLE_DEPTH_TEST);
+    pAngle=0;
+    // player.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     pushStyle();
@@ -562,31 +625,49 @@ class Scene_spin_right_wrong extends TSSceneBase {
     //get the angle between the left shoulder and the left hand as if looking down from above ie at the x z plane
     float angle = atan2( leftShoulder.z- leftHand.z, leftShoulder.x- leftHand.x);
     //if we are at the right point of the rotation
-  //  if(angle>0.0 && angle< (TWO_PI * 0.1)) {
+    //  if(angle>0.0 && angle< (TWO_PI * 0.1)) {
     //  player.play();
-   // }
+    // }
     translate(picturePos.x+(0.5*imageWidth), picturePos.y);
     //draw the front
     pushMatrix();
     rotateY(angle);
     translate(-0.5*imageWidth, 0, 0);
-    fill(255);
-    rect(0, 0, imageWidth, imageHeight);
-    translate(0, 0, 1);
+    fill(255, 255);
+    //rect(0, 0, imageWidth, imageHeight);
+    translate(0, 0, -0.7);
+    float diff = pAngle * angle;
+    
+    
+    if (diff<0) {
+      player.rewind();
+      player.play();
+    }
+    pAngle=angle;
+    //if(angle>=-(0.5*PI) && angle < (0.5*PI) ) image(right, 0, 0);
     image(right, 0, 0);
     popMatrix();
     //draw the back
     pushMatrix();
 
     rotateY(angle+PI);
-    translate(0, 0, 2);
-
+    translate(0, 0, -0.7);
     translate(-0.5*imageWidth, 0, 0);
     image(wrong, 0, 0);
+    //if(angle>(0.5*PI) && angle < (1.5*PI) )  image(wrong, 0, 0);
     popMatrix();
     popMatrix();
     drawMaskedUser();
+
     popStyle();
+  }
+  void onEnd() {
+    hint(DISABLE_DEPTH_TEST);
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
   }
 };
 
@@ -623,7 +704,6 @@ class Scene_shatter_image extends TSSceneBase {
   void onStart() {
     println("Charlene::Scene_shatter_image::onStart");
     handOver=false;
-    player.close();
     player = minim.loadFile("charlene/donttouch.mp3");
 
     int x=0;
@@ -667,6 +747,13 @@ class Scene_shatter_image extends TSSceneBase {
     }
     drawMaskedUser();
   }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+  }
 };
 
 
@@ -681,7 +768,7 @@ class Scene_drop_set extends TSSceneBase {
   boolean startDrop;
   boolean endDrop;
   float sizeMult=2.0;
-
+  boolean   lock;
   Scene_drop_set() {
     sceneName="scene10 DROP SET";
 
@@ -694,10 +781,13 @@ class Scene_drop_set extends TSSceneBase {
     //println(storyName + "::" + sceneName + "::onStart");
     startDrop=false;
     endDrop=false;
-    player.close();
     player = minim.loadFile("charlene/question.mp3");
     //TODO add gotitwrong on drop
-    player.loop();
+    player.play();
+    player1 = minim.loadFile("charlene/gotitwrong.mp3");
+    //TODO add gotitwrong on drop
+
+    lock=false;
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     drawMaskedUser();
@@ -723,6 +813,10 @@ class Scene_drop_set extends TSSceneBase {
       }
       if (picturePos.y>height+(height/2)) {
         endDrop=true;
+        storyPlayer.pause();
+        player.pause();
+
+        player1.play();
       }
     }
     else {
@@ -734,6 +828,14 @@ class Scene_drop_set extends TSSceneBase {
     }
     popMatrix();
     popStyle();
+  }
+  void onEnd() {
+    try {
+      player1.close();
+      player.close();
+    }
+    catch (Exception e) {
+    }
   }
 }
 

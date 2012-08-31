@@ -1,8 +1,9 @@
 class LornaStory extends TSStoryBase {
-
+  //TODO paper mens start audio on touch  TODO 
   LornaStory() {
     storyName = "LornaStory";
     println(storyName + "::" + storyName);
+
     addScene(new Scene_Black_White());
     addScene(new Scene_Think_Straight());
     addScene(new Scene_maid());
@@ -13,25 +14,19 @@ class LornaStory extends TSStoryBase {
     addScene(new Scene_rainbow());
     addScene(new Scene_shadow());
     addScene(new Scene_reach_for_stars());
-     try{
-      storyPlayer.close();
-    }
-    catch (Exception e){
-      
-    }
+
     storyPlayer = minim.loadFile("lorna/lorna-melody-new.mp3");
     storyPlayer.loop();
   }
 
   //----------------------------------
-  void onEnd() {
-    println(storyName + "::onEnd");
-  }
 }
 
 // switch black and white from one side to the other (directly ripped off from JAmel prison bars
 class Scene_Black_White extends TSSceneBase {
   float x1, x2;
+  float maxArm;
+  boolean lock;
   //TODO make the volume a base level and increase when arms are crossed
   Scene_Black_White() {
     sceneName = "Scene1 black and white";
@@ -43,9 +38,9 @@ class Scene_Black_White extends TSSceneBase {
     //println(storyName + "::" + sceneName + "::onStart");
     x1 = 0;
     x2 = width;
-    player.close();
-    player = minim.loadFile("lorna/super8.mp3");
-    player.loop();
+    player = minim.loadFile("lorna/super8-loop.mp3");
+    maxArm = getMaxArmLength();
+    lock = false;
   }
 
   //----------------
@@ -57,16 +52,35 @@ class Scene_Black_White extends TSSceneBase {
     float h = height;
     float w = width/2;//h / imgBars.height * width;
 
-    x1 += (map(getLeftHand().x, getHip().x - getMaxArmLength()/2, getHip().x, 0, width) - x1) * 0.5;
-    x2 += (map(getRightHand().x, getHip().x + getMaxArmLength()/2, getHip().x, width, 0) - x2) * 0.5;
-    fill(255);
-    rect( x1 - w, 0, w, h);
+    //  x1 += (map(getLeftHand().x, getHip().x - getMaxArmLength()/2, getHip().x, 0, width) - x1) * 0.5;
+    //  x2 += (map(getRightHand().x, getHip().x + getMaxArmLength()/2, getHip().x, width, 0) - x2) * 0.5;
+    float leftExtent = getLeftHand().x - getHip().x;
+    float rightExtent = getRightHand().x - getHip().x;
+    x1=  map(leftExtent, 0, maxArm/2, 0, width);
+    x2=  map(rightExtent, 0, maxArm/2, 0, width);
+    int thresh=30;
+    if (getLeftHand().x > getRightHand().x ) {
+
+      player.play();
+      lock =true;
+    }
+
     stroke(255);
     strokeWeight(3);
     fill(0);
     rect(x2, 0, w, h);
+    noStroke();
+    fill(255);
+    rect( x1, 0, w, h);
     popStyle();
     drawMaskedUser();
+  }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
   }
 };
 
@@ -89,7 +103,7 @@ class Scene_Think_Straight extends TSSceneBase {
     //println(storyName + "::" + sceneName + "::onStart");
     x1 = 0;
     x2 = width;
-    player.close();
+    //player.close();
     player = minim.loadFile("lorna/thinkstraight_sine.mp3");
     player.loop();
     handsOverHead=false;
@@ -164,7 +178,6 @@ class Scene_Think_Straight extends TSSceneBase {
     //draw straight
     else {
 
-      player.play();
       //draw triangular mask over left shoulder
       float hyp=imageHeight+imageWidth;
       //get angle between shoulder and hand
@@ -196,6 +209,13 @@ class Scene_Think_Straight extends TSSceneBase {
     }
     drawMaskedUser();
   }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+  }
 };
 
 
@@ -218,7 +238,7 @@ class Scene_maid extends TSSceneBase {
   //----------------
   void onStart() {
     //println(storyName + "::" + sceneName + "::onStart");
-    player.close();
+    //player.close();
     //possible switch to brush =sing triggered by sweepin gesture
     player = minim.loadFile("lorna/brushing.mp3");
     player.loop();
@@ -275,6 +295,13 @@ class Scene_maid extends TSSceneBase {
 
     popStyle();
   }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+  }
 };
 
 // Scene 5 hand (or maybe later crayon) colours background from b and white to colour
@@ -282,6 +309,8 @@ class Scene_colour_trees extends TSSceneBase {
 
   PImage colourTrees = loadImage("lorna/treescolour.png");
   PImage bandwTrees = loadImage("lorna/treesbw.png");
+  PImage source = createImage(width, height, ARGB);
+  PImage target = createImage(width, height, ARGB);
   PImage crayon = loadImage("lorna/crayon.png");
   int imageWidth=width;
   int imageHeight=height;
@@ -289,8 +318,8 @@ class Scene_colour_trees extends TSSceneBase {
   Scene_colour_trees() {
     sceneName = "Scene5 colour trees";
     //println(storyName + "::" + sceneName);
-    colourTrees.resize(imageWidth, imageHeight);
-    bandwTrees.resize(imageWidth, imageHeight);
+    // colourTrees.resize(imageWidth, imageHeight);
+    // bandwTrees.resize(imageWidth, imageHeight);
     float crayonLength=300;
     crayon.resize(int(crayonLength/5), int(crayonLength));
   }
@@ -298,9 +327,12 @@ class Scene_colour_trees extends TSSceneBase {
   //----------------
   void onStart() {
     //println(storyName + "::" + sceneName + "::onStart");
-    player.close();
+    //player.close();
     player = minim.loadFile("lorna/crayon chalk.mp3");
     player.loop();
+
+    source.copy(colourTrees, 0, 0, colourTrees.width, colourTrees.height, 0, 0, width, height);
+    target.copy(bandwTrees, 0, 0, colourTrees.width, colourTrees.height, 0, 0, width, height);
   }
 
   //----------------
@@ -308,12 +340,14 @@ class Scene_colour_trees extends TSSceneBase {
 
     pushStyle();
 
+
+
     //if hand is over one image
     PVector leftHand=getLeftHand();
     PVector rightHand=getRightHand();
 
-    colourTrees.loadPixels();
-    bandwTrees.loadPixels();
+    source.loadPixels();
+    target.loadPixels();
     int radius=40;
     int x=0;
     int y=0;
@@ -337,24 +371,31 @@ class Scene_colour_trees extends TSSceneBase {
     for (int x1=startPosX; x1<endPosX; x1++) {
       for (int y1=startPosY; y1<endPosY; y1++) {
 
-        int index = x1+ (colourTrees.width*y1);
-        if (index< bandwTrees.pixels.length &&index>0 ) {
+        int index = x1+ (source.width*y1);
+        if (index< target.pixels.length &&index>0 ) {
           if (dist(x1, y1, leftHand.x, leftHand.y  )<radius) {
             //write into bandw image with colour data 
-            bandwTrees.pixels[index] = colourTrees.pixels[index];
+            target.pixels[index] = source.pixels[index];
           }
         }
       }
     }
 
 
-    colourTrees.updatePixels();
-    bandwTrees.updatePixels();
+    source.updatePixels();
+    target.updatePixels();
     imageMode(CORNER);
 
-    image(bandwTrees, 0, 0);
+    image(target, 0, 0, imageWidth, imageHeight);
     popStyle();
     drawMaskedUser();
+  }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
   }
 };
 
@@ -389,9 +430,10 @@ class Scene_paper_chain extends TSSceneBase {
     fall=false;
     touchCount=0;
     pChain=new ArrayList();
-    player.close();
-    player = minim.loadFile("lorna/paper crumple loop.mp3");
+    //player.close();
+    player = minim.loadFile("lorna/paper crumple loop-LITE.mp3");
     player.loop();
+    player.pause();
   }
 
   //----------------
@@ -415,11 +457,14 @@ class Scene_paper_chain extends TSSceneBase {
     if (isTouching!=pIsTouching && isTouching) {
       chainHasStarted=true;
       touchCount++;
+      // player.rewind();
+      player.loop();
       //if this is the second touch make the particles fall and restart everything
       if (touchCount>=2) {
         fall=true;
         chainHasStarted=false;
         touchCount=0;
+        player.pause();
       }
     }
 
@@ -459,6 +504,13 @@ class Scene_paper_chain extends TSSceneBase {
     popStyle();
     isTouching=pIsTouching;
   }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+  }
 };
 
 
@@ -471,6 +523,7 @@ class Scene_rainbow extends TSSceneBase {
   int imageWidth=500;
   int imageHeight=300;
   boolean handsOverHead;
+  boolean lock;
   Scene_rainbow() {
     sceneName = "Scene5 colour trees";
     //println(storyName + "::" + sceneName);
@@ -481,7 +534,8 @@ class Scene_rainbow extends TSSceneBase {
   void onStart() {
     //println(storyName + "::" + sceneName + "::onStart");
     handsOverHead=false;
-    player.close();
+    //player.close();
+    lock=false;
     player = minim.loadFile("lorna/rainbow.mp3");
   }
 
@@ -503,7 +557,10 @@ class Scene_rainbow extends TSSceneBase {
       handsOverHead=true;
     }
     if (handsOverHead) {
-      player.play();
+      if (!lock) {
+        player.play();
+        lock=true;
+      }
       image( rainbow, head.x- (0.5*rainbow.width), head.y- (0.8*rainbow.height) );
       //draw triangular mask over left shoulder
       float hyp=imageHeight+imageWidth;
@@ -548,6 +605,13 @@ class Scene_rainbow extends TSSceneBase {
     }
     drawMaskedUser();
   }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+  }
 };
 
 
@@ -561,7 +625,7 @@ class Scene_dream extends TSSceneBase {
   int imageHeight=200;
   float wScale=0.0;
   float hScale=0.0;
-
+  boolean lock;
   Scene_dream() {
     sceneName = "Scene7 bubbles";
     //println(storyName + "::" + sceneName);
@@ -571,10 +635,11 @@ class Scene_dream extends TSSceneBase {
   //----------------
   void onStart() {
     //println(storyName + "::" + sceneName + "::onStart");
-    player.close();
-    player = minim.loadFile("lorna/brushing.mp3");
-    player.loop();
+    //player.close();
+    player = minim.loadFile("lorna/bubbles.mp3");
+
     dreamStarted=false;
+    lock=false;
   }
 
   //----------------
@@ -589,6 +654,10 @@ class Scene_dream extends TSSceneBase {
     //start dream by touching head
     if (dist(head.x, head.y, rightHand.x, rightHand.y)<thresh) dreamStarted = true;
     if (dreamStarted) {
+      if (!lock) {
+        player.play();
+        lock=true;
+      }
       image(bubbles, head.x, head.y-(bubbles.height * hScale), bubbles.width * wScale, bubbles.height * hScale);
 
       if (hScale<=1.0) {
@@ -598,6 +667,13 @@ class Scene_dream extends TSSceneBase {
     }
     popMatrix();
     popStyle();
+  }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
   }
 };
 
@@ -614,6 +690,7 @@ class Scene_reality extends TSSceneBase {
   float hScale=1.0;
   float alpha;
   boolean isPopped;
+  boolean lock;
   Scene_reality() {
     sceneName = "Scene7 reality";
     //println(storyName + "::" + sceneName);
@@ -623,9 +700,8 @@ class Scene_reality extends TSSceneBase {
   //----------------
   void onStart() {
     //println(storyName + "::" + sceneName + "::onStart");
-    player.close();
-    player = minim.loadFile("lorna/brushing.mp3");
-    player.loop();
+    player = minim.loadFile("lorna/wipeclouds.mp3");
+    lock=false;
     alpha=255;
     isPopped=false;
   }
@@ -639,17 +715,22 @@ class Scene_reality extends TSSceneBase {
 
     int thresh=50;
     if (dist(centreOfImage.x, centreOfImage.y, rightHand.x, rightHand.y )<thresh) isPopped=true;
-
+    if (isPopped&&!lock) {
+      player.play();
+      lock=true;
+    }
     pushStyle();
     pushMatrix();
     tint(255, alpha);
     image(bubbles, head.x, head.y-(bubbles.height), bubbles.width * wScale, bubbles.height);
 
     if (isPopped &&alpha>=0) alpha-=10;
-    println(dist(head.x, head.y, rightHand.x, rightHand.y)+" "+alpha );
-
+    
     popMatrix();
     popStyle();
+  }
+  void onEnd() {
+    player.close();
   }
 };
 
@@ -665,6 +746,7 @@ class Scene_shadow extends TSSceneBase {
   float hScale=1.0;
   float alpha;
   boolean isShadow;
+  boolean lock;
   Scene_shadow() {
     sceneName = "Scene7 shadow";
     //println(storyName + "::" + sceneName);
@@ -676,13 +758,21 @@ class Scene_shadow extends TSSceneBase {
     //println(storyName + "::" + sceneName + "::onStart");
     isShadow=false;
     alpha=0;
+    lock=false;
+    player =minim.loadFile("lorna/minorchord.mp3");
   }
 
   //----------------
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     PVector head = getHead();
 
-    if (head.x>width/2) isShadow=true;
+    if (head.x>width/2) {
+      isShadow=true;
+      if (!lock) {
+        player.play(); 
+        lock=true;
+      }
+    }
 
     if (!isShadow) {
       drawMaskedUser();
@@ -700,6 +790,9 @@ class Scene_shadow extends TSSceneBase {
 
     popMatrix();
     popStyle();
+  }
+  void onEnd() {
+    player.close();
   }
 };
 
@@ -723,9 +816,8 @@ class Scene_reach_for_stars extends TSSceneBase {
     startAttract=false;
     println("Lorna::Scene_reach_for_stars::onStart");
     amt=0.0;
-    player.close();
+    //player.close();
     player = minim.loadFile("lorna/stars.mp3");
-    player.loop();
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
@@ -741,6 +833,7 @@ class Scene_reach_for_stars extends TSSceneBase {
     pushMatrix();
     //attract half the stars to the left hand and half to the right
     if (startAttract) {
+      player.play();
       for (int i=0;i<stars.length/2;i++) {
         stars[i].update(leftHand, amt);
         if (dist(stars[i].pos.x, stars[i].pos.y, leftHand.x, leftHand.y)<20) {
@@ -764,6 +857,13 @@ class Scene_reach_for_stars extends TSSceneBase {
 
     popMatrix();
     popStyle();
+  }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
   }
 };
 

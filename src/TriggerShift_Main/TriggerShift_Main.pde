@@ -40,6 +40,8 @@ Minim minim;
 AudioPlayer player;
 AudioPlayer player1;
 AudioPlayer storyPlayer;
+MSAAudioPlayer working;
+MSAAudioPlayer happy;
 
 int lastUserId = 1;
 
@@ -62,6 +64,8 @@ void setupAudio() {
   player1 = minim.loadFile("song1.mp3");
   //  player1.play();
   player.printControls();
+  working = new MSAAudioPlayer("intro-working-tune-edit.mp3");
+  happy =  new MSAAudioPlayer("lorna-hugs-section.mp3");
 }
 //----------------------------------
 void setupUI() {
@@ -294,6 +298,22 @@ void keyPressed() {
     break;
   case 'g':
     doShowGUI ^= true;
+    break;
+  case 'w':
+    if (working.isPlaying()) {
+      working.pause();
+    }
+    else {
+      working.loop();
+    }
+    break;
+  case 'h':
+    if (happy.isPlaying()) {
+      happy.pause();
+    }
+    else {
+      happy.loop();
+    }
     break;
   }
 }
