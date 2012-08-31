@@ -14,7 +14,7 @@ class JamelStory extends TSStoryBase {
   } 
   );
   MSAAudioPlayer audioDuplicate = new MSAAudioPlayer("jamel/audio/duplicate.mp3");
-  
+
   JamelStory() {
     storyName = "JamelStory";
     println(storyName + "::" + storyName);
@@ -566,7 +566,7 @@ class JamelStory extends TSStoryBase {
       println(storyName + "::" + sceneName + "::onStart");
       isTriggered = false;
       audioMelody.setGain(0.5);
-      if(audioMelody.isPlaying() == false) audioMelody.loop();
+      if (audioMelody.isPlaying() == false) audioMelody.loop();
     }
 
     //----------------
@@ -775,17 +775,27 @@ class JamelStory extends TSStoryBase {
       t = t * t;
       t = 3 * t * t - 2 * t * t * t;
 
+      pushStyle();
       for (int i=count; i>0; i--) {
+        float r = 1.0 - i * 1.0/count;
+        float c = lerp(100, 255, r);
+        float s = lerp(0.7, 1, r);
+        float y = height/2 * (1-s);
+        tint(c);
+        fill(c);
         float x = i * t * width * 0.5 / (count+1);
         pushMatrix();
-        translate(x, 0);
+        translate(x, y);
+        scale(1, s, 1);
         drawMaskedUser();
         popMatrix();
         pushMatrix();
-        translate(-x, 0);
+        translate(-x, y);
+        scale(1, s, 1);
         drawMaskedUser();
         popMatrix();
       }
+      popStyle();
       drawMaskedUser();
     }
   };

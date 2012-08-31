@@ -140,7 +140,11 @@ float getMaxArmLength() {
 
 
 void drawMaskedUser() {
-  transform2D.drawImage( masker.getImage() );
+  if(masker.getImage()==null) {
+    ellipse(width/2, height/2, height/4, width/4);
+  } else {
+    transform2D.drawImage( masker.getImage() );
+  }
 }
 
 void drawUserDepthPlane() {
