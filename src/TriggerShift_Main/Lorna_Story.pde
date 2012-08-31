@@ -121,6 +121,7 @@ class LornaStory extends TSStoryBase {
       strokeWeight(10);
       noFill();
       pushStyle();
+      pushStyle();
 
       //if hand is over one image
       PVector leftHand=getLeftHand();
@@ -213,6 +214,7 @@ class LornaStory extends TSStoryBase {
         popStyle();
       }
       drawMaskedUser();
+      popStyle();
     }
     void onEnd() {
       try {

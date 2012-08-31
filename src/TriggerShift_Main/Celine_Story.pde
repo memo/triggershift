@@ -280,7 +280,6 @@ class CelineStory extends TSStoryBase {
       msaPlayer.setGain(volume1);
       msaPlayer1.setGain(1.0f-volume2);
 
-      println(volume1+" "+volume2);
       drawMaskedUser();
     }
     void onEnd() {
@@ -570,8 +569,6 @@ class CelineStory extends TSStoryBase {
           topImageXShift+=speed;
         }
         else {
-          println("new frame");
-
           player.rewind();
           player.play();
 
