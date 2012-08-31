@@ -59,6 +59,7 @@ float secondsSinceLastFrame = 1;
 
 // Stories
 TSStoryBase currentStory = null;
+int currentStoryIndex = 0;
 int numStorys = 6; // including test story
 //ArrayList stories = new ArrayList();
 
@@ -122,7 +123,14 @@ void setStory(int i) {
     currentStory = new AudioReactiveStory();
   }
 
+  currentStoryIndex = i;
   currentStory.startStory();
+}
+
+void nextStory() {
+  currentStoryIndex++;
+  if(currentStoryIndex>5) currentStoryIndex = 1;
+  setStory(currentStoryIndex);
 }
 
 //----------------------------------
@@ -293,6 +301,10 @@ void keyPressed() {
   case 'r': 
     currentStory.startStory(); 
     break;
+    
+   case 'n':
+   nextStory();
+   break;
 
   case 'c': 
     doDrawKinectRGB ^= true; 

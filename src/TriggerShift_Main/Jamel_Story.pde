@@ -95,6 +95,8 @@ class JamelStory extends TSStoryBase {
           image(imgFlagRip2, xpos-width, -height, width, height);
           popMatrix();
         }
+        
+        if(useInstallationMode && (millis() - ripStartMillis > 2000)) nextScene();
       }
 
       // play BEEP sound
@@ -109,7 +111,6 @@ class JamelStory extends TSStoryBase {
         audioFlagRip.play(0);
       }
       
-      if(useInstallationMode && (millis() - ripStartMillis > 2000)) nextScene();
     }
   };
 
@@ -192,7 +193,7 @@ class JamelStory extends TSStoryBase {
 
         // add latest hand
         //      if(frameCount % 10 == 0) {
-        if (graph.pointIn(activeHand) && activeHand.x > lastPoint.x && PVector.sub(activeHand, lastPoint).mag() > units(20)) {
+        if (graph.pointIn(activeHand) && /*activeHand.x > lastPoint.x && */PVector.sub(activeHand, lastPoint).mag() > units(20)) {
           posArray.add(activeHand.get());
           if (posArray.size() > 100) posArray.remove(0);  // trim array
           audioGraph.playRandomIndex();
@@ -232,7 +233,7 @@ class JamelStory extends TSStoryBase {
         }
         popStyle();
         
-        if(useInstallationMode && ((PVector)posArray.get(posArray.size()-1)).x > graph.x2()) nextScene();
+        if(useInstallationMode && getElapsedSeconds()>20) nextScene();
       }
 
       //      if (getHighestHandVelocity().mag() > 0.1) {
