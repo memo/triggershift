@@ -53,9 +53,9 @@ class JamelStory extends TSStoryBase {
   //------------------------------------------------------------------------------------------------------
   // jump through flag
   class Scene1 extends TSSceneBase {
-    PImage imgFlag = loadImage("jamel/flag.png");
-    PImage imgFlagRip1 = loadImage("jamel/flagrip1.png");
-    PImage imgFlagRip2 = loadImage("jamel/flagrip2.png");
+    PImage imgFlag = loadImage("jamel/ukflag.png");
+    PImage imgFlagRip1 = loadImage("jamel/ukflagrip1.png");
+    PImage imgFlagRip2 = loadImage("jamel/ukflagrip2.png");
     int ripStartMillis = 0;
 
     Scene1() {
