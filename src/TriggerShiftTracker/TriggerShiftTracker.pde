@@ -131,7 +131,7 @@ void sendVel2DMessage(int userId, int jointId, PVector vel2D) {
   oscP5.send(myMessage, myRemoteLocation);
 }
 void sendSmoothVel2DMessage(int userId, int jointId, PVector vel2D) {
-  OscMessage myMessage = new OscMessage("/skeleton/"+str(userId)+"/joint/"+str(jointId)+"/vel2d");
+  OscMessage myMessage = new OscMessage("/skeleton/"+str(userId)+"/joint/"+str(jointId)+"/smoothvel2d");
 
   myMessage.add(vel2D.x);
   myMessage.add(vel2D.y);
