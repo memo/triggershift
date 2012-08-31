@@ -10,7 +10,7 @@ import SimpleOpenNI.*;
 import controlP5.*;
 
 // SET THIS TO TRUE OR FALSE
-boolean useOpenNI = true;
+boolean useOpenNI = false;
 
 // params
 boolean doDrawKinectRGB = false;
@@ -60,7 +60,7 @@ void setupAudio() {
   //a default song to load - if we don't have this calling .close() gives null pointer
   player = minim.loadFile("song1.mp3");
   player1 = minim.loadFile("song1.mp3");
-//  player1.play();
+  //  player1.play();
   player.printControls();
 }
 //----------------------------------
@@ -109,6 +109,8 @@ void setStory(int i) {
   case 5: 
     currentStory = new CharleneStory(this); 
     break;
+  case 6:
+    currentStory = new AudioReactiveStory();
   }
 
   currentStory.startStory();
@@ -116,13 +118,6 @@ void setStory(int i) {
 
 //----------------------------------
 void setupStories() {
-  //  stories.add(new StoryTest());  // 0
-  //  stories.add(new ManiStory());  // 1
-  //  stories.add(new LornaStory());  // 2
-  //  stories.add(new JamelStory());  // 3
-  //  stories.add(new CelineStory());  // 4
-  //  stories.add(new CharleneStory(this));  // 5
-  //  
   setStory(0);  // use keyboard 0-5 to choose story
 }
 
@@ -169,8 +164,8 @@ void setup() {
 
 //----------------------------------
 void draw() {
-//  setGain(player1, 1 - mouseY * 1.0/height);
-  
+  //  setGain(player1, 1 - mouseY * 1.0/height);
+
   // update timing
   secondsSinceLastFrame = (millis() - lastFrameMillis) * 0.001;
   lastFrameMillis = millis();
@@ -274,6 +269,9 @@ void keyPressed() {
     break;
   case '5': 
     setStory(5); 
+    break;
+  case '6':
+    setStory(6);
     break;
   case ' ': 
     currentStory.nextScene(); 
@@ -384,12 +382,12 @@ void stop()
   super.stop();
 }
 
-void mouseMoved(){
-    float volume = map(mouseX, 0, width, -80.0, -13.9794);
-    try{
-     storyPlayer.setGain(volume);
-    }
-    catch(Exception e){
-    }
-  
+void mouseMoved() {
+  float volume = map(mouseX, 0, width, -80.0, -13.9794);
+  try {
+    storyPlayer.setGain(volume);
+  }
+  catch(Exception e) {
+  }
 }
+
