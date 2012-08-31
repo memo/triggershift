@@ -1,5 +1,6 @@
 class CharleneStory extends TSStoryBase {
   //TODO change scene names
+  //TODO page flick
   CharleneStory(PApplet ref) {
     storyName = "CharleneStory";
     println(storyName + "::" + storyName);
@@ -15,12 +16,6 @@ class CharleneStory extends TSStoryBase {
     addScene(new Scene_shatter_image());
     addScene(new Scene_drop_set());
     
-    try{
-      storyPlayer.close();
-    }
-    catch (Exception e){
-      
-    }
     storyPlayer = minim.loadFile("charlene/charlene-melody.mp3");
     storyPlayer.loop();
   }
@@ -49,7 +44,6 @@ class Scene_flickBook extends TSSceneBase {
     for (int i=0;i<numPageCells;i++) {
       book[i].resize(imageWidth, imageHeight);
     }
-    player.close();
     //TODO take to one flick (use array index)
     player = minim.loadFile("charlene/page-flick.mp3");
     //player.loop();
@@ -69,6 +63,14 @@ class Scene_flickBook extends TSSceneBase {
       frameIndex=0; // frameIndex=book.length-1;
     }
     drawMaskedUser();
+  }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+   
   }
 };
 
@@ -97,7 +99,6 @@ class Scene_clock_hands extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     //println(storyName + "::" + sceneName + "::onStart");
-    player.close();
     player = minim.loadFile("charlene/clock.mp3");
     player.loop();
   }
@@ -122,6 +123,14 @@ class Scene_clock_hands extends TSSceneBase {
     drawMaskedUser();
 
     angle+=0.005;
+  }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+    
   }
 };
 //SCENE 3 THROW COFFEE
@@ -185,7 +194,6 @@ class Scene_throw_coffee extends TSSceneBase {
       }
     }
 
-    player.close();
     player = minim.loadFile("charlene/coffee.mp3");
     //no loop for this one
     player.play();
@@ -247,6 +255,14 @@ class Scene_throw_coffee extends TSSceneBase {
     popMatrix();
     popStyle();
   }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+   
+  }
 };
 
 //SCENE 4 A mortar board flies from the sky and lands ont he head
@@ -276,7 +292,6 @@ class Scene_mortar_board_on_head extends TSSceneBase {
     //scale for imagee
     w=120;
     h=120;
-    player.close();
     player = minim.loadFile("charlene/mortarboard.mp3");
     player.play();
   }
@@ -296,6 +311,14 @@ class Scene_mortar_board_on_head extends TSSceneBase {
     if (inc<1.0) {
       inc+=speed;
     }
+  }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+    
   }
 };
 
@@ -326,7 +349,6 @@ class Scene_zoom_from_space extends TSSceneBase {
     world.resize(imageWidth, imageHeight);
     city.resize(imageWidth, imageHeight);
     blended.resize(imageWidth, imageHeight);
-    player.close();
     player = minim.loadFile("charlene/zoom.mp3");
     player.loop();
   }
@@ -372,6 +394,14 @@ class Scene_zoom_from_space extends TSSceneBase {
     image2.updatePixels();
     blendImage.updatePixels();
     return blendImage;
+  }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+    
   }
 };
 
@@ -420,7 +450,6 @@ class Scene_vote_in_box extends TSSceneBase {
     //scale for imagee
 
       yInc=0;
-    player.close();
     player = minim.loadFile("charlene/paper.mp3");
   }
 
@@ -460,6 +489,14 @@ class Scene_vote_in_box extends TSSceneBase {
       image(ballotBoxFront, picturePos.x, picturePos.y);
     }
   }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+   
+  }
 };
 
 //SCENE 7 circling left hand gesture above the shoulder rotates one image to another on the flip side
@@ -485,7 +522,6 @@ class Scene_power_hands extends TSSceneBase {
     alpha=0;
     inc=2;
     rot=0;
-    player.close();
     player = minim.loadFile("charlene/orb.mp3");
     player.loop();
   }
@@ -524,6 +560,14 @@ class Scene_power_hands extends TSSceneBase {
     popMatrix();
     popStyle();
   }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+    
+  }
 };
 
 
@@ -547,7 +591,6 @@ class Scene_spin_right_wrong extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("Charlene::Scene_spin_right_wrong::onStart");
-    player.close();
     //TODO replace loop with single hit on each half rotation
     player = minim.loadFile("charlene/right-wrong.mp3");
    // player.loop();
@@ -587,6 +630,14 @@ class Scene_spin_right_wrong extends TSSceneBase {
     drawMaskedUser();
     popStyle();
   }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+    
+  }
 };
 
 
@@ -622,7 +673,6 @@ class Scene_shatter_image extends TSSceneBase {
   void onStart() {
     println("Charlene::Scene_shatter_image::onStart");
     handOver=false;
-    player.close();
     player = minim.loadFile("charlene/donttouch.mp3");
 
     int x=0;
@@ -666,6 +716,14 @@ class Scene_shatter_image extends TSSceneBase {
     }
     drawMaskedUser();
   }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+    
+  }
 };
 
 
@@ -680,7 +738,7 @@ class Scene_drop_set extends TSSceneBase {
   boolean startDrop;
   boolean endDrop;
   float sizeMult=2.0;
-  float lock;
+  boolean   lock;
   Scene_drop_set() {
     sceneName="scene10 DROP SET";
 
@@ -693,7 +751,6 @@ class Scene_drop_set extends TSSceneBase {
     //println(storyName + "::" + sceneName + "::onStart");
     startDrop=false;
     endDrop=false;
-    player.close();
     player = minim.loadFile("charlene/question.mp3");
     //TODO add gotitwrong on drop
     player.loop();
@@ -734,6 +791,14 @@ class Scene_drop_set extends TSSceneBase {
     }
     popMatrix();
     popStyle();
+  }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+  
   }
 }
 

@@ -1,5 +1,5 @@
 class LornaStory extends TSStoryBase {
-
+//TODO paper mens start audio on touch  TODO 
   LornaStory() {
     storyName = "LornaStory";
     println(storyName + "::" + storyName);
@@ -13,20 +13,13 @@ class LornaStory extends TSStoryBase {
     addScene(new Scene_rainbow());
     addScene(new Scene_shadow());
     addScene(new Scene_reach_for_stars());
-     try{
-      storyPlayer.close();
-    }
-    catch (Exception e){
-      
-    }
+    
     storyPlayer = minim.loadFile("lorna/lorna-melody-new.mp3");
     storyPlayer.loop();
   }
 
   //----------------------------------
-  void onEnd() {
-    println(storyName + "::onEnd");
-  }
+   
 }
 
 // switch black and white from one side to the other (directly ripped off from JAmel prison bars
@@ -68,6 +61,14 @@ class Scene_Black_White extends TSSceneBase {
     popStyle();
     drawMaskedUser();
   }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+   
+  }
 };
 
 // SCENE 2 can't think straight
@@ -89,7 +90,7 @@ class Scene_Think_Straight extends TSSceneBase {
     //println(storyName + "::" + sceneName + "::onStart");
     x1 = 0;
     x2 = width;
-    player.close();
+    //player.close();
     player = minim.loadFile("lorna/thinkstraight_sine.mp3");
     player.loop();
     handsOverHead=false;
@@ -164,7 +165,6 @@ class Scene_Think_Straight extends TSSceneBase {
     //draw straight
     else {
 
-      player.play();
       //draw triangular mask over left shoulder
       float hyp=imageHeight+imageWidth;
       //get angle between shoulder and hand
@@ -196,6 +196,14 @@ class Scene_Think_Straight extends TSSceneBase {
     }
     drawMaskedUser();
   }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+   
+  }
 };
 
 
@@ -218,7 +226,7 @@ class Scene_maid extends TSSceneBase {
   //----------------
   void onStart() {
     //println(storyName + "::" + sceneName + "::onStart");
-    player.close();
+    //player.close();
     //possible switch to brush =sing triggered by sweepin gesture
     player = minim.loadFile("lorna/brushing.mp3");
     player.loop();
@@ -275,6 +283,14 @@ class Scene_maid extends TSSceneBase {
 
     popStyle();
   }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+    
+  }
 };
 
 // Scene 5 hand (or maybe later crayon) colours background from b and white to colour
@@ -298,7 +314,7 @@ class Scene_colour_trees extends TSSceneBase {
   //----------------
   void onStart() {
     //println(storyName + "::" + sceneName + "::onStart");
-    player.close();
+    //player.close();
     player = minim.loadFile("lorna/crayon chalk.mp3");
     player.loop();
   }
@@ -356,6 +372,14 @@ class Scene_colour_trees extends TSSceneBase {
     popStyle();
     drawMaskedUser();
   }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+   
+  }
 };
 
 
@@ -389,7 +413,7 @@ class Scene_paper_chain extends TSSceneBase {
     fall=false;
     touchCount=0;
     pChain=new ArrayList();
-    player.close();
+    //player.close();
     player = minim.loadFile("lorna/paper crumple loop.mp3");
     player.loop();
   }
@@ -459,6 +483,14 @@ class Scene_paper_chain extends TSSceneBase {
     popStyle();
     isTouching=pIsTouching;
   }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+   
+  }
 };
 
 
@@ -471,6 +503,7 @@ class Scene_rainbow extends TSSceneBase {
   int imageWidth=500;
   int imageHeight=300;
   boolean handsOverHead;
+  boolean lock;
   Scene_rainbow() {
     sceneName = "Scene5 colour trees";
     //println(storyName + "::" + sceneName);
@@ -481,7 +514,8 @@ class Scene_rainbow extends TSSceneBase {
   void onStart() {
     //println(storyName + "::" + sceneName + "::onStart");
     handsOverHead=false;
-    player.close();
+    //player.close();
+    lock=false;
     player = minim.loadFile("lorna/rainbow.mp3");
   }
 
@@ -503,7 +537,10 @@ class Scene_rainbow extends TSSceneBase {
       handsOverHead=true;
     }
     if (handsOverHead) {
-      player.play();
+      if(!lock){
+      player.loop();
+      lock=true;
+      }
       image( rainbow, head.x- (0.5*rainbow.width), head.y- (0.8*rainbow.height) );
       //draw triangular mask over left shoulder
       float hyp=imageHeight+imageWidth;
@@ -548,6 +585,14 @@ class Scene_rainbow extends TSSceneBase {
     }
     drawMaskedUser();
   }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+    
+  }
 };
 
 
@@ -561,7 +606,7 @@ class Scene_dream extends TSSceneBase {
   int imageHeight=200;
   float wScale=0.0;
   float hScale=0.0;
-
+  boolean lock;
   Scene_dream() {
     sceneName = "Scene7 bubbles";
     //println(storyName + "::" + sceneName);
@@ -571,10 +616,11 @@ class Scene_dream extends TSSceneBase {
   //----------------
   void onStart() {
     //println(storyName + "::" + sceneName + "::onStart");
-    player.close();
-    player = minim.loadFile("lorna/brushing.mp3");
-    player.loop();
+    //player.close();
+    player = minim.loadFile("lorna/bubbles.mp3");
+    
     dreamStarted=false;
+    lock=false;
   }
 
   //----------------
@@ -589,6 +635,10 @@ class Scene_dream extends TSSceneBase {
     //start dream by touching head
     if (dist(head.x, head.y, rightHand.x, rightHand.y)<thresh) dreamStarted = true;
     if (dreamStarted) {
+      if(!lock){
+       player.loop();
+      lock=true; 
+      }
       image(bubbles, head.x, head.y-(bubbles.height * hScale), bubbles.width * wScale, bubbles.height * hScale);
 
       if (hScale<=1.0) {
@@ -598,6 +648,14 @@ class Scene_dream extends TSSceneBase {
     }
     popMatrix();
     popStyle();
+  }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+   
   }
 };
 
@@ -614,6 +672,7 @@ class Scene_reality extends TSSceneBase {
   float hScale=1.0;
   float alpha;
   boolean isPopped;
+  boolean lock;
   Scene_reality() {
     sceneName = "Scene7 reality";
     //println(storyName + "::" + sceneName);
@@ -623,9 +682,8 @@ class Scene_reality extends TSSceneBase {
   //----------------
   void onStart() {
     //println(storyName + "::" + sceneName + "::onStart");
-    player.close();
-    player = minim.loadFile("lorna/brushing.mp3");
-    player.loop();
+       player = minim.loadFile("lorna/wipeclouds.mp3");
+    lock=false;
     alpha=255;
     isPopped=false;
   }
@@ -639,7 +697,10 @@ class Scene_reality extends TSSceneBase {
 
     int thresh=50;
     if (dist(centreOfImage.x, centreOfImage.y, rightHand.x, rightHand.y )<thresh) isPopped=true;
-
+    if(isPopped&&!lock){
+     player.loop();
+    lock=true; 
+    }
     pushStyle();
     pushMatrix();
     tint(255, alpha);
@@ -650,6 +711,13 @@ class Scene_reality extends TSSceneBase {
 
     popMatrix();
     popStyle();
+  }
+   void onEnd() {
+    try{
+      player.close();
+    }
+    catch(Exception e){
+    }
   }
 };
 
@@ -701,6 +769,9 @@ class Scene_shadow extends TSSceneBase {
     popMatrix();
     popStyle();
   }
+   void onEnd() {
+   
+  }
 };
 
 //SCENE 13 2 HANDS UP ATTACTS STAR PARTICLES
@@ -723,9 +794,9 @@ class Scene_reach_for_stars extends TSSceneBase {
     startAttract=false;
     println("Lorna::Scene_reach_for_stars::onStart");
     amt=0.0;
-    player.close();
+    //player.close();
     player = minim.loadFile("lorna/stars.mp3");
-    player.loop();
+    
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
@@ -741,6 +812,7 @@ class Scene_reach_for_stars extends TSSceneBase {
     pushMatrix();
     //attract half the stars to the left hand and half to the right
     if (startAttract) {
+      player.play();
       for (int i=0;i<stars.length/2;i++) {
         stars[i].update(leftHand, amt);
         if (dist(stars[i].pos.x, stars[i].pos.y, leftHand.x, leftHand.y)<20) {
@@ -764,6 +836,14 @@ class Scene_reach_for_stars extends TSSceneBase {
 
     popMatrix();
     popStyle();
+  }
+   void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+  
   }
 };
 

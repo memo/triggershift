@@ -1,5 +1,5 @@
 class CelineStory extends TSStoryBase {
-
+//TODO sound effect are too low - Ed? rip at wrong poitn - old to new is quiet  - page flick for images crashes on exit
   CelineStory() {
     storyName = "CelineStory";
     println(storyName + "::" + storyName);
@@ -9,12 +9,7 @@ class CelineStory extends TSStoryBase {
     addScene(new Scene_shrink_grow_image());
     addScene(new Scene_turn_cards());
     addScene(new Scene_flick_through_images());
-    try{
-      storyPlayer.close();
-    }
-    catch (Exception e){
-      
-    }
+    
     storyPlayer = minim.loadFile("celine/celine-melody.mp3");
     storyPlayer.loop();
   }
@@ -50,6 +45,8 @@ class Scene_big_buildings extends TSSceneBase {
     image(picture, 0, 0);
     popMatrix();
     drawMaskedUser();
+  }
+  void onEnd() {
   }
 };
 
@@ -107,12 +104,7 @@ class Scene_ripPaper extends TSSceneBase {
     rightP = new ShardParticle(new PVector(0, 0, 0), new PVector(0, 0, 0), 0, 0, 0, 1, 0, 1);
 
     //close player 2 in case we toggle back to this one
-    try {
-      player1.close();
-    }
-    catch(Exception e) {
-    }
-    player.close();
+
     player = minim.loadFile("celine/rip.mp3");
   }
 
@@ -136,145 +128,152 @@ class Scene_ripPaper extends TSSceneBase {
 
 
 
-   // if (getElapsedSeconds()>1) {
+    // if (getElapsedSeconds()>1) {
 
 
+    pushMatrix();
+    imageMode(CENTER);
+    translate(picturePos.x, picturePos.y, picturePos.z);
+    rotate(imageRotateAngle);
+    float sW=imageWidth*0.5;
+    float sH=imageHeight*0.5;
+
+    translate(-imageWidth*0.5, -imageHeight*0.5);
+
+    image(picture, 0, 0, sW, sH);
+
+
+    popMatrix();
+
+    imageMode(CORNER);
+
+
+    player.play();
+    ///get the angle between hand and elbow
+    leftHand.sub(leftElbow);
+    leftHand.normalize();
+
+    PVector imageOrientation = new PVector(1, 0, 0);
+
+
+    //before we reach the critical angle tie the drawing to the forearms orientation
+    if (!startToFlyAway) {
+      // image(easel, leftHalfPos.x- (easel.width*0.7575), leftHalfPos.y-(easel.height*0.6868));
+
+      //RIGHT HALF
       pushMatrix();
-      imageMode(CENTER);
-      translate(picturePos.x, picturePos.y, picturePos.z);
+      //get the dot and cross products
+      angle = acos(imageOrientation.dot(leftHand));
+      axis = imageOrientation.cross(leftHand);
+      //translate to the place we want to draw the image
+
+      translate(rightHalfPos.x, rightHalfPos.y, rightHalfPos.z);
+
+
+      //translate(-rightHalf.width*0.5, -rightHalf.height, 0);
+      //translate rotation point to bottom left of image
+      // translate(0, rightHalf.height, 0);
+      //rotate by joint orientation of forearm
+      rotate(angle, axis.x, axis.y, -axis.z);
+      //rotate by easel angle
       rotate(imageRotateAngle);
-      float sW=imageWidth*0.5;
-      float sH=imageHeight*0.5;
 
-      translate(-imageWidth*0.5, -imageHeight*0.5);
-
-      image(picture, 0, 0, sW, sH);
-
-
+      translate(-rightHalf.width, -rightHalf.height, 0);
+      //translate back up to draw
+      // translate(-rightHalf.width*0.2, -rightHalf.height, 0);
+      rightP.draw(rightHalf);
       popMatrix();
 
-      imageMode(CORNER);
+      rightHand.sub(rightElbow);
+      rightHand.normalize();
 
 
-      player.play();
-      ///get the angle between hand and elbow
-      leftHand.sub(leftElbow);
-      leftHand.normalize();
+      //LEFT HALF
+      pushMatrix();
+      //get the dot and cross products
+      angle1 = acos(imageOrientation.dot(rightHand));
 
-      PVector imageOrientation = new PVector(1, 0, 0);
+      axis1 = imageOrientation.cross(rightHand);
 
+      translate(rightHalfPos.x, rightHalfPos.y, rightHalfPos.z);
 
-      //before we reach the critical angle tie the drawing to the forearms orientation
-      if (!startToFlyAway) {
-        // image(easel, leftHalfPos.x- (easel.width*0.7575), leftHalfPos.y-(easel.height*0.6868));
+      rotate(imageRotateAngle);
 
-        //RIGHT HALF
-        pushMatrix();
-        //get the dot and cross products
-        angle = acos(imageOrientation.dot(leftHand));
-        axis = imageOrientation.cross(leftHand);
-        //translate to the place we want to draw the image
+      translate(-rightHalf.width*0.8, 0);
 
-        translate(rightHalfPos.x, rightHalfPos.y, rightHalfPos.z);
+      rotate(-angle1, axis1.x, axis1.y, axis1.z);
+      rotate(PI+imageRotateAngle);
+      translate(-leftHalf.width, -leftHalf.height, 0);
+      leftP.draw(leftHalf);
+      popMatrix();
 
 
-        //translate(-rightHalf.width*0.5, -rightHalf.height, 0);
-        //translate rotation point to bottom left of image
-        // translate(0, rightHalf.height, 0);
-        //rotate by joint orientation of forearm
-        rotate(angle, axis.x, axis.y, -axis.z);
-        //rotate by easel angle
-        rotate(imageRotateAngle);
-
-        translate(-rightHalf.width, -rightHalf.height, 0);
-        //translate back up to draw
-        // translate(-rightHalf.width*0.2, -rightHalf.height, 0);
-        rightP.draw(rightHalf);
-        popMatrix();
-
-        rightHand.sub(rightElbow);
-        rightHand.normalize();
-
-
-        //LEFT HALF
-        pushMatrix();
-        //get the dot and cross products
-        angle1 = acos(imageOrientation.dot(rightHand));
-
-        axis1 = imageOrientation.cross(rightHand);
-
-        translate(rightHalfPos.x, rightHalfPos.y, rightHalfPos.z);
-
-        rotate(imageRotateAngle);
-
-        translate(-rightHalf.width*0.8, 0);
-
-        rotate(-angle1, axis1.x, axis1.y, axis1.z);
-        rotate(PI+imageRotateAngle);
-        translate(-leftHalf.width, -leftHalf.height, 0);
-        leftP.draw(leftHalf);
-        popMatrix();
-
-
-        if (angle>0.5 && angle1<2.0) {
-          startToFlyAway=true;
-          rightP.setRotVel(3);
-          leftP.setRotVel(-3);
-          rightP.setPosVel(new PVector(-5, 5, 0));
-          leftP.setPosVel(new PVector(5, 5, 0));
-        }
-        else {
-          startToFlyAway=false;
-        }
+      if (angle>0.5 && angle1<2.0) {
+        startToFlyAway=true;
+        rightP.setRotVel(3);
+        leftP.setRotVel(-3);
+        rightP.setPosVel(new PVector(-5, 5, 0));
+        leftP.setPosVel(new PVector(5, 5, 0));
       }
-      //if we are flying away then...
       else {
-
-
-        //RIGHT HALF
-        pushMatrix();
-        //get the dot and cross products
-        //angle = acos(imageOrientation.dot(leftHand));
-        // axis = imageOrientation.cross(leftHand);
-        //translate to the place we want to draw the image
-        translate(rightHalfPos.x+rightP.pos.x, rightHalfPos.y+rightP.pos.y, rightHalfPos.z);
-        translate(-rightHalf.width*0.5, -rightHalf.height, 0);
-        //translate rotation point to bottom left of image
-        translate(0, rightHalf.height, 0);
-        //rotate by joint orientation of forearm
-        rotate(angle, axis.x, axis.y, -axis.z);
-        //rotate by easel angle
-        rotate(imageRotateAngle);
-        //translate back up to draw
-        translate(-rightHalf.width*0.2, -rightHalf.height, 0);
-        rightP.drawWithoutTranslation(rightHalf);
-        popMatrix();
-
-        rightHand.sub(rightElbow);
-        rightHand.normalize();
-
-
-        //LEFT HALF
-        pushMatrix();
-        //get the dot and cross products
-        //angle1 = acos(imageOrientation.dot(rightHand));
-        //axis1 = imageOrientation.cross(rightHand);
-        //translate to the place we want to draw the image
-        translate(leftHalfPos.x+leftP.pos.x, leftHalfPos.y+leftP.pos.y, leftHalfPos.z);
-        translate(-leftHalf.width*0.5, -leftHalf.height, 0);
-        //translate rotation point to bottom left of image
-        translate(0, leftHalf.height, 0);
-        //rotate by joint orientation of forearm
-        rotate(-angle1, axis1.x, axis1.y, axis1.z);
-        //rotate by easel angle
-        rotate(PI+imageRotateAngle);
-        //translate back up to draw
-        translate(-leftHalf.width, -leftHalf.height, 0);
-        leftP.drawWithoutTranslation(leftHalf);
-        popMatrix();
+        startToFlyAway=false;
       }
+    }
+    //if we are flying away then...
+    else {
+
+
+      //RIGHT HALF
+      pushMatrix();
+      //get the dot and cross products
+      //angle = acos(imageOrientation.dot(leftHand));
+      // axis = imageOrientation.cross(leftHand);
+      //translate to the place we want to draw the image
+      translate(rightHalfPos.x+rightP.pos.x, rightHalfPos.y+rightP.pos.y, rightHalfPos.z);
+      translate(-rightHalf.width*0.5, -rightHalf.height, 0);
+      //translate rotation point to bottom left of image
+      translate(0, rightHalf.height, 0);
+      //rotate by joint orientation of forearm
+      rotate(angle, axis.x, axis.y, -axis.z);
+      //rotate by easel angle
+      rotate(imageRotateAngle);
+      //translate back up to draw
+      translate(-rightHalf.width*0.2, -rightHalf.height, 0);
+      rightP.drawWithoutTranslation(rightHalf);
+      popMatrix();
+
+      rightHand.sub(rightElbow);
+      rightHand.normalize();
+
+
+      //LEFT HALF
+      pushMatrix();
+      //get the dot and cross products
+      //angle1 = acos(imageOrientation.dot(rightHand));
+      //axis1 = imageOrientation.cross(rightHand);
+      //translate to the place we want to draw the image
+      translate(leftHalfPos.x+leftP.pos.x, leftHalfPos.y+leftP.pos.y, leftHalfPos.z);
+      translate(-leftHalf.width*0.5, -leftHalf.height, 0);
+      //translate rotation point to bottom left of image
+      translate(0, leftHalf.height, 0);
+      //rotate by joint orientation of forearm
+      rotate(-angle1, axis1.x, axis1.y, axis1.z);
+      //rotate by easel angle
+      rotate(PI+imageRotateAngle);
+      //translate back up to draw
+      translate(-leftHalf.width, -leftHalf.height, 0);
+      leftP.drawWithoutTranslation(leftHalf);
+      popMatrix();
+    }
     //}
     drawMaskedUser();
+  }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
   }
 };
 
@@ -302,7 +301,6 @@ class Scene_fade_in_colour extends TSSceneBase {
 
     angle=0;
 
-    player.close();
     player = minim.loadFile("celine/projectors.mp3");
     player.loop();
 
@@ -365,6 +363,18 @@ class Scene_fade_in_colour extends TSSceneBase {
     println(volume1+" "+volume2);
     drawMaskedUser();
   }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
+    try {
+      player1.close();
+    }
+    catch (Exception e) {
+    }
+  }
 };
 
 //SCENE 4controls size of image with distance between hands
@@ -386,13 +396,7 @@ class Scene_shrink_grow_image extends TSSceneBase {
   void onStart() {
     println("CelineStory::Scene_shrink_grow_image::onStart");
 
-    player.close();
-    try {
-      player1.close();
-    }
-    catch(Exception e) {
-      println ("Couldn't close player1");
-    }
+    //player.close();
     player = minim.loadFile("celine/zoom-loop.mp3");
     player.loop();
   }
@@ -421,6 +425,13 @@ class Scene_shrink_grow_image extends TSSceneBase {
     image(picture, 0, 0, picture.width*imageScale, picture.height*imageScale );
     popMatrix();
     drawMaskedUser();
+  }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
   }
 };
 
@@ -453,7 +464,7 @@ class Scene_turn_cards extends TSSceneBase {
   // this is called when the scene starts (i.e. is triggered)
   void onStart() {
     println("CelineStory::Scene_turn_cards::onStart");
-    player.close();
+    //player.close();
     player = minim.loadFile("celine/cardflick-a.mp3");
     pWhichHand=0;
   }
@@ -494,6 +505,13 @@ class Scene_turn_cards extends TSSceneBase {
     pWhichHand=whichHand;
     //scale the image according to the mapped distance between hands
     drawMaskedUser();
+  }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
   }
 };
 //a class for cards which turn over when a joint passes over them and stay in that position until next time a joint passes over them
@@ -592,7 +610,7 @@ class Scene_flick_through_images extends TSSceneBase {
       //images[i].resize(imageWidth, imageHeight);
     }
     topImageXShift=0;
-    player.close();
+    //player.close();
     //TODO replace with single hit thing when ed has made it
     player = minim.loadFile("celine/whyisitinteresting.mp3");
     player.loop();
@@ -641,6 +659,13 @@ class Scene_flick_through_images extends TSSceneBase {
       frameIndex=images.length-1;
     }
     drawMaskedUser();
+  }
+  void onEnd() {
+    try {
+      player.close();
+    }
+    catch (Exception e) {
+    }
   }
 };
 

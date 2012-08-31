@@ -10,7 +10,7 @@ import SimpleOpenNI.*;
 import controlP5.*;
 
 // SET THIS TO TRUE OR FALSE
-boolean useOpenNI = false;
+boolean useOpenNI = true;
 
 // params
 boolean doDrawKinectRGB = false;
@@ -40,6 +40,8 @@ Minim minim;
 AudioPlayer player;
 AudioPlayer player1;
 AudioPlayer storyPlayer;
+MSAAudioPlayer working;
+MSAAudioPlayer happy;
 
 int lastUserId = 1;
 
@@ -60,8 +62,10 @@ void setupAudio() {
   //a default song to load - if we don't have this calling .close() gives null pointer
   player = minim.loadFile("song1.mp3");
   player1 = minim.loadFile("song1.mp3");
-//  player1.play();
+  //  player1.play();
   player.printControls();
+  working = new MSAAudioPlayer("intro-working-tune-edit.mp3");
+  happy =  new MSAAudioPlayer("lorna-hugs-section.mp3");
 }
 //----------------------------------
 void setupUI() {
@@ -169,8 +173,8 @@ void setup() {
 
 //----------------------------------
 void draw() {
-//  setGain(player1, 1 - mouseY * 1.0/height);
-  
+  //  setGain(player1, 1 - mouseY * 1.0/height);
+
   // update timing
   secondsSinceLastFrame = (millis() - lastFrameMillis) * 0.001;
   lastFrameMillis = millis();
@@ -297,6 +301,22 @@ void keyPressed() {
   case 'g':
     doShowGUI ^= true;
     break;
+  case 'w':
+    if (working.isPlaying()) {
+      working.pause();
+    }
+    else {
+      working.loop();
+    }
+    break;
+  case 'h':
+    if (happy.isPlaying()) {
+      happy.pause();
+    }
+    else {
+      happy.loop();
+    }
+    break;
   }
 }
 
@@ -384,12 +404,12 @@ void stop()
   super.stop();
 }
 
-void mouseMoved(){
-    float volume = map(mouseX, 0, width, -80.0, -13.9794);
-    try{
-     storyPlayer.setGain(volume);
-    }
-    catch(Exception e){
-    }
-  
+void mouseMoved() {
+  float volume = map(mouseX, 0, width, -80.0, -13.9794);
+  try {
+    storyPlayer.setGain(volume);
+  }
+  catch(Exception e) {
+  }
 }
+

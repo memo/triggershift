@@ -33,6 +33,7 @@ class TSStoryBase {
   void endStory() {
     println(storyName + "::endStory");
     onEnd();
+    if(currentScene != null) currentScene.endScene();
     println("-------------------------------------------------");
     println("-------------------------------------------------");
     println(" ");

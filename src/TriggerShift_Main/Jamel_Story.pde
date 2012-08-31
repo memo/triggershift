@@ -14,12 +14,7 @@ class JamelStory extends TSStoryBase {
 //    addScene(new Scene9());
     addScene(new Scene10());
     addScene(new Scene11());
-     try{
-      storyPlayer.close();
-    }
-    catch (Exception e){
-      
-    }
+    
   }
 
   //------------------------------------------------------------------------------------------------------
