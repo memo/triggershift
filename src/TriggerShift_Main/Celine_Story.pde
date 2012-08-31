@@ -148,19 +148,21 @@ class Scene_ripPaper extends TSSceneBase {
     //draw small picture
     image(picture, 0, 0, sW, sH);
     pushMatrix();
-    image(bigPicture, 0, yPos);
-
+    if (!startToFlyAway) {
+      image(bigPicture, 0, 0);
+    }
+    else {
+      image(bigPicture, 0, yPos);
+    }
+    float maxRange = waist.y-head.y;
     if (startToFlyAway ) {
       if (!lock) {
         player.play();
         lock=true;
       }
-      float maxRange = waist.y-head.y;
-      float newY = map (leftHand.y-head.y, 0, maxRange, (height/2), height+(height/2));
-       yPos = newY;
-      if (newY<height) {
-       
-      }
+
+      //float newY = map (leftHand.y-head.y, 0, maxRange, 0, height/2);
+      yPos +=10;// map (leftHand.y-head.y, 0, maxRange, (height/2), height+(height/2));
     }
 
     popMatrix();

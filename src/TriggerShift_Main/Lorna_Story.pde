@@ -360,7 +360,7 @@ class Scene_colour_trees extends TSSceneBase {
 
 
 
-    image(crayon, leftHand.x, leftHand.y);
+   
 
     //TODO optimise this 
     int boxSize=2*radius;
@@ -384,9 +384,14 @@ class Scene_colour_trees extends TSSceneBase {
 
     source.updatePixels();
     target.updatePixels();
+    
+     
     imageMode(CORNER);
 
     image(target, 0, 0, imageWidth, imageHeight);
+    
+    imageMode(CENTER);
+    //image(crayon, leftHand.x, leftHand.y);
     popStyle();
     drawMaskedUser();
   }
