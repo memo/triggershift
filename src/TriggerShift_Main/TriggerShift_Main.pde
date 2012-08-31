@@ -162,6 +162,8 @@ void setup() {
   stroke(255, 255, 255);
 
   hint(DISABLE_DEPTH_TEST);
+  
+  println("\n\n\n*** READY TO GO!!!!****\n");
   // smooth();
 }
 

@@ -55,7 +55,7 @@ class Scene_ripPaper extends TSSceneBase {
   PImage easel = loadImage("celine/easel.png");
   //the picture underneath
   PImage picture = loadImage("celine/skyscraper1.png");
-
+  PImage bigPicture = loadImage("celine/skyscraper1.png");
   PImage leftHalf = loadImage("celine/left.png");
   PImage rightHalf= loadImage("celine/right.png");
 
@@ -81,13 +81,14 @@ class Scene_ripPaper extends TSSceneBase {
   PVector  leftHalfPos= new PVector(rightHalfPos.x, rightHalfPos.y, rightHalfPos.z) ;
   PVector axis;
   PVector axis1;
-
+  float yPos;
   Scene_ripPaper() {
     sceneName = "Scene2 RIP PAPER";
     //println(storyName + "::" + sceneName + "::onStart");
     leftHalf.resize(imageWidth/2, imageHeight);
     rightHalf.resize(imageWidth/2, imageHeight);
     easel.resize(int(2.2*imageWidth), int(2.8*imageHeight));
+    bigPicture.resize(imageWidth, imageHeight);
   }
 
   // this is called when the scene starts (i.e. is triggered)
@@ -106,7 +107,7 @@ class Scene_ripPaper extends TSSceneBase {
     rightP = new ShardParticle(new PVector(0, 0, 0), new PVector(0, 0, 0), 0, 0, 0, 1, 0, 1);
 
     //close player 2 in case we toggle back to this one
-
+    yPos=0;
     player = minim.loadFile("celine/rip.mp3");
   }
 
@@ -115,163 +116,57 @@ class Scene_ripPaper extends TSSceneBase {
   void onDraw(PImage userImage, TSSkeleton skeleton) {
     //      println("StoryTest::Scene1::onDraw");      
     //   pushMatrix();
-    PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
-    PVector rightElbow = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_ELBOW, transform2D, openNIContext);
-    PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
-    PVector leftElbow = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_ELBOW, transform2D, openNIContext);
-
+    PVector rightHand = getRightHand();
+    PVector rightElbow = getRightElbow();
+    PVector leftHand = getLeftHand();
+    PVector leftElbow = getLeftElbow();
+    PVector head= getHead();
+    PVector waist= getHip();
     //draw the easel behind the 2 halves of the image
 
 
     float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
+
+    if (rightHand.y < head.y) startToFlyAway =true;
 
 
     pushMatrix();
     image(easel, picturePos.x- (easel.width*0.85), picturePos.y-(easel.height*0.66));
     popMatrix();
 
-
-
     // if (getElapsedSeconds()>1) {
-
-
     pushMatrix();
     imageMode(CENTER);
     translate(picturePos.x, picturePos.y, picturePos.z);
+
     rotate(imageRotateAngle);
+
     float sW=imageWidth*0.5;
     float sH=imageHeight*0.5;
 
     translate(-imageWidth*0.5, -imageHeight*0.5);
-
+    //draw small picture
     image(picture, 0, 0, sW, sH);
+    pushMatrix();
+    image(bigPicture, 0, yPos);
 
-
-    popMatrix();
-
-    imageMode(CORNER);
-
-
-
-    ///get the angle between hand and elbow
-    leftHand.sub(leftElbow);
-    leftHand.normalize();
-
-    PVector imageOrientation = new PVector(1, 0, 0);
-
-
-    //before we reach the critical angle tie the drawing to the forearms orientation
-    if (!startToFlyAway) {
-      // image(easel, leftHalfPos.x- (easel.width*0.7575), leftHalfPos.y-(easel.height*0.6868));
-
-      //RIGHT HALF
-      pushMatrix();
-      //get the dot and cross products
-      angle = acos(imageOrientation.dot(leftHand));
-      axis = imageOrientation.cross(leftHand);
-      //translate to the place we want to draw the image
-
-      translate(rightHalfPos.x, rightHalfPos.y, rightHalfPos.z);
-
-
-      //translate(-rightHalf.width*0.5, -rightHalf.height, 0);
-      //translate rotation point to bottom left of image
-      // translate(0, rightHalf.height, 0);
-      //rotate by joint orientation of forearm
-      rotate(angle, axis.x, axis.y, -axis.z);
-      //rotate by easel angle
-      rotate(imageRotateAngle);
-
-      translate(-rightHalf.width, -rightHalf.height, 0);
-      //translate back up to draw
-      // translate(-rightHalf.width*0.2, -rightHalf.height, 0);
-      rightP.draw(rightHalf);
-      popMatrix();
-
-      rightHand.sub(rightElbow);
-      rightHand.normalize();
-
-
-      //LEFT HALF
-      pushMatrix();
-      //get the dot and cross products
-      angle1 = acos(imageOrientation.dot(rightHand));
-
-      axis1 = imageOrientation.cross(rightHand);
-
-      translate(rightHalfPos.x, rightHalfPos.y, rightHalfPos.z);
-
-      rotate(imageRotateAngle);
-
-      translate(-rightHalf.width*0.8, 0);
-
-      rotate(-angle1, axis1.x, axis1.y, axis1.z);
-      rotate(PI+imageRotateAngle);
-      translate(-leftHalf.width, -leftHalf.height, 0);
-      leftP.draw(leftHalf);
-      popMatrix();
-
-
-      if (angle>0.5 && angle1<2.0) {
-        startToFlyAway=true;
-        rightP.setRotVel(3);
-        leftP.setRotVel(-3);
-        rightP.setPosVel(new PVector(-5, 5, 0));
-        leftP.setPosVel(new PVector(5, 5, 0));
-      }
-      else {
-        startToFlyAway=false;
-      }
-    }
-    //if we are flying away then...
-    else {
+    if (startToFlyAway ) {
       if (!lock) {
         player.play();
         lock=true;
       }
-      //RIGHT HALF
-      pushMatrix();
-      //get the dot and cross products
-      //angle = acos(imageOrientation.dot(leftHand));
-      // axis = imageOrientation.cross(leftHand);
-      //translate to the place we want to draw the image
-      translate(rightHalfPos.x+rightP.pos.x, rightHalfPos.y+rightP.pos.y, rightHalfPos.z);
-      translate(-rightHalf.width*0.5, -rightHalf.height, 0);
-      //translate rotation point to bottom left of image
-      translate(0, rightHalf.height, 0);
-      //rotate by joint orientation of forearm
-      rotate(angle, axis.x, axis.y, -axis.z);
-      //rotate by easel angle
-      rotate(imageRotateAngle);
-      //translate back up to draw
-      translate(-rightHalf.width*0.2, -rightHalf.height, 0);
-      rightP.drawWithoutTranslation(rightHalf);
-      popMatrix();
-
-      rightHand.sub(rightElbow);
-      rightHand.normalize();
-
-
-      //LEFT HALF
-      pushMatrix();
-      //get the dot and cross products
-      //angle1 = acos(imageOrientation.dot(rightHand));
-      //axis1 = imageOrientation.cross(rightHand);
-      //translate to the place we want to draw the image
-      translate(leftHalfPos.x+leftP.pos.x, leftHalfPos.y+leftP.pos.y, leftHalfPos.z);
-      translate(-leftHalf.width*0.5, -leftHalf.height, 0);
-      //translate rotation point to bottom left of image
-      translate(0, leftHalf.height, 0);
-      //rotate by joint orientation of forearm
-      rotate(-angle1, axis1.x, axis1.y, axis1.z);
-      //rotate by easel angle
-      rotate(PI+imageRotateAngle);
-      //translate back up to draw
-      translate(-leftHalf.width, -leftHalf.height, 0);
-      leftP.drawWithoutTranslation(leftHalf);
-      popMatrix();
+      float maxRange = waist.y-head.y;
+      float newY = map (leftHand.y-head.y, 0, maxRange, (height/2), height+(height/2));
+       yPos = newY;
+      if (newY<height) {
+       
+      }
     }
-    //}
+
+    popMatrix();
+    popMatrix();
+
+    imageMode(CORNER);
     drawMaskedUser();
   }
   void onEnd() {
@@ -604,7 +499,7 @@ class Scene_flick_through_images extends TSSceneBase {
   int timeOutThresh=30;
   int counter=timeOutThresh+1;
   boolean firstTime=true;
-  
+
   Scene_flick_through_images() {
     //println(storyName + "::" + sceneName + "::onStart");
     images[0]=loadImage("celine/house.png");
