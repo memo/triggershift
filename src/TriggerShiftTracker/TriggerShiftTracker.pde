@@ -11,6 +11,8 @@ int userCount;
 int numJoints = 24; 
 int max_users=17;
 
+int imageIndex;
+
 TSJoint[][] tsjoints;
 
 void setup() {
@@ -30,12 +32,53 @@ void setup() {
 }
 
 void draw() {
-  if (openNIContext != null) {
-    openNIContext.update();
-  }
+  if(openNIContext == null) return;
+  
   update(openNIContext);
-  image(openNIContext.rgbImage(), 0, 0, width, height);
+  
+  masker.update(openNIContext, 0);
+  
+  
+
+  PImage img = null;
+  switch(imageIndex) {
+  case 1:
+    img = openNIContext.rgbImage();
+    break;
+  case 2:
+    img = openNIContext.depthImage();
+    break;
+  case 3:
+    img = masker.getImage();
+    break;
+  case 4:
+    img = masker.getMask();
+  }
+
+  if (img != null) {
+    image(img, 0, 0, width, height);
+    syphonSender.sendImage(img);
+  }
 }
+
+
+void keyPressed() {
+  switch(key) {
+  case '1':
+    imageIndex = 1;
+    break;
+  case '2':
+    imageIndex = 2;
+    break;
+  case '3':
+    imageIndex = 3;
+    break;
+  case '4':
+    imageIndex = 4;
+    break;
+  }
+}
+
 
 void setupOpenNI() {
   //setup openNI context

@@ -51,4 +51,5 @@ class TSMasker {
     return maskImage;
   }
 };
+TSMasker masker = new TSMasker();
 
