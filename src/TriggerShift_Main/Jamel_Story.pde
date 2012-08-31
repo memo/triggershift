@@ -108,6 +108,8 @@ class JamelStory extends TSStoryBase {
         ripStartMillis = millis();
         audioFlagRip.play(0);
       }
+      
+      if(useInstallationMode && (millis() - ripStartMillis > 2000)) nextScene();
     }
   };
 
@@ -229,6 +231,8 @@ class JamelStory extends TSStoryBase {
           ellipse(p2.x, p2.y, 10, 10);
         }
         popStyle();
+        
+        if(useInstallationMode && ((PVector)posArray.get(posArray.size()-1)).x > graph.x2()) nextScene();
       }
 
       //      if (getHighestHandVelocity().mag() > 0.1) {
@@ -238,6 +242,7 @@ class JamelStory extends TSStoryBase {
       //      }
       //
       //      particleSystem.draw();
+      
     }
   };
 
@@ -314,7 +319,10 @@ class JamelStory extends TSStoryBase {
       float newt = constrain(map(getLeftHand().y, getHip().y, getHead().y, 0.0, 1.0), 0.0, 1.0);
       if (newt < 0.01) doInteraction = true;
 
-      if (tramp.fillAmount > 0.99) doInteraction = false;
+      if (tramp.fillAmount > 0.99) {
+        doInteraction = false;
+        nextScene();
+      }
       if (doInteraction) tramp.fillAmount += (newt - tramp.fillAmount) * 0.5;
       //      else tramp.fillAmount = 0;
       tramp.draw();

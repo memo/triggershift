@@ -16,6 +16,7 @@ boolean useOpenNI = false;
 // IN INSTALLATION MODE, AUTOADVANCE, AND DISABLE SOME SCENES 
 boolean useInstallationMode = true;
 
+
 // params
 boolean doDrawKinectRGB = false;
 boolean doDrawKinectDepth = false;
