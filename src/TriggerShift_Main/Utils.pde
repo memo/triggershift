@@ -141,7 +141,8 @@ float getMaxArmLength() {
 
 void drawMaskedUser() {
   if(masker.getImage()==null) {
-    ellipse(width/2, height/2, height/4, width/4);
+    syphon.update();
+    transform2D.drawImage(syphon.img);
   } else {
     transform2D.drawImage( masker.getImage() );
   }
