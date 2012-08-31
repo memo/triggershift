@@ -13,7 +13,8 @@ class JamelStory extends TSStoryBase {
     "jamel/audio/graph/1.mp3", "jamel/audio/graph/2.mp3", "jamel/audio/graph/3.mp3", "jamel/audio/graph/4.mp3", "jamel/audio/graph/5.mp3", "jamel/audio/graph/6.mp3"
   } 
   );
-
+  MSAAudioPlayer audioDuplicate = new MSAAudioPlayer("jamel/audio/duplicate.mp3");
+  
   JamelStory() {
     storyName = "JamelStory";
     println(storyName + "::" + storyName);
@@ -43,6 +44,7 @@ class JamelStory extends TSStoryBase {
     audioHair.close();
     audioPrison.close();
     audioPages.close();
+    audioDuplicate.close();
     //    audioCashRegister.close();
   }
 
@@ -761,6 +763,7 @@ class JamelStory extends TSStoryBase {
     //----------------
     void onStart() {
       println(storyName + "::" + sceneName + "::onStart");
+      audioDuplicate.play(0);
     }
 
     //----------------

@@ -1,5 +1,5 @@
 class ManiStory extends TSStoryBase {
-  MSAAudioPlayer audioRain = new MSAAudioPlayer("mani/audio/rain.mp3");
+  MSAAudioPlayer audioRain = new MSAAudioPlayer("mani/audio/rain-loop.mp3");
 
   MSAAudioPlayer audioForward = new MSAAudioPlayer("mani/audio/goforwards.mp3");
 
@@ -10,18 +10,18 @@ class ManiStory extends TSStoryBase {
   MSAAudioPlayer audioBallCatch = new MSAAudioPlayer("mani/audio/basketball-bounce.mp3");
 
   MSAAudioPlayers audioFlowers = new MSAAudioPlayers( new String[] {
-    "mani/audio/flowers/1.mp3", "mani/audio/flowers/2.mp3", "mani/audio/flowers/3.mp3", "mani/audio/flowers/4.mp3", "mani/audio/flowers/5.mp3", "mani/audio/flowers/6.mp3"
+    "mani/audio/flowers/1.mp3", "mani/audio/flowers/2.mp3", "mani/audio/flowers/3.mp3", "mani/audio/flowers/4.mp3", "mani/audio/flowers/5.mp3"
   } );
 
   MSAAudioPlayers audioStars = new MSAAudioPlayers( new String[] {
-    "mani/audio/stars/1.mp3", "mani/audio/stars/2.mp3", "mani/audio/stars/3.mp3", "mani/audio/stars/4.mp3", "mani/audio/stars/5.mp3", "mani/audio/stars/6.mp3"
+    "mani/audio/stars/1.mp3", "mani/audio/stars/2.mp3", "mani/audio/stars/3.mp3"
   } );
 
   MSAAudioPlayers audioTraffic = new MSAAudioPlayers( new String[] {
     "mani/audio/trafficlights/red.mp3", "mani/audio/trafficlights/yellow.mp3", "mani/audio/trafficlights/green.mp3"
   } );
 
-  MSAAudioPlayer audioBallet = new MSAAudioPlayer("mani/audio/swan lake.mp3");
+  MSAAudioPlayer audioBallet = new MSAAudioPlayer("mani/audio/ballerina.mp3");
 
   MSAAudioPlayer audioNightSky = new MSAAudioPlayer("mani/audio/world-turn.mp3");
 
@@ -30,7 +30,7 @@ class ManiStory extends TSStoryBase {
   //  String []audioNoteNames = ;
 
   MSAAudioPlayers audioNotes = new MSAAudioPlayers( new String[] {
-    "mani/audio/notes/1.mp3", "mani/audio/notes/2.mp3", "mani/audio/notes/3.mp3", "mani/audio/notes/4.mp3", "mani/audio/notes/5.mp3", "mani/audio/notes/6.mp3"
+    "mani/audio/notes/1.mp3", "mani/audio/notes/2.mp3", "mani/audio/notes/3.mp3", "mani/audio/notes/4.mp3", "mani/audio/notes/5.mp3", "mani/audio/notes/6.mp3", "mani/audio/notes/7.mp3", "mani/audio/notes/8.mp3", "mani/audio/notes/9.mp3"
   } );
 
 
