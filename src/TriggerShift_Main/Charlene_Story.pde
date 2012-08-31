@@ -6,7 +6,7 @@ class CharleneStory extends TSStoryBase {
     println(storyName + "::" + storyName);
 
     //    if (useInstallationMode) {
-    //
+    //  
     //      addScene(new Scene_power_hands());
     //    }
     //
@@ -737,7 +737,6 @@ class CharleneStory extends TSStoryBase {
       }
 
       if (handOver&&!moveShards) {
-        println("reset");
         for (int i=0;i<numShards;i++) {
           shards[i].posVel=new PVector(random(-3, 3), random(4, 8), 0  );
           shards[i].rotVel=  random(-3, 3);

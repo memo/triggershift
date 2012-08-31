@@ -7,8 +7,9 @@ NetAddress myRemoteLocation;
 
 SimpleOpenNI  openNIContext = null;
 int lastUserId;
-int userCount; 
+int userCount;
 int numJoints = 24;
+
 void setup() {
   size(1280, 768, P3D);
 
@@ -24,6 +25,7 @@ void draw() {
   update(openNIContext);
   image(openNIContext.rgbImage(), 0, 0, width, height);
 }
+
 void setupOpenNI() {
   //setup openNI context
   openNIContext = new SimpleOpenNI(this);
