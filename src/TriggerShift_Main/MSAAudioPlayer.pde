@@ -42,6 +42,7 @@ class MSAAudioPlayer {
   
   void close() {
      try{
+      pause();
       audioPlayer.close();
     }
     catch (Exception e){
