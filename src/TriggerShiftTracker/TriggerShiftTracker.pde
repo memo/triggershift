@@ -8,7 +8,10 @@ NetAddress myRemoteLocation;
 SimpleOpenNI  openNIContext = null;
 int lastUserId;
 int userCount;
-int numJoints = 24;
+int numJoints = 24; 
+int max_users=17;
+
+TSJoint[][] tsjoints;
 
 void setup() {
   size(1280, 768, P3D);
@@ -16,6 +19,14 @@ void setup() {
   oscP5 = new OscP5(this, 1000);
   myRemoteLocation = new NetAddress("127.0.0.1", 7000);
   setupOpenNI();
+
+  tsjoints= new TSJoint[max_users][numJoints];
+  //set all initial previous joint positions and velocities to 0
+  for (int i=0;i<max_users;i++) {
+    for (int j=0;j<tsjoints.length;j++) {
+      tsjoints[i][j]=new TSJoint(20);
+    }
+  }
 }
 
 void draw() {
@@ -40,36 +51,38 @@ void setupOpenNI() {
 }
 
 void update(SimpleOpenNI context) {
-  lastUserId = findMostConfidentSkeleton(context);
 
   if (context != null) {
-    userCount = context.getNumberOfUsers();
-
-
     int[] userList = context.getUsers();
 
     //for each user
-    // for (int i=0;i<userList.length;i++) {
-    //if there is a valid skeleton
-    if (context.isTrackingSkeleton(lastUserId)) {
-      //for each joint on that skeleton
-      for (int j=0;j<numJoints;j++) {
-        PVector jointPos = new PVector();
-        //get real world coords
-        context.getJointPositionSkeleton(lastUserId, j, jointPos);
-        PVector jointPos_Proj = new PVector(); 
-        //convert to screen coords
-        println(jointPos);
-        context.convertRealWorldToProjective(jointPos, jointPos_Proj);
-        sendJointMessage(j, jointPos, "jointPos");
-        sendJointMessage(j, jointPos_Proj, "projectivePos");
+    for (int i=0;i<userList.length;i++) {
+      PVector p = new PVector();
+      float c = context.getJointPositionSkeleton(userList[i], SimpleOpenNI.SKEL_HEAD, p);
+      sendConfidenceMessage(userList[i], c);
+      //if there is a valid skeleton
+      if (context.isTrackingSkeleton(userList[i])) {
+        //for each joint on that skeleton
+        for (int j=0;j<tsjoints.length;j++) {
+          PVector jointPos = new PVector();
+          //get real world coords
+          context.getJointPositionSkeleton(userList[i], j, jointPos);
+          PVector jointPos_Proj = new PVector(); 
+          //convert to screen coords
+          context.convertRealWorldToProjective(jointPos, jointPos_Proj);
+
+          tsjoints[userList[i]][j].update(context, jointPos_Proj);
+
+          sendPos2DMessage(userList[i], j, jointPos_Proj);
+          sendPos3DMessage(userList[i], j, jointPos);
+          sendVel2DMessage(userList[i], j, tsjoints[userList[i]][j].velocity);
+          sendSmoothVel2DMessage(userList[i], j, tsjoints[userList[i]][j].smoothedVelocity);
+        }
       }
     }
   }
-  else {
-    println("no valid context");
-  }
 }
+
 
 
 int findMostConfidentSkeleton(SimpleOpenNI context) {
@@ -87,6 +100,74 @@ int findMostConfidentSkeleton(SimpleOpenNI context) {
   return mostConfident;
 }   
 
+void sendConfidenceMessage(int userId, float confidence) {
+  OscMessage myMessage = new OscMessage("/skeleton/"+str(userId)+"/confidence");
+  myMessage.add(confidence);
+  oscP5.send(myMessage, myRemoteLocation);
+}
+void sendPos2DMessage(int userId, int jointId, PVector pos2D) {
+  OscMessage myMessage = new OscMessage("/skeleton/"+str(userId)+"/joint/"+str(jointId)+"/pos2d");
+
+  myMessage.add(pos2D.x);
+  myMessage.add(pos2D.y);
+
+  oscP5.send(myMessage, myRemoteLocation);
+}
+void sendPos3DMessage(int userId, int jointId, PVector pos3D) {
+  OscMessage myMessage = new OscMessage("/skeleton/"+str(userId)+"/joint/"+str(jointId)+"/pos3d");
+
+  myMessage.add(pos3D.x);
+  myMessage.add(pos3D.y);
+  myMessage.add(pos3D.z);
+
+  oscP5.send(myMessage, myRemoteLocation);
+}
+void sendVel2DMessage(int userId, int jointId, PVector vel2D) {
+  OscMessage myMessage = new OscMessage("/skeleton/"+str(userId)+"/joint/"+str(jointId)+"/vel2d");
+
+  myMessage.add(vel2D.x);
+  myMessage.add(vel2D.y);
+
+  oscP5.send(myMessage, myRemoteLocation);
+}
+void sendSmoothVel2DMessage(int userId, int jointId, PVector vel2D) {
+  OscMessage myMessage = new OscMessage("/skeleton/"+str(userId)+"/joint/"+str(jointId)+"/vel2d");
+
+  myMessage.add(vel2D.x);
+  myMessage.add(vel2D.y);
+
+  oscP5.send(myMessage, myRemoteLocation);
+}
+
+/*skeleton/1/confidence [float]
+ 
+ skeleton/1/joint/1/pos2d [float] [float] 
+ skeleton/1/joint/1/pos3d [float] [float] [float]
+ skeleton/1/joint/1/vel2d [float] [float]
+ skeleton/1/joint/1/smoothvel2d [float] [float]
+ 
+ skeleton/1/joint/2/pos2d [float] [float] 
+ skeleton/1/joint/2/pos3d [float] [float] [float]
+ skeleton/1/joint/2/vel2d [float] [float] 
+ skeleton/1/joint/2/smoothvel2d [float] [float]]
+ 
+ 
+ 
+ skeleton/2/confidence [float]
+ 
+ skeleton/2/joint/1/pos2d [float] [float] 
+ skeleton/2/joint/1/pos3d [float] [float] [float]
+ skeleton/2/joint/1/vel2d [float] [float] 
+ skeleton/2/joint/1/smoothvel2d [float] [float] 
+ 
+ skeleton/2/joint/2/pos2d [float] [float] 
+ skeleton/2/joint/2/pos3d [float] [float] [float]
+ skeleton/2/joint/2/vel2d [float] [float] 
+ skeleton/2/joint/2/smoothvel2d [float] [float] 
+ */
+
+
+
 void sendJointMessage(int jointId, PVector pos, String type) {
   OscMessage myMessage = new OscMessage("/"+type+"/"+str(jointId));
   //myMessage.add(jointId);
@@ -94,6 +175,9 @@ void sendJointMessage(int jointId, PVector pos, String type) {
   myMessage.add(pos.y);
   myMessage.add(pos.z);
   oscP5.send(myMessage, myRemoteLocation);
+}
+
+void sendSkeletonMessage() {
 }
 
 
