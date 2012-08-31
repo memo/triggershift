@@ -26,7 +26,7 @@ class CelineStory extends TSStoryBase {
     PImage picture = loadImage("celine/skyscraper1.png");  
     int imageWidth=150;
     int imageHeight=262;
-    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
+    PVector picturePos = new PVector(0.3 * width, 0.65 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
 
     Scene_big_buildings() {
       sceneName = "Scene1 BIG BUILDINGS";
@@ -40,10 +40,10 @@ class CelineStory extends TSStoryBase {
       println("CelineStory::Scene_big_buildings::onStart");
     }
 
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
-      image(easel, picturePos.x- (easel.width*0.85), picturePos.y-(easel.height*0.66));
+    void onDraw() {
+//      image(easel, picturePos.x- (easel.width*0.85), picturePos.y-(easel.height*0.66));  // FIX
       pushMatrix();
-      translate(picturePos.x, picturePos.y);
+//      translate(picturePos.x, picturePos.y); // FIX
 
       rotate(imageRotateAngle);
       translate(-picture.width, -picture.height);
@@ -80,9 +80,9 @@ class CelineStory extends TSStoryBase {
     //set to true if the 2 halves get past about 20 degrees
     boolean startToFlyAway;
     //the top left of the skyscraper image : the easel is drawn above and left of this to aligh
-    PVector rightHalfPos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
+    PVector rightHalfPos = new PVector(0.3 * width, 0.65 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
 
-    PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
+    PVector picturePos = new PVector(0.3 * width, 0.65 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
 
     PVector  leftHalfPos= new PVector(rightHalfPos.x, rightHalfPos.y, rightHalfPos.z) ;
     PVector axis;
@@ -119,7 +119,7 @@ class CelineStory extends TSStoryBase {
 
     // this is the scenes draw function
     // use getElapsedSeconds() to see how long the scene has been running (useful for transitions)
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       //      println("StoryTest::Scene1::onDraw");      
       //   pushMatrix();
       PVector rightHand = getRightHand();
@@ -229,13 +229,13 @@ class CelineStory extends TSStoryBase {
       msaPlayer1.loop();
     }
 
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
 
       pushStyle();
 
       PVector rightHand = getRightHand();// skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
       PVector leftHand = getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
-      PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
+      PVector picturePos = new PVector(0.3 * width, 0.65 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
 
       //get the distance between hands
       float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
@@ -313,11 +313,11 @@ class CelineStory extends TSStoryBase {
       msaPlayer.loop();
     }
 
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       //imageMode(CORNER);
       PVector rightHand = getRightHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
       PVector leftHand = getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
-      PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
+      PVector picturePos = new PVector(0.3 * width, 0.65 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
       //PVector easelPos=transform2D.getWorldCoordsForInputNorm(new PVector(0.2, 0.5, 0));
 
       float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
@@ -387,7 +387,7 @@ class CelineStory extends TSStoryBase {
       pWhichHand=0;
     }
 
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       PVector leftHand = getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
 
       int x=0;
@@ -538,10 +538,10 @@ class CelineStory extends TSStoryBase {
       //TODO replace with single hit thing when ed has made it
       player = minim.loadFile("celine/page-flick.mp3");
     }
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
 
       PVector leftHand = getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
-      PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
+      PVector picturePos = new PVector(0.1 * width, 0.1 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
 
       image(images[frameIndex], picturePos.x, picturePos.y);
       // text("BLAH BALH ",picturePos.x+(images[frameIndex].width/2), picturePos.y+(images[frameIndex].height/2));

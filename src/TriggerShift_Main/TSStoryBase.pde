@@ -103,14 +103,14 @@ class TSStoryBase {
 
 
   //----------------------------------
-  void draw(PImage userImage, TSSkeleton skeleton) {
+  void draw() {
     if (currentScene==null) return;
 
     // check trigger
     if (currentScene.checkTrigger()) nextScene();
 
     // draw current scene
-    currentScene.onDraw(userImage, skeleton);
+    currentScene.onDraw();
     if(useInstallationMode && currentScene.getElapsedSeconds() > 20) nextScene();
   }
 };

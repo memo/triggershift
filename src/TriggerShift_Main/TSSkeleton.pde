@@ -1,349 +1,195 @@
 
+static int  SKEL_HEAD;
+static int  SKEL_LEFT_ANKLE; 
+static int  SKEL_LEFT_COLLAR; 
+static int  SKEL_LEFT_ELBOW ;
+static int  SKEL_LEFT_FINGERTIP; 
+static int  SKEL_LEFT_FOOT; 
+static int  SKEL_LEFT_HAND; 
+static int  SKEL_LEFT_HIP; 
+static int  SKEL_LEFT_KNEE; 
+static int  SKEL_LEFT_SHOULDER; 
+static int  SKEL_LEFT_WRIST;
+static int  SKEL_NECK ;
+static int  SKEL_RIGHT_ANKLE; 
+static int  SKEL_RIGHT_COLLAR ;
+static int  SKEL_RIGHT_ELBOW ;
+static int  SKEL_RIGHT_FINGERTIP; 
+static int  SKEL_RIGHT_FOOT ;
+static int  SKEL_RIGHT_HAND ;
+static int  SKEL_RIGHT_HIP ;
+static int  SKEL_RIGHT_KNEE ;
+static int  SKEL_RIGHT_SHOULDER; 
+static int  SKEL_RIGHT_WRIST ;
+static int  SKEL_TORSO ;
+static int  SKEL_WAIST ;
+
+  static int numJoints = 24;
+
 class TSSkeleton {
 
-  // a skeleton
-  // store positions and velocities, scaled and mapped to screen space (in case we have scaled down the kinect input)
-  //openni kinect capture / scale / skeleton 
-  private int userCount; 
-  //first dimension is users, second dimension is all velocity and positions for each joint
-  private TSJoint[][] tsjoints;
-  //24 joints are tracked according to documentation, can't find a constant that represents this.
-  private int numJoints = 24;
-  private int max_users=17;
+  class Joint {
+    PVector pos3d;        // 3d coordinates (in mm)
+    PVector pos2d;        // 2d coordinates (normalized)
+    PVector vel2d;        // 2d velocity (normalized)
+    PVector smoothVel2d;  // smoothed 2d velocity (normalized)
+  };
+
+
+  private Joint[] joints;
+  private float confidence;
+  private int userIndex;
+  private int lastUpdateMillis;
+
 
   //----------------------------------
-
-  TSSkeleton() {
-    userCount=0;
-
-    tsjoints= new TSJoint[max_users][numJoints];
-    //set all initial previous joint positions and velocities to 0
-    for (int i=0;i<max_users;i++) {
-      for (int j=0;j<tsjoints.length;j++) {
-        tsjoints[i][j]=new TSJoint(20);
-      }
-    }
-  }
-
-  int findMostConfidentSkeleton(SimpleOpenNI context) {
-    int mostConfident = 0;
-    float maxConfidence = 0;
-    PVector p = new PVector();
-    int[] userList = context.getUsers();
-    for(int i=0; i<userList.length; i++) {
-      float c = context.getJointPositionSkeleton(userList[i], SimpleOpenNI.SKEL_HEAD, p);
-      if(c > maxConfidence) {
-        maxConfidence = c;
-        mostConfident = userList[i];
-      }
-    }
-    return mostConfident;
+  TSSkeleton(int _userIndex) {
+    userIndex = _userIndex;
+    joints= new Joint[numJoints];
+    for (int i=0; i<joints.length; i++) joints[i] = new Joint();
   }
 
 
   //----------------------------------
-  void update(SimpleOpenNI context) {
-    lastUserId = findMostConfidentSkeleton(context);
-
-    if (context != null) {
-      userCount = context.getNumberOfUsers();
-      updateVelocities(context);
-    }
-  }
-
-  //----------------------------------
-  void updateVelocities(SimpleOpenNI context) {
-    if (context != null) {
-      int[] userList = context.getUsers();
-
-      //for each user
-      for (int i=0;i<userList.length;i++) {
-        //if there is a valid skeleton
-        if (context.isTrackingSkeleton(userList[i])) {
-          //for each joint on that skeleton
-          for (int j=0;j<tsjoints.length;j++) {
-            PVector jointPos = new PVector();
-            //get real world coords
-            context.getJointPositionSkeleton(userList[i], j, jointPos);
-            PVector jointPos_Proj = new PVector(); 
-            //convert to screen coords
-            context.convertRealWorldToProjective(jointPos, jointPos_Proj);
-
-            tsjoints[userList[i]][j].update(context, jointPos_Proj);
-          }
-        }
-      }
-    }
+  void update() {
+    // if not updated recently, set confidence to 0
+    if(millis() - lastUpdateMillis > 2000) confidence = 0;
   }
 
 
   //----------------------------------
-  //for debugging purposes
-  void drawAllSkeletons(SimpleOpenNI context, TSTransform2D transform2D) {
-    if (context != null) {
-      pushMatrix();
-      // translate(width/2, height/2, 0);
-      //openni draws upside down
-      // rotateX(PI);
-      //translate(-width/2, -height/2, 0);
-      //scale(0.5f);
-      //translate(0, 0, -1000); 
-      stroke(100); 
-
-      int[] userList = context.getUsers();
-      for (int i=0;i<userList.length;i++)
-      {
-        if (context.isTrackingSkeleton(userList[i]))
-          drawSkeleton(transform2D, context, userList[i]);
-      }
-      popMatrix();
-    }
-  }
-
-  //----------------------------------
-  //from simpleOPENNI examples/ credits to http://code.google.com/p/simple-openni
-  void drawSkeleton(TSTransform2D transform2D, SimpleOpenNI context, int userId) {
-    if (context != null) {
-      strokeWeight(3);
-
-      boolean drawInWorld=true;
-      // to get the 3d joint data
-      //this is roughly scaled following simpleOpenNI example
-      if (!drawInWorld) {
-        pushMatrix();
-        translate(width/2, height/2, 0);
-        //openni draws upside down
-        rotateX(PI);
-        scale(0.5f);
-        translate(0, 0, -1000); 
-        drawLimb(context, userId, SimpleOpenNI.SKEL_HEAD, SimpleOpenNI.SKEL_NECK);
-
-        drawLimb(context, userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_LEFT_SHOULDER);
-        drawLimb(context, userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_LEFT_ELBOW);
-        drawLimb(context, userId, SimpleOpenNI.SKEL_LEFT_ELBOW, SimpleOpenNI.SKEL_LEFT_HAND);
-
-        drawLimb(context, userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_RIGHT_SHOULDER);
-        drawLimb(context, userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_RIGHT_ELBOW);
-        drawLimb(context, userId, SimpleOpenNI.SKEL_RIGHT_ELBOW, SimpleOpenNI.SKEL_RIGHT_HAND);
-
-        drawLimb(context, userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
-        drawLimb(context, userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
-
-        drawLimb(context, userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_LEFT_HIP);
-        drawLimb(context, userId, SimpleOpenNI.SKEL_LEFT_HIP, SimpleOpenNI.SKEL_LEFT_KNEE);
-        drawLimb(context, userId, SimpleOpenNI.SKEL_LEFT_KNEE, SimpleOpenNI.SKEL_LEFT_FOOT);
-
-        drawLimb(context, userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_RIGHT_HIP);
-        drawLimb(context, userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
-        drawLimb(context, userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);
-        popMatrix();
-      }
-      ///this is the real deal - usess transform2D to map joints to our world coords
-      else {
-        drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_HEAD, SimpleOpenNI.SKEL_NECK);
-
-        drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_LEFT_SHOULDER);
-        drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_LEFT_ELBOW);
-        drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_LEFT_ELBOW, SimpleOpenNI.SKEL_LEFT_HAND);
-
-        drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_RIGHT_SHOULDER);
-        drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_RIGHT_ELBOW);
-        drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_RIGHT_ELBOW, SimpleOpenNI.SKEL_RIGHT_HAND);
-
-        drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
-        drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
-
-        drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_LEFT_HIP);
-        drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_LEFT_HIP, SimpleOpenNI.SKEL_LEFT_KNEE);
-        drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_LEFT_KNEE, SimpleOpenNI.SKEL_LEFT_FOOT);
-
-        drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_RIGHT_HIP);
-        drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
-        drawLimbInWorld(context, userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);
-      }
-    }
+  void setConfidence(float f) {
+    confidence = f;
+    lastUpdateMillis = millis();
   }
 
 
   //----------------------------------
-  //from simpleOPENNI examples/ credits to http://code.google.com/p/simple-openni
-  void drawLimb(SimpleOpenNI context, int userId, int jointType1, int jointType2)
-  {
-    PVector jointPos1 = new PVector();
-    PVector jointPos2 = new PVector();
-    float  confidence;
+  void setJointPos2d(int jointType, PVector p) {
+    joints[jointType].pos2d = p;
+    lastUpdateMillis = millis();
+  }
 
-    // draw the joint position
-    confidence = context.getJointPositionSkeleton(userId, jointType1, jointPos1);
-    confidence = context.getJointPositionSkeleton(userId, jointType2, jointPos2);
 
+  //----------------------------------
+  void setJointPos3d(int jointType, PVector p) {
+    joints[jointType].pos2d = p;
+    lastUpdateMillis = millis();
+  }
+
+
+  //----------------------------------
+  void setJointVel(int jointType, PVector p) {
+    joints[jointType].vel2d = p;
+    lastUpdateMillis = millis();
+  }
+
+
+  //----------------------------------
+  void setJointSmoothVel(int jointType, PVector p) {
+    joints[jointType].smoothVel2d = p;
+    lastUpdateMillis = millis();
+  }
+
+
+  //----------------------------------
+  float getConfidence() {
+    return confidence;
+  }
+
+
+  //----------------------------------
+  PVector getJointPos3d(int jointType) {
+    return joints[jointType].pos3d;
+  }
+
+
+  //----------------------------------
+  PVector getJointPos2d(int jointType) {
+    return joints[jointType].pos2d;
+  }
+
+
+  //----------------------------------
+  PVector getJointVel(int jointType) {
+    return joints[jointType].vel2d;
+  }
+
+
+  //----------------------------------
+  PVector getJointSmoothVel(int jointType) {
+    return joints[jointType].smoothVel2d;
+  }
+
+
+  //----------------------------------
+  void drawLimb2d(int jointType1, int jointType2) {
+    PVector p1 = getJointPos2d(jointType1);
+    PVector p2 = getJointPos2d(jointType2);
     stroke(255, 0, 0, confidence * 200 + 55);
-    line(jointPos1.x, jointPos1.y, jointPos1.z, 
-    jointPos2.x, jointPos2.y, jointPos2.z);
+    line(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z);
   }
+
+
   //----------------------------------
-  //from simpleOPENNI examples/ credits to http://code.google.com/p/simple-openni
-  void drawLimbInWorld(SimpleOpenNI context, int userId, int jointType1, int jointType2)
-  {
-    PVector jointPos1 = new PVector();
-    PVector jointPos2 = new PVector();
-    float  confidence;
-
-    // draw the joint position
-    confidence = context.getJointPositionSkeleton(userId, jointType1, jointPos1);
-    confidence = context.getJointPositionSkeleton(userId, jointType2, jointPos2);
-
-    PVector jointPos_Proj1 = new PVector();
-    PVector jointPos_Proj2 = new PVector(); 
-
-
-    if (context.isTrackingSkeleton(userId)) {
-      context.convertRealWorldToProjective(jointPos1, jointPos_Proj1);
-      context.convertRealWorldToProjective(jointPos2, jointPos_Proj2);
-    }
-
-    PVector transformedCoords1 = transform2D.getWorldCoordsForInputPixels(jointPos_Proj1);
-    PVector transformedCoords2 = transform2D.getWorldCoordsForInputPixels(jointPos_Proj2);
-
+  void drawLimb3d(int jointType1, int jointType2) {
+    PVector p1 = getJointPos3d(jointType1);
+    PVector p2 = getJointPos3d(jointType2);
     stroke(255, 0, 0, confidence * 200 + 55);
-    line(transformedCoords1.x, transformedCoords1.y, transformedCoords1.z, transformedCoords2.x, transformedCoords2.y, transformedCoords2.z);
+    line(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z);
   }
+
 
   //----------------------------------
-  //////////////GIVEN A JOINT ID THIS WILL GIVE THE POSITION RELATIVE TO DEPTH MAP SIZE (640*480)///////////////////////////////
-  PVector getScreenCoords(SimpleOpenNI context, int userId, int jointType) {
-    if (context != null) {
+  void draw2d() {
+    strokeWeight(3);
+    drawLimb2d(SKEL_HEAD, SKEL_NECK);
 
-      //JOINT POS IN WORLD SIZE IE MM
-      PVector jointPos = new PVector();
-      //JOINT POS IN SCEEN SIZE IE PIXELS
-      PVector jointPos_Proj = new PVector(); 
-      context.getJointPositionSkeleton(userId, jointType, jointPos);
-      if (context.isTrackingSkeleton(userId)) {
-        context.convertRealWorldToProjective(jointPos, jointPos_Proj);
-      }
-      return(jointPos_Proj);
-    } 
-    else return new PVector();
-  }
-  //from simpleOPENNI examples/ credits to http://code.google.com/p/simple-openni
-  public PVector getJointCoords(SimpleOpenNI context, int userId, int jointType1)
-  {
-    PVector jointPos1 = new PVector();
-    // draw the joint position
-    context.getJointPositionSkeleton(userId, jointType1, jointPos1);
+    drawLimb2d(SKEL_NECK, SKEL_LEFT_SHOULDER);
+    drawLimb2d(SKEL_LEFT_SHOULDER, SKEL_LEFT_ELBOW);
+    drawLimb2d(SKEL_LEFT_ELBOW, SKEL_LEFT_HAND);
 
-    return jointPos1;
+    drawLimb2d(SKEL_NECK, SKEL_RIGHT_SHOULDER);
+    drawLimb2d(SKEL_RIGHT_SHOULDER, SKEL_RIGHT_ELBOW);
+    drawLimb2d(SKEL_RIGHT_ELBOW, SKEL_RIGHT_HAND);
+
+    drawLimb2d(SKEL_LEFT_SHOULDER, SKEL_TORSO);
+    drawLimb2d(SKEL_RIGHT_SHOULDER, SKEL_TORSO);
+
+    drawLimb2d(SKEL_TORSO, SKEL_LEFT_HIP);
+    drawLimb2d(SKEL_LEFT_HIP, SKEL_LEFT_KNEE);
+    drawLimb2d(SKEL_LEFT_KNEE, SKEL_LEFT_FOOT);
+
+    drawLimb2d(SKEL_TORSO, SKEL_RIGHT_HIP);
+    drawLimb2d(SKEL_RIGHT_HIP, SKEL_RIGHT_KNEE);
+    drawLimb2d(SKEL_RIGHT_KNEE, SKEL_RIGHT_FOOT);
   }
 
-  //////////////GIVEN A JOINT ID A POSITION THIS WILL RETURN A MAPPED POSITION USING SETTINGS IN TSTRANSFORM2D///////////////////////////////
-  public PVector getJointCoordsInWorld(int userId, int jointType, TSTransform2D transform2D, SimpleOpenNI  context) {
-    if (context != null) {
-
-      //JOINT POS IN WORLD SIZE IE MM
-      PVector jointPos = new PVector();
-      //JOINT POS IN SCEEN SIZE IE PIXELS
-      PVector jointPos_Proj = new PVector(); 
-
-      //first get the screen coordinates as opposed to world coordinates
-      context.getJointPositionSkeleton(userId, jointType, jointPos);
-
-      if (context.isTrackingSkeleton(userId)) {
-        context.convertRealWorldToProjective(jointPos, jointPos_Proj);
-      }
-
-      PVector transformedCoords = transform2D.getWorldCoordsForInputPixels(jointPos_Proj);
-
-      return transformedCoords.get();
-    } 
-    else {
-      println("NEW SDS");
-      return new PVector();
-    }
-  }
-
-  public PVector getJointVelocity(int userId, int jointType, TSTransform2D transform2D, SimpleOpenNI  context) {
-    return tsjoints[userId][jointType].velocity;
-  }
-  
- public PVector getJointSmoothedVelocity(int userId, int jointType, TSTransform2D transform2D, SimpleOpenNI  context) {
-    return tsjoints[userId][jointType].smoothedVelocity.get();
-  }
 
   //----------------------------------
-  PVector getWorldCoords(SimpleOpenNI context, int userId, int jointType) {
-    if (context != null) {
-      //JOINT POS IN WORLD SIZE IE MM
-      PVector jointPos = new PVector();
-      context.getJointPositionSkeleton(userId, jointType, jointPos);
+  void draw3d() {
+    strokeWeight(3);
+    drawLimb3d(SKEL_HEAD, SKEL_NECK);
 
-      return(jointPos);
-    } 
-    else return new PVector();
+    drawLimb3d(SKEL_NECK, SKEL_LEFT_SHOULDER);
+    drawLimb3d(SKEL_LEFT_SHOULDER, SKEL_LEFT_ELBOW);
+    drawLimb3d(SKEL_LEFT_ELBOW, SKEL_LEFT_HAND);
+
+    drawLimb3d(SKEL_NECK, SKEL_RIGHT_SHOULDER);
+    drawLimb3d(SKEL_RIGHT_SHOULDER, SKEL_RIGHT_ELBOW);
+    drawLimb3d(SKEL_RIGHT_ELBOW, SKEL_RIGHT_HAND);
+
+    drawLimb3d(SKEL_LEFT_SHOULDER, SKEL_TORSO);
+    drawLimb3d(SKEL_RIGHT_SHOULDER, SKEL_TORSO);
+
+    drawLimb3d(SKEL_TORSO, SKEL_LEFT_HIP);
+    drawLimb3d(SKEL_LEFT_HIP, SKEL_LEFT_KNEE);
+    drawLimb3d(SKEL_LEFT_KNEE, SKEL_LEFT_FOOT);
+
+    drawLimb3d(SKEL_TORSO, SKEL_RIGHT_HIP);
+    drawLimb3d(SKEL_RIGHT_HIP, SKEL_RIGHT_KNEE);
+    drawLimb3d(SKEL_RIGHT_KNEE, SKEL_RIGHT_FOOT);
   }
 
-  //----------------------------------
-  //am example to test velocity data
-  void drawDebugInfo(SimpleOpenNI context) {
-    fill(255);
-    textFont(debugFont, 48);
-    int[] userList = context.getUsers();
-    if (userList.length>0) {
-      for (int i=0;i<userList.length;i++) {
-
-        // for (int i=0;i<20;i++) {
-        PVector jointPos1 = new PVector();
-
-        context.getJointPositionSkeleton(userList[i], SimpleOpenNI.SKEL_RIGHT_HAND, jointPos1);
-
-        if (context.isTrackingSkeleton(userList[i])) {
-          PVector jointPos_Proj = new PVector(); 
-          context.convertRealWorldToProjective(jointPos1, jointPos_Proj);
-          try {
-            text("right hand_VEL_X "+tsjoints[userList[i]][SimpleOpenNI.SKEL_RIGHT_HAND].smoothedVelocity.x, 100, height- 150);
-            if (tsjoints[userList[i]][SimpleOpenNI.SKEL_RIGHT_HAND].smoothedVelocity.x>0) {
-              text("right hand going LEFT ", 100, height- 50);
-            }
-            else {
-              text("right hand going RIGHT ", 100, height- 50);
-            }
-            if (  tsjoints[userList[i]][SimpleOpenNI.SKEL_RIGHT_HAND].smoothedVelocity.y<0) {
-              text("right hand going UP ", 100, height- 100);
-            }
-            else {
-              text("right hand going DOWN ", 100, height-100);
-            }
-          }
-          catch(Exception e) {
-            println(e);
-          }
-        }
-      }
-    }
-  }
 };
 
-/*static int	SKEL_HEAD 
- static int	SKEL_LEFT_ANKLE 
- static int	SKEL_LEFT_COLLAR 
- static int	SKEL_LEFT_ELBOW 
- static int	SKEL_LEFT_FINGERTIP 
- static int	SKEL_LEFT_FOOT 
- static int	SKEL_LEFT_HAND 
- static int	SKEL_LEFT_HIP 
- static int	SKEL_LEFT_KNEE 
- static int	SKEL_LEFT_SHOULDER 
- static int	SKEL_LEFT_WRIST 
- static int	SKEL_NECK 
- static int	SKEL_RIGHT_ANKLE 
- static int	SKEL_RIGHT_COLLAR 
- static int	SKEL_RIGHT_ELBOW 
- static int	SKEL_RIGHT_FINGERTIP 
- static int	SKEL_RIGHT_FOOT 
- static int	SKEL_RIGHT_HAND 
- static int	SKEL_RIGHT_HIP 
- static int	SKEL_RIGHT_KNEE 
- static int	SKEL_RIGHT_SHOULDER 
- static int	SKEL_RIGHT_WRIST 
- static int	SKEL_TORSO 
- static int	SKEL_WAIST */

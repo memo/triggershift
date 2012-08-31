@@ -71,7 +71,7 @@ class JamelStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       drawMaskedUser();
       pushStyle();
       imageMode(CORNER);
@@ -180,7 +180,7 @@ class JamelStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       drawMaskedUser();
       graph.draw();
 
@@ -311,7 +311,7 @@ class JamelStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       drawMaskedUser();
 
       // position of hand relative to waist->head
@@ -422,7 +422,7 @@ class JamelStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       pushStyle();
       imageMode(CORNER);
       for (int i=0; i<numTrees; i++) {
@@ -503,7 +503,7 @@ class JamelStory extends TSStoryBase {
   //    }
   //
   //    //----------------
-  //    void onDraw(PImage userImage, TSSkeleton skeleton) {
+  //    void onDraw() {
   //      drawMaskedUser();
   //
   //      // position of hand relative to waist->head
@@ -541,7 +541,7 @@ class JamelStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       float curY = getHighestHand().y;
       float headToHip = getHip().y - getHead().y;
       float topY = getHead().y - headToHip/2;
@@ -580,7 +580,7 @@ class JamelStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       image(imgFlag, 0, 0, width, height);
       drawMaskedUser();
 
@@ -638,7 +638,7 @@ class JamelStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       image(imgFlag, 0, 0, width, height);
       drawMaskedUser();
 
@@ -695,7 +695,7 @@ class JamelStory extends TSStoryBase {
   //    }
   //
   //    //----------------
-  //    void onDraw(PImage userImage, TSSkeleton skeleton) {
+  //    void onDraw() {
   //      drawMaskedUser();
   //    }
   //  };
@@ -755,7 +755,7 @@ class JamelStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       drawMaskedUser();
       int yy = 2012 + (int)(getElapsedSeconds() * getElapsedSeconds() * getElapsedSeconds() * getElapsedSeconds() * 0.1);
       if (yy == 2013 && !audioPages.isPlaying()) {
@@ -779,7 +779,7 @@ class JamelStory extends TSStoryBase {
     }
 
     //----------------
-    void onDraw(PImage userImage, TSSkeleton skeleton) {
+    void onDraw() {
       int count = 5;
       float t = constrain(map(getElapsedSeconds(), 0, 3, 0, 1), 0, 1);
       t = t * t;
