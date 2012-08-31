@@ -453,7 +453,7 @@ class ManiStory extends TSStoryBase {
     void draw() {
       for (int i=0; i<2; i++) {
         if (getHandVelocity(i).mag() > 0.1) {
-          if (random(1.0)<0.2) {
+          if (random(1.0)<0.5) {
             particleSystem.startPos.base = getHand(i);
             particleSystem.inheritVel.base = getHandVelocity(i);
             particleSystem.add();
