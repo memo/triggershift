@@ -1,5 +1,5 @@
 class CelineStory extends TSStoryBase {
-//TODO sound effect are too low - Ed? rip at wrong poitn - old to new is quiet  - page flick for images crashes on exit
+  //TODO sound effect are too low - Ed? rip at wrong poitn - old to new is quiet  - page flick for images crashes on exit
   CelineStory() {
     storyName = "CelineStory";
     println(storyName + "::" + storyName);
@@ -9,7 +9,7 @@ class CelineStory extends TSStoryBase {
     addScene(new Scene_shrink_grow_image());
     addScene(new Scene_turn_cards());
     addScene(new Scene_flick_through_images());
-    
+
     storyPlayer = minim.loadFile("celine/celine-melody.mp3");
     storyPlayer.loop();
   }
@@ -62,6 +62,8 @@ class Scene_ripPaper extends TSSceneBase {
   ShardParticle leftP;
   ShardParticle rightP;
 
+  boolean lock;
+
   int imageWidth=150;
   int imageHeight=262;
   float angle;
@@ -92,7 +94,7 @@ class Scene_ripPaper extends TSSceneBase {
   void onStart() {
     println("CelineStory::Scene_ripPaper::onStart");
 
-
+    lock = false;
     angle=0;
     angle1=0;
     //to lerp distance when halves are thrown away
@@ -121,7 +123,9 @@ class Scene_ripPaper extends TSSceneBase {
     //draw the easel behind the 2 halves of the image
 
 
-
+    float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
+    
+    
     pushMatrix();
     image(easel, picturePos.x- (easel.width*0.85), picturePos.y-(easel.height*0.66));
     popMatrix();
@@ -148,7 +152,7 @@ class Scene_ripPaper extends TSSceneBase {
     imageMode(CORNER);
 
 
-    player.play();
+
     ///get the angle between hand and elbow
     leftHand.sub(leftElbow);
     leftHand.normalize();
@@ -221,8 +225,10 @@ class Scene_ripPaper extends TSSceneBase {
     }
     //if we are flying away then...
     else {
-
-
+      if (!lock) {
+        player.play();
+        lock=true;
+      }
       //RIGHT HALF
       pushMatrix();
       //get the dot and cross products
@@ -286,6 +292,9 @@ class Scene_fade_in_colour extends TSSceneBase {
   int imageWidth=150;
   int imageHeight=262;
   float angle;
+  MSAAudioPlayer msaPlayer;
+  MSAAudioPlayer msaPlayer1;
+
   Scene_fade_in_colour() {
     sceneName = "Scene3 FADE IN COLOUR";
     //println(storyName + "::" + sceneName + "::onStart");
@@ -301,12 +310,12 @@ class Scene_fade_in_colour extends TSSceneBase {
 
     angle=0;
 
-    player = minim.loadFile("celine/projectors.mp3");
-    player.loop();
+    msaPlayer = new MSAAudioPlayer("celine/projectors.mp3");
+    msaPlayer.loop();
 
     //player1.close();
-    player1 = minim.loadFile("celine/phonetones.mp3");
-    player1.loop();
+    msaPlayer1 =new MSAAudioPlayer("celine/phonetones.mp3");
+    msaPlayer1.loop();
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -353,27 +362,19 @@ class Scene_fade_in_colour extends TSSceneBase {
 
     popStyle();
 
-    float volume1 = map(distBetweenHands, 0, maxDist, -80.0, -13.9794);
-    float volume2 = map(distBetweenHands, 0, maxDist, -13.9794, -80.0);
-    volume1=constrain(volume1, -80.0, -13.9794);
-    volume2=constrain(volume2, -80.0, -13.9794);
-    player.setGain(volume1);
-    player1.setGain(volume2);
+    float volume1 = map(distBetweenHands, 0, maxDist, 0.0, 1.0);
+    float volume2 = map(distBetweenHands, 0, maxDist, 0.0, 1.0);
+    volume1=constrain(volume1, 0.0, 1.0);
+    volume2=constrain(volume2, 0.0, 1.0);
+    msaPlayer.setGain(volume1);
+    msaPlayer1.setGain(1.0f-volume2);
 
     println(volume1+" "+volume2);
     drawMaskedUser();
   }
   void onEnd() {
-    try {
-      player.close();
-    }
-    catch (Exception e) {
-    }
-    try {
-      player1.close();
-    }
-    catch (Exception e) {
-    }
+    msaPlayer.close();
+    msaPlayer1.close();
   }
 };
 
@@ -383,6 +384,7 @@ class Scene_shrink_grow_image extends TSSceneBase {
   PImage picture = loadImage("celine/skyscraper1.png");
   int imageWidth=150;
   int imageHeight=262;
+  MSAAudioPlayer msaPlayer;
 
   Scene_shrink_grow_image() {
     sceneName = "Scene4 SHRINK AND GROW IMAGE";
@@ -397,8 +399,8 @@ class Scene_shrink_grow_image extends TSSceneBase {
     println("CelineStory::Scene_shrink_grow_image::onStart");
 
     //player.close();
-    player = minim.loadFile("celine/zoom-loop.mp3");
-    player.loop();
+    msaPlayer = new MSAAudioPlayer("celine/zoom-loop.mp3");
+    msaPlayer.loop();
   }
 
   void onDraw(PImage userImage, TSSkeleton skeleton) {
@@ -410,6 +412,12 @@ class Scene_shrink_grow_image extends TSSceneBase {
 
     float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
     float maxDist= 300;
+
+    float volume1 = map(distBetweenHands, 0, maxDist, 0.0, 1.0);
+    volume1=constrain(volume1, 0.0, 1.0);
+    msaPlayer.setGain(volume1);
+
+
     //scale the image according to the mapped distance between hands
     float imageScale =map(distBetweenHands, 0, maxDist, 0.0, 1);
     imageScale = constrain(imageScale, 0.0, 1.0);
@@ -580,6 +588,7 @@ class Scene_flick_through_images extends TSSceneBase {
 
   int imageWidth = 400;
   int frameIndex=0;
+  int pFrameIndex=0;
   int topImageXShift=0;
   int timeOutThresh=30;
   int counter=timeOutThresh+1;
@@ -609,11 +618,14 @@ class Scene_flick_through_images extends TSSceneBase {
     for (int i=0;i<numImages;i++) {
       //images[i].resize(imageWidth, imageHeight);
     }
+
+    frameIndex=0;
+    pFrameIndex=0;
     topImageXShift=0;
-    //player.close();
+    counter=timeOutThresh+1;
+    boolean firstTime=true;
     //TODO replace with single hit thing when ed has made it
-    player = minim.loadFile("celine/whyisitinteresting.mp3");
-    player.loop();
+    player = minim.loadFile("celine/page-flick.mp3");
   }
   void onDraw(PImage userImage, TSSkeleton skeleton) {
 
@@ -638,7 +650,7 @@ class Scene_flick_through_images extends TSSceneBase {
     float thresh=0.01;
 
     //if the left hand is moving to the right and its a little while since we did this...
-    if (skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext).x >0+thresh && counter>timeOutThresh) {
+    if (-skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext).x >thresh && counter>timeOutThresh) {
       float numSteps= 5.0;
       float speed = refImage.width/numSteps;
       //don't move past the left edge of where we want the image to go
@@ -647,13 +659,20 @@ class Scene_flick_through_images extends TSSceneBase {
       }
       else {
         println("new frame");
+
+        player.rewind();
+        player.play();
+
         frameIndex++;
         topImageXShift=0;
         counter=0;
       }
     }
     counter++;
-
+    if (pFrameIndex!=frameIndex &&frameIndex==0) {
+      //      player.play();
+    }
+    pFrameIndex=frameIndex;
     if (frameIndex>=images.length) {
       // frameIndex=0; //
       frameIndex=images.length-1;
