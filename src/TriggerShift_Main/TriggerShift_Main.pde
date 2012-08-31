@@ -128,6 +128,7 @@ void setStory(int i) {
 }
 
 void nextStory() {
+  println("nextStory");
   currentStoryIndex++;
   if(currentStoryIndex>5) currentStoryIndex = 1;
   setStory(currentStoryIndex);
@@ -135,7 +136,7 @@ void nextStory() {
 
 //----------------------------------
 void setupStories() {
-  setStory(0);  // use keyboard 0-5 to choose story
+  setStory(0);//useInstallationMode ? 1 : 0);  // use keyboard 0-5 to choose story
 }
 
 //----------------------------------

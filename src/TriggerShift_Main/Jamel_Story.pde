@@ -23,11 +23,11 @@ class JamelStory extends TSStoryBase {
     addScene(new Scene3());
     addScene(new Scene4());
     //    addScene(new Scene5());
-    addScene(new Scene6());
-    addScene(new Scene7());
-    addScene(new Scene8());
+    if(useInstallationMode == false) addScene(new Scene6());
+    if(useInstallationMode == false) addScene(new Scene7());
+    if(useInstallationMode == false) addScene(new Scene8());
     //    addScene(new Scene9());
-    addScene(new Scene10());
+    if(useInstallationMode == false) addScene(new Scene10());
     addScene(new Scene11());
 
   }
@@ -232,8 +232,6 @@ class JamelStory extends TSStoryBase {
           ellipse(p2.x, p2.y, 10, 10);
         }
         popStyle();
-        
-        if(useInstallationMode && getElapsedSeconds()>20) nextScene();
       }
 
       //      if (getHighestHandVelocity().mag() > 0.1) {
@@ -321,8 +319,7 @@ class JamelStory extends TSStoryBase {
       if (newt < 0.01) doInteraction = true;
 
       if (tramp.fillAmount > 0.99) {
-        doInteraction = false;
-        nextScene();
+        if(useInstallationMode == false) doInteraction = false;
       }
       if (doInteraction) tramp.fillAmount += (newt - tramp.fillAmount) * 0.5;
       //      else tramp.fillAmount = 0;
@@ -403,6 +400,7 @@ class JamelStory extends TSStoryBase {
   class Scene4 extends TSSceneBase {
     boolean throwCats;
     boolean catchCats;
+    float throwCatsMillis  = 0;
 
     Scene4() {
       sceneName = "Scene4 CATS";
@@ -448,6 +446,7 @@ class JamelStory extends TSStoryBase {
       if (throwCats == false && catchCats == true && getLeftHand().y < getHead().y && getRightHand().y < getHead().y) {
         throwCats = true;
         audioCatAngry.play(0);
+        throwCatsMillis = millis();
       } 
 
       pushStyle();
@@ -461,6 +460,7 @@ class JamelStory extends TSStoryBase {
             diff = PVector.sub(t.currentPos, t.cat.pos);
             diff.mult(catSpeedUp);
             t.cat.pos.add(diff);
+            if(useInstallationMode && millis() - throwCatsMillis > 3000) onStart();
           } 
           else {
             // find closest hand

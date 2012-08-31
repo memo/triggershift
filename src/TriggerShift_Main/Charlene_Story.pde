@@ -4,22 +4,29 @@ class CharleneStory extends TSStoryBase {
   CharleneStory(PApplet ref) {
     storyName = "CharleneStory";
     println(storyName + "::" + storyName);
-    addScene(new Scene_flickBook());
 
-    addScene(new Scene_clock_hands());
-    addScene(new Scene_throw_coffee(ref));
-    addScene(new Scene_mortar_board_on_head());
-    addScene(new Scene_zoom_from_space());
-    addScene(new Scene_vote_in_box());
-    addScene(new Scene_power_hands());
-    addScene(new Scene_spin_right_wrong());
-    addScene(new Scene_shatter_image());
-    addScene(new Scene_drop_set());
+//    if (useInstallationMode) {
+//
+//      addScene(new Scene_power_hands());
+//    }
+//
+//    else {
+      addScene(new Scene_flickBook());
 
+      addScene(new Scene_clock_hands());
+      addScene(new Scene_throw_coffee(ref));
+      addScene(new Scene_mortar_board_on_head());
+      addScene(new Scene_zoom_from_space());
+      addScene(new Scene_vote_in_box());
+      addScene(new Scene_power_hands());
+      addScene(new Scene_spin_right_wrong());
+      addScene(new Scene_shatter_image());
+      addScene(new Scene_drop_set());
+//    }
     storyPlayer = minim.loadFile("charlene/charlene-melody.mp3");
     storyPlayer.loop();
   }
-}
+
 // SCENE 1
 class Scene_flickBook extends TSSceneBase {
   int numPageCells=8;
@@ -257,7 +264,7 @@ class Scene_throw_coffee extends TSSceneBase {
     //turn the particles into words
     //ellipse(leftHand.x, leftHand.y, 20, 20);
 
-    image(mug, leftHand.x-(0.7*imageWidth), leftHand.y-(0.7*imageHeight),imageWidth, imageHeight);
+    image(mug, leftHand.x-(0.7*imageWidth), leftHand.y-(0.7*imageHeight), imageWidth, imageHeight);
 
     popMatrix();
     popStyle();
@@ -583,6 +590,7 @@ class Scene_power_hands extends TSSceneBase {
     }
     popMatrix();
     popStyle();
+
   }
   void onEnd() {
     msaPlayer.close();
@@ -637,8 +645,8 @@ class Scene_spin_right_wrong extends TSSceneBase {
     //rect(0, 0, imageWidth, imageHeight);
     translate(0, 0, -0.7);
     float diff = pAngle * angle;
-    
-    
+
+
     if (diff<0) {
       player.rewind();
       player.play();
@@ -838,4 +846,4 @@ class Scene_drop_set extends TSSceneBase {
     }
   }
 }
-
+}

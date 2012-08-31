@@ -59,7 +59,7 @@ class TSStoryBase {
       // reached end, do something
       println(storyName + "::setSceneIndex: reached end");
       reachedEnd = true;
-      if(useInstallationMode) nextScene();
+      if(useInstallationMode) nextStory();
       return;
     } else if(i<0) {
       println(storyName + "::setSceneIndex: reached start");
@@ -111,7 +111,7 @@ class TSStoryBase {
 
     // draw current scene
     currentScene.onDraw(userImage, skeleton);
-    if(useInstallationMode && currentScene.getElapsedSeconds() > 30) nextScene();
+    if(useInstallationMode && currentScene.getElapsedSeconds() > 20) nextScene();
   }
 };
 
