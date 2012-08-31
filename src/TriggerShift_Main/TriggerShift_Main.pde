@@ -210,13 +210,13 @@ void draw() {
 //  transform2D.targetCenter = new PVector(videoPosX, videoPosY);
 //  transform2D.update();
 
-  currentStory.draw();
+//  currentStory.draw();
 
 //  if (openNIContext != null) {
 //    if (doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
 //    if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
 //    if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
-    if (doDrawSkeletons) skeletonManager.draw2d();
+//    if (doDrawSkeletons) skeletonManager.draw2d();
 //  }
 
   if (doShowGUI) cp5.draw();
