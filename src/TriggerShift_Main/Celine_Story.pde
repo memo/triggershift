@@ -233,8 +233,8 @@ class CelineStory extends TSStoryBase {
 
       pushStyle();
 
-      PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
-      PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+      PVector rightHand = getRightHand();// skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
+      PVector leftHand = getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
       PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
 
       //get the distance between hands
@@ -316,8 +316,8 @@ class CelineStory extends TSStoryBase {
 
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       //imageMode(CORNER);
-      PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
-      PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+      PVector rightHand = getRightHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
+      PVector leftHand = getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
       PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.3, 0.65, 0));
       //PVector easelPos=transform2D.getWorldCoordsForInputNorm(new PVector(0.2, 0.5, 0));
 
@@ -389,7 +389,7 @@ class CelineStory extends TSStoryBase {
     }
 
     void onDraw(PImage userImage, TSSkeleton skeleton) {
-      PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+      PVector leftHand = getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
 
       int x=0;
       int y=0;
@@ -541,7 +541,7 @@ class CelineStory extends TSStoryBase {
     }
     void onDraw(PImage userImage, TSSkeleton skeleton) {
 
-      PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+      PVector leftHand = getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
       PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
 
       image(images[frameIndex], picturePos.x, picturePos.y);
@@ -562,7 +562,7 @@ class CelineStory extends TSStoryBase {
       float thresh=0.01;
 
       //if the left hand is moving to the right and its a little while since we did this...
-      if (-skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext).x >thresh && counter>timeOutThresh) {
+      if (-getRightHandVelocity().x >thresh && counter>timeOutThresh) {
         float numSteps= 5.0;
         float speed = refImage.width/numSteps;
         //don't move past the left edge of where we want the image to go

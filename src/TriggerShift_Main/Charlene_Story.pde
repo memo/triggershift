@@ -65,7 +65,7 @@ class CharleneStory extends TSStoryBase {
       float thresh=0.01;
       //TODO if (frameIndex==0) player.play();
       //if the left hand is moving to the right increment the page index
-      if (-skeleton.getJointVelocity(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext).x >0+thresh) {
+      if (-getRightHandVelocity().x >0+thresh) {
         frameIndex++;
       }
       if (frameIndex>=book.length) {
@@ -485,7 +485,7 @@ class CharleneStory extends TSStoryBase {
         player.play();
       }
       drawMaskedUser();
-      PVector leftHand= skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+      PVector leftHand= getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
       PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.01, 0.5, 0));
 
       PVector centreOfVote= new PVector(leftHand.x - (0.5*vote.width), leftHand.y   );
@@ -557,8 +557,8 @@ class CharleneStory extends TSStoryBase {
       drawMaskedUser();
       pushStyle();
       pushMatrix();
-      PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
-      PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
+      PVector leftHand = getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+      PVector rightHand = getRightHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
       //add some pulsing glow
       tint(255, 100+alpha);
 
@@ -626,8 +626,8 @@ class CharleneStory extends TSStoryBase {
     void onDraw(PImage userImage, TSSkeleton skeleton) {
       pushStyle();
       pushMatrix();
-      PVector leftHand = skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_HAND);
-      PVector leftShoulder = skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_SHOULDER);
+      PVector leftHand = getLeftHand();//skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_HAND);
+      PVector leftShoulder = getLeftShoulder();//skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_SHOULDER);
       PVector picturePos=transform2D.getWorldCoordsForInputNorm(new PVector(0.2, 0.2, 0));
       //get the angle between the left shoulder and the left hand as if looking down from above ie at the x z plane
       float angle = atan2( leftShoulder.z- leftHand.z, leftShoulder.x- leftHand.x);
@@ -731,7 +731,7 @@ class CharleneStory extends TSStoryBase {
       if (handOver) {
         player.play();
       }
-      PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+      PVector leftHand = getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
       if (leftHand.x>picturePos.x && leftHand.x<picturePos.x+imageWidth && leftHand.y>picturePos.y && leftHand.y<picturePos.y+imageHeight) {
         handOver=true;
       }
@@ -802,11 +802,11 @@ class CharleneStory extends TSStoryBase {
       pushMatrix();
       imageMode(CENTER);
 
-      PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
-      PVector rightHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
-      PVector head = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
+      PVector leftHand = getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+      PVector rightHand = getRightHand();// skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HAND, transform2D, openNIContext);
+      PVector head = getHead();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
       //SKEL_WAIST is not working! 
-      PVector waist = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HIP, transform2D, openNIContext);
+      PVector waist = getHip();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_RIGHT_HIP, transform2D, openNIContext);
 
       float maxRange = waist.y-head.y;
       //if both arms go above the head start linking the image pos to hands

@@ -14,7 +14,7 @@ boolean useOpenNI = false;
 
 // SET THIS TO TRUE OR FALSE
 // IN INSTALLATION MODE, AUTOADVANCE, AND DISABLE SOME SCENES 
-boolean useInstallationMode = true;
+boolean useInstallationMode = false;
 
 
 // params
