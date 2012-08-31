@@ -289,11 +289,11 @@ void keyPressed() {
    nextStory();
    break;
 
-  case 'c': 
-    doDrawKinectRGB ^= true; 
-    break;
   case 's': 
     doDrawSkeletons ^= true; 
+    break;
+  case 'c': 
+    doDrawKinectRGB ^= true; 
     break;
   case 'd': 
     doDrawDebugInfo ^= true; 
