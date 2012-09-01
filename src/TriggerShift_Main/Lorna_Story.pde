@@ -1,7 +1,7 @@
 class LornaStory extends TSStoryBase {
   //TODO paper mens start audio on touch  TODO 
   LornaStory() {
-    storyName = "The Optimist";
+    storyName = "The Thinker";
     println(storyName + "::" + storyName);
 
     //    if (useInstallationMode) {

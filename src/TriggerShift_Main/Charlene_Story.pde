@@ -2,7 +2,7 @@ class CharleneStory extends TSStoryBase {
   //TODO change scene names
   //TODO page flick
   CharleneStory(PApplet ref) {
-    storyName = "The Doubftul one";
+    storyName = "The Doubter";
     println(storyName + "::" + storyName);
 
     //    if (useInstallationMode) {
