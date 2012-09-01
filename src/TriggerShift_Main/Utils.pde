@@ -143,7 +143,7 @@ float getMaxArmLength() {
 
 
 void drawMaskedUser() {
-  if (syphon != null) {
+  if (doDrawUsers && syphon != null) {
     syphon.update();
     if (syphon.img != null) image(syphon.img, 0, 0, width, height);
   }

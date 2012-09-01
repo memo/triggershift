@@ -62,6 +62,6 @@ class TSSkeletonManager {
 };
 
 
-TSSkeletonManager skeletonManager = new TSSkeletonManager(17);
+TSSkeletonManager skeletonManager = new TSSkeletonManager(10);
 
 

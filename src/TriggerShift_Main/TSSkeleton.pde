@@ -195,7 +195,7 @@ class TSSkeleton {
     PVector p = getJointPos2d(jointIndex);
     PVector v = getJointVel2d(jointIndex);
     PVector vs = getJointSmoothVel2d(jointIndex);
-    float a = confidence * 200 + 55;
+    float a = confidence * 255;
 
     strokeWeight(1);
     stroke(0, 0, 255, a);
@@ -211,7 +211,7 @@ class TSSkeleton {
   void drawLimb2d(int jointIndex1, int jointIndex2) {
     PVector p1 = getJointPos2d(jointIndex1);
     PVector p2 = getJointPos2d(jointIndex2);
-    stroke(255, 0, 0, confidence * 200 + 55);
+    stroke(255, 0, 0, confidence * 255);
     line(p1.x, p1.y, p2.x, p2.y);
   }
 
@@ -220,7 +220,7 @@ class TSSkeleton {
   void drawLimb3d(int jointIndex1, int jointIndex2) {
     PVector p1 = getJointPos3d(jointIndex1);
     PVector p2 = getJointPos3d(jointIndex2);
-    stroke(255, 0, 0, confidence * 200 + 55);
+    stroke(255, 0, 0, confidence * 255);
     line(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z);
   }
 
@@ -228,6 +228,8 @@ class TSSkeleton {
 
   //----------------------------------
   void drawVelocities(float velMult) {
+    if(!isAlive()) return;
+
     pushStyle();
     for (int i=0; i<joints.length; i++) {
       drawJointVelocity(i, velMult);
@@ -238,6 +240,8 @@ class TSSkeleton {
 
   //----------------------------------
   void draw2d() {
+    if(!isAlive()) return;
+    
     pushStyle();
     strokeWeight(3);
     drawLimb2d(SKEL_HEAD, SKEL_NECK);
@@ -266,6 +270,8 @@ class TSSkeleton {
 
   //----------------------------------
   void draw3d() {
+    if(!isAlive()) return;
+
     pushStyle();
     strokeWeight(3);
     drawLimb3d(SKEL_HEAD, SKEL_NECK);

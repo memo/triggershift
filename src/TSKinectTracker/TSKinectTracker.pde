@@ -82,7 +82,7 @@ void draw() {
 
     openNIContext.update();
     update(openNIContext);
-    masker.update(openNIContext, 0);
+    masker.update(openNIContext);
 
     switch(imageIndex) {
     case 2:
@@ -102,8 +102,8 @@ void draw() {
 
   if (img != null) {
     image(img, 0, 0);
-    if (useSyphon && syphonServer!= null) syphonServer.sendImage(img);
   }
+  if (useSyphon && syphonServer!= null) syphonServer.sendImage(masker.getImage());
 
   pushMatrix();
   scale(width, height, 1);

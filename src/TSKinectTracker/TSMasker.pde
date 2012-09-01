@@ -7,7 +7,28 @@ class TSMasker {
 
     //----------------------------------
   // update images form openni context
-  void update(SimpleOpenNI context, int maskBlurAmount) {
+  void update(SimpleOpenNI context) {
+    int w = context.rgbImage().width;
+    int h = context.rgbImage().height;
+
+    if (rgbImage == null || rgbImage.width != w || rgbImage.height != h) rgbImage = createImage(w, h, ARGB);
+
+    rgbImage.copy(context.rgbImage(), 0, 0, w, h, 0, 0, w, h);
+
+    int[] map = context.sceneMap();
+    rgbImage.loadPixels();
+    for (int i=0;i<map.length;i++) {
+      if (map[i] == 0) {
+        rgbImage.pixels[i] = color(0, 0, 0, 0);
+      }
+    }
+    rgbImage.updatePixels();
+  }
+
+
+
+  // update images form openni context
+  void updateOLD (SimpleOpenNI context, int maskBlurAmount) {
     int w = context.rgbImage().width;
     int h = context.rgbImage().height;
 

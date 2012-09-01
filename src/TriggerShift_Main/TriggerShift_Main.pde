@@ -10,7 +10,7 @@ import processing.opengl.*;
 import controlP5.*;
 
 // SET THIS TO TRUE OR FALSE
-boolean useOpenNI = false;
+//boolean useOpenNI = false;
 
 // SET THIS TO TRUE OR FALSE
 // IN INSTALLATION MODE, AUTOADVANCE, AND DISABLE SOME SCENES 
@@ -18,6 +18,7 @@ boolean useInstallationMode = false;
 
 
 // params
+boolean doDrawUsers = true;
 boolean doDrawKinectRGB = false;
 boolean doDrawKinectDepth = false;
 boolean doDrawKinectMasked = false;
@@ -295,6 +296,10 @@ void keyPressed() {
 
   case 'n':
     nextStory();
+    break;
+    
+  case 'u':
+    doDrawUsers ^= true;
     break;
 
   case 's': 

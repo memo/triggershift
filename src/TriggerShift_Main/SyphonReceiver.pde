@@ -2,8 +2,9 @@ import codeanticode.syphon.*;
 
 class TSSyphonReceiver {
   PImage img;
+  PImage img2;
   SyphonClient client;
-  int lastUpdateMillis;
+  int lastUpdateMillis = -1000;
 
   TSSyphonReceiver(PApplet a, String s) {
     client = new SyphonClient(a, s);
@@ -16,7 +17,12 @@ class TSSyphonReceiver {
       // a null argument, it will initialize the PImage
       // object with the correct size.
       //img = client.getImage(img, false); // load the pixels array with the updated image info (slow)
-      img = client.getImage(img, false); // does not load the pixels array (faster)
+      img = client.getImage(null, true);
+//      img.loadPixels();
+//      for(int i=0; i<img.width * img.height; i++) {
+//        if(img.pixels[i] == color(0, 0, 0)) img.pixels[i] = color(255, 0, 0, 0);
+//      }
+//      img.updatePixels();
     } else {
       if(millis() - lastUpdateMillis > 1000) {
         lastUpdateMillis = millis();
@@ -26,5 +32,5 @@ class TSSyphonReceiver {
   }
 };
 
-TSSyphonReceiver syphon = new TSSyphonReceiver(this, "TSKinectTracker");
+TSSyphonReceiver syphon = new TSSyphonReceiver(this, "Simple Server");
 
