@@ -188,6 +188,9 @@ void draw() {
   lastFrameMillis = millis();
 
   background(0, 0, 0);
+  
+  syphon.update();
+
 
   //drawMaskedUser();
 

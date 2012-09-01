@@ -38,6 +38,7 @@ class AudioReactiveStory extends TSStoryBase {
       pushMatrix();
       scale(width * 1.0/(audioIn.bufferSize()), height/200.0);
       stroke(0, 200, 255);
+      strokeWeight(5);
       for (int i = 0; i < audioIn.bufferSize() - 1; i++) {
         line(i, 50 + audioIn.left.get(i)*50, i+1, 50 + audioIn.left.get(i+1)*50);
         line(i, 150 + audioIn.right.get(i)*50, i+1, 150 + audioIn.right.get(i+1)*50);

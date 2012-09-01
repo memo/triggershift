@@ -148,36 +148,35 @@ float getMaxArmLength() {
 
 void drawMaskedUser() {
   if (doDrawUsers && syphon != null) {
-    syphon.update();
     if (syphon.img != null) image(syphon.img, 0, 0, width, height);
   }
   //  transform2D.drawImage(syphon.img);
 }
 
-void drawMaskedUserGrey() {
-  if (doDrawUsers && syphon != null) {
-    syphon.update();
-  if (syphon.imgMask != null) image(syphon.imgMask, 0, 0, width, height);
-  }
-  //  transform2D.drawImage(syphon.img);
-}
+//void drawMaskedUserGrey() {
+//  if (doDrawUsers && syphon != null) {
+//    syphon.update();
+//  if (syphon.imgMask != null) image(syphon.imgMask, 0, 0, width, height);
+//  }
+//  //  transform2D.drawImage(syphon.img);
+//}
 
-PImage getMaskedUser() {
-  PImage imageForReturn=null; 
-  if (doDrawUsers && syphon != null) {
-    syphon.update();
-    if (syphon.img != null) {
-      imageForReturn = syphon.img;
-    }
-  }
-  return imageForReturn;
-  //  transform2D.drawImage(syphon.img);
-}
+//PImage getMaskedUser() {
+//  PImage imageForReturn=null; 
+//  if (doDrawUsers && syphon != null) {
+////    syphon.update();
+//    if (syphon.img != null) {
+//      imageForReturn = syphon.img;
+//    }
+//  }
+//  return imageForReturn;
+//  //  transform2D.drawImage(syphon.img);
+//}
 
-void drawUserDepthPlane() {
-  drawMaskedUser();
-  //  transform2D.drawImage( masker.getMask() );
-}
+//void drawUserDepthPlane() {
+//  drawMaskedUser();
+//  //  transform2D.drawImage( masker.getMask() );
+//}
 
 float getWithVariance(float f, float variance) {
   return random(f - variance, f + variance);

@@ -781,10 +781,18 @@ class LornaStory extends TSStoryBase {
       }
 
       if (!isShadow) {
+        pushStyle();
+        tint(255);
         drawMaskedUser();
+        popStyle();
       }
       else {
-        drawMaskedUserGrey();
+        background(120);
+        pushStyle();
+        tint(0);
+        drawMaskedUser();
+        popStyle();
+//        drawMaskedUserGrey();
         //drawUserDepthPlane();
         /*if(getMaskedUser()!=null){
          maskImage = getMaskedUser();
