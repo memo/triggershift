@@ -310,7 +310,9 @@ class CharleneStory extends TSStoryBase {
       lock=false;
     }
     void onDraw() {
-     // drawMaskedUser();
+      drawMaskedUser();
+      pushMatrix();
+      pushStyle();
       PVector endPos= getHead();
 
       float currentX = lerp(startPos.x, endPos.x, inc);
@@ -331,6 +333,8 @@ class CharleneStory extends TSStoryBase {
       if (inc<1.0) {
         inc+=speed;
       }
+      popMatrix();
+      popStyle();
     }
     void onEnd() {
       try {
@@ -353,7 +357,7 @@ class CharleneStory extends TSStoryBase {
     int imageHeight;
     //TODO add volume
     MSAAudioPlayer msaPlayer;
-
+    float scale;
     Scene_zoom_from_space() {
       sceneName="scene5 ZOOM FROM SPACE";
 
@@ -372,21 +376,24 @@ class CharleneStory extends TSStoryBase {
       blended.resize(imageWidth, imageHeight);
       msaPlayer = new MSAAudioPlayer("charlene/zoom.mp3");
       msaPlayer.loop();
+      scale=0;
     }
 
     void onDraw() {
       pushStyle();
+      pushMatrix();
       PVector rightHand = getRightHand();
       PVector leftHand = getLeftHand();
       PVector picturePos = new PVector(0.1 * width, 0.1 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
 
       float distBetweenHands = dist( rightHand.x, rightHand.y, leftHand.x, leftHand.y);
+      scale+= (distBetweenHands - scale )*0.1;
       float maxDist= 300;
       //scale the image according to the mapped distance between hands
-      float imageScale =  map(distBetweenHands, 0, maxDist, 0.0, 1);
+      float imageScale =  map(scale, 0, maxDist, 0.0, 1);
       imageScale=constrain(imageScale, 0.01, 0.96);
 
-      float volume = map(distBetweenHands, 0, getMaxArmLength()*2, 0.0, 1.0);
+      float volume = map(scale, 0, getMaxArmLength()*2, 0.0, 1.0);
       volume=constrain(volume, 0.0, 1.0);
       // player.setGain(volume);
       //get the height in proportion so we don't squash the image
@@ -403,6 +410,8 @@ class CharleneStory extends TSStoryBase {
        }*/
       imageMode(CENTER);
       image(composite, width/2, height/2, width*volume*3, height*volume*3);
+      popMatrix();
+      imageMode(CORNER);
       drawMaskedUser();
       popStyle();
     }
@@ -645,7 +654,7 @@ class CharleneStory extends TSStoryBase {
       translate(0, 0, -0.7);
       float diff = pAngle * angle;
 
-      
+
       if (diff<0) {
         player.rewind();
         player.play();
@@ -664,9 +673,8 @@ class CharleneStory extends TSStoryBase {
       //if(angle>(0.5*PI) && angle < (1.5*PI) )  image(wrong, 0, 0);
       popMatrix();
       popMatrix();
-     // drawMaskedUser();
-      textFont(debugFont, 48);
-      text(str(angle), width-100,100);
+      // drawMaskedUser();
+     
       popStyle();
     }
     void onEnd() {
@@ -752,7 +760,7 @@ class CharleneStory extends TSStoryBase {
       else {
         image(scream, picturePos.x, picturePos.y);
       }
-     // drawMaskedUser();
+      drawMaskedUser();
     }
     void onEnd() {
       try {
@@ -792,12 +800,10 @@ class CharleneStory extends TSStoryBase {
       //TODO add gotitwrong on drop
       player.play();
       player1 = minim.loadFile("charlene/gotitwrong.mp3");
-      //TODO add gotitwrong on drop
-
       lock=false;
     }
     void onDraw() {
-    //  drawMaskedUser();
+      drawMaskedUser();
       pushStyle();
       pushMatrix();
       imageMode(CENTER);
@@ -846,3 +852,4 @@ class CharleneStory extends TSStoryBase {
     }
   }
 }
+

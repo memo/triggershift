@@ -745,9 +745,7 @@ class LornaStory extends TSStoryBase {
 
   class Scene_shadow extends TSSceneBase {
 
-    PImage bubbles = loadImage("lorna/thoughtbubble.png");
-    boolean dreamStarted;
-
+   
     int imageWidth=300;
     int imageHeight=200;
     float wScale=1.0;
@@ -755,10 +753,10 @@ class LornaStory extends TSStoryBase {
     float alpha;
     boolean isShadow;
     boolean lock;
+    PImage maskImage = createImage(width,height,RGB);
     Scene_shadow() {
       sceneName = "Scene7 shadow";
       //println(storyName + "::" + sceneName);
-      bubbles.resize(imageWidth, imageHeight);
     }
 
     //----------------
@@ -786,18 +784,33 @@ class LornaStory extends TSStoryBase {
         drawMaskedUser();
       }
       else {
+        drawMaskedUserGrey();
+        //drawUserDepthPlane();
+        /*if(getMaskedUser()!=null){
+         maskImage = getMaskedUser();
+        }
+        maskImage.loadPixels();
+        
+        for(int i=0;i<maskImage.pixels.length;i++){
+          
+         color aColor=  maskImage.pixels[i];
+         if(brightness(aColor)==0){
+           
+         }
+         else{
+           maskImage.pixels[i] = color(255);
+         }
+        }
+        maskImage.updatePixels();
+        image(maskImage,0,0,width,height);*/
 
-        drawUserDepthPlane();
-        fill(0);
-        //tint(0, alpha);
-        //rect(0,0,width,height);
-        alpha+=2;
       }
       pushStyle();
       pushMatrix();
 
       popMatrix();
       popStyle();
+     
     }
     void onEnd() {
       player.close();

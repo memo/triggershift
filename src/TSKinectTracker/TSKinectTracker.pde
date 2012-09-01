@@ -167,7 +167,8 @@ void update(SimpleOpenNI context) {
 
     //for each user
     for (int i=0;i<userList.length;i++) {
-      int userIndex = userList[i];
+      int userIndex = userList[i] % 10;
+      println("updating user : " + userIndex);
       PVector p = new PVector();
       float c = context.getJointPositionSkeleton(userIndex, SimpleOpenNI.SKEL_HEAD, p);
       sendConfidenceMessage(userIndex, c);
