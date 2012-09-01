@@ -2,7 +2,7 @@ import codeanticode.syphon.*;
 
 class TSSyphonReceiver {
   PImage img;
-  PImage img2;
+  PImage imgReceived;
   SyphonClient client;
   int lastUpdateMillis = -1000;
 
@@ -17,12 +17,20 @@ class TSSyphonReceiver {
       // a null argument, it will initialize the PImage
       // object with the correct size.
       //img = client.getImage(img, false); // load the pixels array with the updated image info (slow)
-      img = client.getImage(img, false);
-//      img.loadPixels();
-//      for(int i=0; i<img.width * img.height; i++) {
-//        if(img.pixels[i] == color(0, 0, 0)) img.pixels[i] = color(255, 0, 0, 0);
-//      }
-//      img.updatePixels();
+      imgReceived = client.getImage(imgReceived, true);
+      img = imgReceived;
+      if(img == null || img.width != imgReceived.width || img.height != imgReceived.height) {
+        img = createImage(imgReceived.width, imgReceived.height, ARGB);
+      }
+      
+      // HACK TO MAKE IT TRANSPARENT BECAUSE SYPHON IN PROCESSING DOESN"T RESPECT ALPHA
+      img.loadPixels();
+      imgReceived.loadPixels();
+      for(int i=0; i<img.width * img.height; i++) {
+        if(imgReceived.pixels[i] == color(0, 0, 0)) img.pixels[i] = color(0, 0, 0, 0);
+//          img.pixels[i] = imgReceived.pixels[i];
+      }
+      img.updatePixels();
     } else {
       if(millis() - lastUpdateMillis > 1000) {
         lastUpdateMillis = millis();
