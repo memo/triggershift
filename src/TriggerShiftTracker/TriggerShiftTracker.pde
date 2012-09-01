@@ -1,6 +1,8 @@
 import oscP5.*;
 import netP5.*;
 import SimpleOpenNI.*;
+import codeanticode.syphon.*;
+
 
 OscP5 oscP5;
 NetAddress myRemoteLocation;
@@ -8,58 +10,109 @@ NetAddress myRemoteLocation;
 SimpleOpenNI  openNIContext = null;
 int lastUserId;
 int userCount;
-int numJoints = 24; 
+//int numJoints = 24; 
 int max_users=17;
 
-int imageIndex;
+int imageIndex=1;
 
 TSJoint[][] tsjoints;
 
+boolean useSyphon = true;
+
+SyphonServer syphonServer;
+
+
 void setup() {
-  size(1280, 768, P3D);
+  size(640, 480, P3D);
 
   oscP5 = new OscP5(this, 1000);
   myRemoteLocation = new NetAddress("127.0.0.1", 7000);
   setupOpenNI();
 
+
   tsjoints= new TSJoint[max_users][numJoints];
   //set all initial previous joint positions and velocities to 0
   for (int i=0;i<max_users;i++) {
-    for (int j=0;j<tsjoints.length;j++) {
+    for (int j=0;j<tsjoints[i].length;j++) {
       tsjoints[i][j]=new TSJoint(20);
     }
   }
+
+  syphonServer = new SyphonServer(this, "TriggerShiftTracker");
+
+  hint(DISABLE_DEPTH_TEST);
+
+  println("static int SKEL_HEAD = " + SimpleOpenNI.SKEL_HEAD + ";");
+  println("static int SKEL_LEFT_ANKLE = " + SimpleOpenNI.SKEL_LEFT_ANKLE + ";"); 
+  println("static int SKEL_LEFT_COLLAR = " + SimpleOpenNI.SKEL_LEFT_COLLAR + ";"); 
+  println("static int SKEL_LEFT_ELBOW  = " + SimpleOpenNI.SKEL_LEFT_ELBOW + ";");
+  println("static int SKEL_LEFT_FINGERTIP = " + SimpleOpenNI.SKEL_LEFT_FINGERTIP + ";"); 
+  println("static int SKEL_LEFT_FOOT = " + SimpleOpenNI.SKEL_LEFT_FOOT + ";"); 
+  println("static int SKEL_LEFT_HAND = " + SimpleOpenNI.SKEL_LEFT_HAND + ";"); 
+  println("static int SKEL_LEFT_HIP = " + SimpleOpenNI.SKEL_LEFT_HIP + ";"); 
+  println("static int SKEL_LEFT_KNEE = " + SimpleOpenNI.SKEL_LEFT_KNEE + ";"); 
+  println("static int SKEL_LEFT_SHOULDER = " + SimpleOpenNI.SKEL_LEFT_SHOULDER + ";"); 
+  println("static int SKEL_LEFT_WRIST = " + SimpleOpenNI.SKEL_LEFT_WRIST + ";");
+  println("static int SKEL_NECK  = " + SimpleOpenNI.SKEL_NECK + ";");
+  println("static int SKEL_RIGHT_ANKLE = " + SimpleOpenNI.SKEL_RIGHT_ANKLE + ";"); 
+  println("static int SKEL_RIGHT_COLLAR  = " + SimpleOpenNI.SKEL_RIGHT_COLLAR + ";");
+  println("static int SKEL_RIGHT_ELBOW  = " + SimpleOpenNI.SKEL_RIGHT_ELBOW + ";");
+  println("static int SKEL_RIGHT_FINGERTIP = " + SimpleOpenNI.SKEL_RIGHT_FINGERTIP + ";"); 
+  println("static int SKEL_RIGHT_FOOT  = " + SimpleOpenNI.SKEL_RIGHT_FOOT + ";");
+  println("static int SKEL_RIGHT_HAND  = " + SimpleOpenNI.SKEL_RIGHT_HAND + ";");
+  println("static int SKEL_RIGHT_HIP  = " + SimpleOpenNI.SKEL_RIGHT_HIP + ";");
+  println("static int SKEL_RIGHT_KNEE  = " + SimpleOpenNI.SKEL_RIGHT_KNEE + ";");
+  println("static int SKEL_RIGHT_SHOULDER = " + SimpleOpenNI.SKEL_RIGHT_SHOULDER + ";"); 
+  println("static int SKEL_RIGHT_WRIST  = " + SimpleOpenNI.SKEL_RIGHT_WRIST + ";");
+  println("static int SKEL_TORSO  = " + SimpleOpenNI.SKEL_TORSO + ";");
+  println("static int SKEL_WAIST  = " + SimpleOpenNI.SKEL_WAIST + ";");
 }
+
+
 
 void draw() {
-  if(openNIContext == null) return;
-  
-  update(openNIContext);
-  
-  masker.update(openNIContext, 0);
-  
-  
+  background(0);
+//  pushMatrix();
+//  pushStyle();
+//  fill(255, 0, 0);
+//  translate(width/2, height/2);
+//  rotateX(frameCount * 0.01);
+//  rotateY(frameCount * 0.01);  
+//  box(150);
+//  popStyle();
+//  popMatrix();
 
   PImage img = null;
-  switch(imageIndex) {
-  case 1:
-    img = openNIContext.rgbImage();
-    break;
-  case 2:
-    img = openNIContext.depthImage();
-    break;
-  case 3:
-    img = masker.getImage();
-    break;
-  case 4:
-    img = masker.getMask();
-  }
+  if (openNIContext != null) {
+
+    openNIContext.update();
+    update(openNIContext);
+    masker.update(openNIContext, 0);
+
+    switch(imageIndex) {
+    case 2:
+      img = openNIContext.depthImage();
+      break;
+    case 3:
+      img = masker.getImage();
+      break;
+    case 4:
+      img = masker.getMask();
+      break;
+    default:
+      img = openNIContext.rgbImage();
+    }
+  } 
+
 
   if (img != null) {
-    image(img, 0, 0, width, height);
-    syphonSender.sendImage(img);
+    image(img, 0, 0);
+    if (useSyphon && syphonServer!= null) syphonServer.sendImage(img);
   }
+
+  skeletonManager.draw2d();
 }
+
 
 
 void keyPressed() {
@@ -75,6 +128,10 @@ void keyPressed() {
     break;
   case '4':
     imageIndex = 4;
+    break;
+
+  case 's':
+    useSyphon ^= true;
     break;
   }
 }
@@ -100,26 +157,35 @@ void update(SimpleOpenNI context) {
 
     //for each user
     for (int i=0;i<userList.length;i++) {
+      int userIndex = userList[i];
       PVector p = new PVector();
-      float c = context.getJointPositionSkeleton(userList[i], SimpleOpenNI.SKEL_HEAD, p);
-      sendConfidenceMessage(userList[i], c);
+      float c = context.getJointPositionSkeleton(userIndex, SimpleOpenNI.SKEL_HEAD, p);
+      sendConfidenceMessage(userIndex, c);
+      skeletonManager.skeletons[userIndex].setConfidence(c);
+
       //if there is a valid skeleton
-      if (context.isTrackingSkeleton(userList[i])) {
+      if (context.isTrackingSkeleton(userIndex)) {
         //for each joint on that skeleton
-        for (int j=0;j<tsjoints.length;j++) {
+        for (int j=0;j<tsjoints[i].length;j++) {
           PVector jointPos = new PVector();
           //get real world coords
-          context.getJointPositionSkeleton(userList[i], j, jointPos);
+          context.getJointPositionSkeleton(userIndex, j, jointPos);
           PVector jointPos_Proj = new PVector(); 
           //convert to screen coords
           context.convertRealWorldToProjective(jointPos, jointPos_Proj);
 
-          tsjoints[userList[i]][j].update(context, jointPos_Proj);
+          tsjoints[userIndex][j].update(context, jointPos_Proj);
 
-          sendPos2DMessage(userList[i], j, jointPos_Proj);
-          sendPos3DMessage(userList[i], j, jointPos);
-          sendVel2DMessage(userList[i], j, tsjoints[userList[i]][j].velocity);
-          sendSmoothVel2DMessage(userList[i], j, tsjoints[userList[i]][j].smoothedVelocity);
+
+          skeletonManager.skeletons[userIndex].setJointPos2d(j, jointPos_Proj);
+          skeletonManager.skeletons[userIndex].setJointPos3d(j, jointPos);
+          skeletonManager.skeletons[userIndex].setJointVel(j, tsjoints[userIndex][j].velocity);
+          skeletonManager.skeletons[userIndex].setJointSmoothVel(j, tsjoints[userIndex][j].smoothedVelocity);
+
+          sendPos2DMessage(userIndex, j, jointPos_Proj);
+          sendPos3DMessage(userIndex, j, jointPos);
+          sendVel2DMessage(userIndex, j, tsjoints[userIndex][j].velocity);
+          sendSmoothVel2DMessage(userIndex, j, tsjoints[userIndex][j].smoothedVelocity);
         }
       }
     }
@@ -128,20 +194,20 @@ void update(SimpleOpenNI context) {
 
 
 
-int findMostConfidentSkeleton(SimpleOpenNI context) {
-  int mostConfident = 0;
-  float maxConfidence = 0;
-  PVector p = new PVector();
-  int[] userList = context.getUsers();
-  for (int i=0; i<userList.length; i++) {
-    float c = context.getJointPositionSkeleton(userList[i], SimpleOpenNI.SKEL_HEAD, p);
-    if (c > maxConfidence) {
-      maxConfidence = c;
-      mostConfident = userList[i];
-    }
-  }
-  return mostConfident;
-}   
+//int findMostConfidentSkeleton(SimpleOpenNI context) {
+//  int mostConfident = 0;
+//  float maxConfidence = 0;
+//  PVector p = new PVector();
+//  int[] userList = context.getUsers();
+//  for (int i=0; i<userList.length; i++) {
+//    float c = context.getJointPositionSkeleton(userList[i], SimpleOpenNI.SKEL_HEAD, p);
+//    if (c > maxConfidence) {
+//      maxConfidence = c;
+//      mostConfident = userList[i];
+//    }
+//  }
+//  return mostConfident;
+//}   
 
 void sendConfidenceMessage(int userId, float confidence) {
   OscMessage myMessage = new OscMessage("/skeleton/"+str(userId)+"/confidence");

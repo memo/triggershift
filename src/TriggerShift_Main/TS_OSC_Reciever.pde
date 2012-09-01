@@ -22,7 +22,6 @@ class TS_OSC_Receiver {
       skeletonManager.skeletons[int(exploded[1])].setJointVel(int(exploded[3]), new PVector (theOscMessage.get(0).floatValue(), theOscMessage.get(1).floatValue()));
     }
     else if (exploded[exploded.length-1].equals("smoothvel2d") ) {
-      setJointSmoothVel
         skeletonManager.skeletons[int(exploded[1])].setJointSmoothVel(int(exploded[3]), new PVector (theOscMessage.get(0).floatValue(), theOscMessage.get(1).floatValue()));
     }
     else if (exploded[exploded.length-1].equals("confidence") ) {     

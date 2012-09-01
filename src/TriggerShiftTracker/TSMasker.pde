@@ -12,10 +12,10 @@ class TSMasker {
     int h = context.rgbImage().height;
 
     // init maskImage
-    if (maskImage == null || maskImage.width != w || maskImage.height != h) maskImage = createImage(w, h, ALPHA);
+    if (maskImage == null || maskImage.width != w || maskImage.height != h) maskImage = createImage(w, h, RGB);
 
     // init rgbImage
-    if (rgbImage == null || rgbImage.width != w || rgbImage.height != h) rgbImage = createImage(w, h, RGB);
+    if (rgbImage == null || rgbImage.width != w || rgbImage.height != h) rgbImage = createImage(w, h, ARGB);
 
     // get color image from context
     rgbImage.copy(context.rgbImage(), 0, 0, w, h, 0, 0, w, h);
@@ -25,10 +25,10 @@ class TSMasker {
     maskImage.loadPixels();
     for (int i=0;i<map.length;i++) {
       if (map[i] > 0) {
-        maskImage.pixels[i] = 255;
+        maskImage.pixels[i] = color(255);
       } 
       else {
-        maskImage.pixels[i] = 0;
+        maskImage.pixels[i] = color(0);
       }
     }
     maskImage.updatePixels();

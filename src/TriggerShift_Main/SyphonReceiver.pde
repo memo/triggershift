@@ -18,5 +18,5 @@ class TSSyphonReceiver {
     }
   }
 }
-TSSyphonReceiver syphon = new TSSyphonReceiver(this, "SendFrames");
+TSSyphonReceiver syphon = new TSSyphonReceiver(this, "TriggerShiftTracker");
 

@@ -188,6 +188,8 @@ void draw() {
   lastFrameMillis = millis();
 
   background(0, 0, 0);
+  
+  drawMaskedUser();
 
   // get kinect color image
 //  if (openNIContext != null) {
@@ -218,6 +220,8 @@ void draw() {
 //    if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
 //    if (doDrawSkeletons) skeletonManager.draw2d();
 //  }
+
+  skeletonManager.draw2d();
 
   if (doShowGUI) cp5.draw();
 
