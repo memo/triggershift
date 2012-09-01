@@ -223,14 +223,22 @@ class ManiStory extends TSStoryBase {
     }
 
     void draw() {
+      // loop all skeletons
       for (int i=0; i<skeletonManager.skeletons.length; i++) {
         TSSkeleton skeleton = skeletonManager.skeletons[i];
+
+        // is skeleton is alive
         if (skeleton.isAlive()) {
+
+          // loop joints (in this case, the hands)
           for (int j=0; j<SKEL_HANDS.length; j++) {
             TSSkeleton.Joint joint = skeleton.getJoint(SKEL_HANDS[j]);
-            if (p.pointIn(joint.pos2d)) {
-              p.rotVel *= 0.98;
-              p.rotVel += joint.smoothVel2d.y * (joint.pos2d.x > p.pos.x ? 1 : -1);
+
+            // if joint position is inside the 'p' graphic...
+            if (p.pointIn(joint.pos2d())) {
+              p.rotVel *= 0.98;  // slow down the wheel
+              float flipDir = joint.pos2d().x > p.pos.x ? 1 : -1;  // if joint is on right side, rotate clockwise; otherwise anticlockwise
+              p.rotVel += joint.smoothVel2d().y * flipDir;  // rotate based on upwards velocity of joint
             }
           } // loop joints
         } // if alive
@@ -289,26 +297,39 @@ class ManiStory extends TSStoryBase {
           audioBallBounce.play(0);
         }
 
-        // collide with hand
-        for (int i=0; i<2; i++) {
-          PVector handPos = getHand(i);
-          PVector handVel = getHandVelocity(i);
-          PVector diff = PVector.sub(p.pos, handPos);
-          float distance = diff.mag();
-          if (distance < p.radius) {
-            PVector normDiff = diff.get();
-            normDiff.normalize();
-            p.pos.add(PVector.mult(normDiff, p.radius-distance));
-            float speeddot = p.posVel.dot(normDiff);  // component of speed into hand
-            PVector veldot = PVector.mult(normDiff, speeddot);  // component of velocity into hand
-            PVector veltan = PVector.sub(p.posVel, veldot); // comopnent of velocty tangent to hand
-            veldot.mult(-bounce);  // flip velocity
-            p.posVel = PVector.add(veldot, veltan);
-            if (!audioBallCatch.isPlaying()) audioBallCatch.play(0);
+
+        // loop all skeletons
+        for (int i=0; i<skeletonManager.skeletons.length; i++) {
+          TSSkeleton skeleton = skeletonManager.skeletons[i];
+
+          // is skeleton is alive
+          if (skeleton.isAlive()) {
+
+            // loop joints (in this case, the hands)
+            for (int j=0; j<SKEL_HANDS_FEET_AND_HEAD.length; j++) {
+              TSSkeleton.Joint joint = skeleton.getJoint(SKEL_HANDS_FEET_AND_HEAD[j]);
+
+
+              // collide with hand
+              PVector handPos = joint.pos2d();
+              PVector handVel = joint.smoothVel2d();
+              PVector diff = PVector.sub(p.pos, handPos);
+              float distance = diff.mag();
+              if (distance < p.radius) {
+                PVector normDiff = diff.get();
+                normDiff.normalize();
+                p.pos.add(PVector.mult(normDiff, p.radius-distance));
+                float speeddot = p.posVel.dot(normDiff);  // component of speed into hand
+                PVector veldot = PVector.mult(normDiff, speeddot);  // component of velocity into hand
+                PVector veltan = PVector.sub(p.posVel, veldot); // comopnent of velocty tangent to hand
+                veldot.mult(-bounce);  // flip velocity
+                p.posVel = PVector.add(veldot, veltan);
+                if (!audioBallCatch.isPlaying()) audioBallCatch.play(0);
+              }
+            }
           }
         }
       }
-
       p.draw();
     }
   };
@@ -334,17 +355,31 @@ class ManiStory extends TSStoryBase {
     }
 
     void draw() {
-      PVector leftHand = getLeftHand();
       float w = units(120);
       float h = w * imgs[0].height / imgs[0].width;
-
       float topY = pos.y - h * 0.45;
       float bottomY = pos.y + h * 0.2;
-      if (leftHand.x < pos.x + w * 0.2 && leftHand.y > topY && leftHand.y < bottomY) {
-        int newLight = (int)round(map(leftHand.y, topY, bottomY, 0, 2));
-        if (newLight != currentLight) {
-          currentLight = newLight;
-          audioTraffic.playIndex(currentLight, 0);
+
+      // loop all skeletons
+      for (int i=0; i<skeletonManager.skeletons.length; i++) {
+        TSSkeleton skeleton = skeletonManager.skeletons[i];
+
+        // is skeleton is alive
+        if (skeleton.isAlive()) {
+
+          // loop joints (in this case, the hands)
+          for (int j=0; j<SKEL_HANDS.length; j++) {
+            TSSkeleton.Joint joint = skeleton.getJoint(SKEL_HANDS[j]);
+
+
+            if (joint.pos2d().x < pos.x + w * 0.2 && joint.pos2d().y > topY && joint.pos2d().y < bottomY) {
+              int newLight = (int)round(map(joint.pos2d().y, topY, bottomY, 0, 2));
+              if (newLight != currentLight) {
+                currentLight = newLight;
+                audioTraffic.playIndex(currentLight, 0);
+              }
+            }
+          }
         }
       }
 
@@ -405,13 +440,25 @@ class ManiStory extends TSStoryBase {
 
     void draw() {
       if (doCreate) {
-        for (int i=0; i<2; i++) {
-          if (random(1.0) < 0.5 && getHandVelocity(i).mag() > units(2)) {
-            particleSystem.startPos.base = getHand(i);
-            particleSystem.inheritVel.base = getHandVelocity(i);
-            particleSystem.add();
-            audioNotes.playRandomIndex();
-            audioNotes.randomGain();
+        // loop all skeletons
+        for (int i=0; i<skeletonManager.skeletons.length; i++) {
+          TSSkeleton skeleton = skeletonManager.skeletons[i];
+
+          // is skeleton is alive
+          if (skeleton.isAlive()) {
+
+            // loop joints (in this case, the hands)
+            for (int j=0; j<SKEL_HANDS.length; j++) {
+              TSSkeleton.Joint joint = skeleton.getJoint(SKEL_HANDS[j]);
+
+              if (random(1.0) < 0.5 && joint.vel2d().mag() > units(2)) {
+                particleSystem.startPos.base = joint.pos2d();
+                particleSystem.inheritVel.base = joint.vel2d();
+                particleSystem.add();
+                audioNotes.playRandomIndex();
+                audioNotes.randomGain();
+              }
+            }
           }
         }
       }
@@ -459,13 +506,25 @@ class ManiStory extends TSStoryBase {
     }
 
     void draw() {
-      for (int i=0; i<2; i++) {
-        if (random(1.0) < 0.5 && getHandVelocity(i).mag() > units(2)) {
-          particleSystem.startPos.base = getHand(i);
-          particleSystem.inheritVel.base = getHandVelocity(i);
-          particleSystem.add();
-          audioStars.playRandomIndex();
-          audioStars.randomGain();
+      // loop all skeletons
+      for (int i=0; i<skeletonManager.skeletons.length; i++) {
+        TSSkeleton skeleton = skeletonManager.skeletons[i];
+
+        // is skeleton is alive
+        if (skeleton.isAlive()) {
+
+          // loop joints (in this case, the hands)
+          for (int j=0; j<SKEL_HANDS.length; j++) {
+            TSSkeleton.Joint joint = skeleton.getJoint(SKEL_HANDS[j]);
+
+            if (random(1.0) < 0.5 && joint.vel2d().mag() > units(2)) {
+              particleSystem.startPos.base = joint.pos2d();
+              particleSystem.inheritVel.base = joint.vel2d();
+              particleSystem.add();
+              audioStars.playRandomIndex();
+              audioStars.randomGain();
+            }
+          }
         }
       }
 
@@ -562,11 +621,23 @@ class ManiStory extends TSStoryBase {
       cityGrey.draw();
       drawMaskedUser();
 
-      for (int i=0; i<2; i++) {
-        particleSystem.startPos.base = getHand(i);
-        particleSystem.startPos.base.y += units(20);
-        particleSystem.inheritVel.base = getHandVelocity(i);
-        particleSystem.add();
+      // loop all skeletons
+      for (int i=0; i<skeletonManager.skeletons.length; i++) {
+        TSSkeleton skeleton = skeletonManager.skeletons[i];
+
+        // is skeleton is alive
+        if (skeleton.isAlive()) {
+
+          // loop joints (in this case, the hands)
+          for (int j=0; j<SKEL_HANDS.length; j++) {
+            TSSkeleton.Joint joint = skeleton.getJoint(SKEL_HANDS[j]);
+
+            particleSystem.startPos.base = joint.pos2d();
+            particleSystem.startPos.base.y += units(20);
+            particleSystem.inheritVel.base = joint.vel2d();
+            particleSystem.add();
+          }
+        }
       }
 
       particleSystem.draw();
@@ -629,12 +700,25 @@ class ManiStory extends TSStoryBase {
       sky.draw();
       drawMaskedUser();
       cityColor.draw();
-      //      PVector leftHand = getLeftHand();
-      PVector rightHand = getRightHand();
-      if (random(1.0) < 0.5 && getRightHandVelocity().mag() > units(2)) {
-        flowers.add(new PVector(width * 0.95, rightHand.y));
-        audioFlowers.playRandomIndex();
-        audioFlowers.randomGain();
+
+      // loop all skeletons
+      for (int i=0; i<skeletonManager.skeletons.length; i++) {
+        TSSkeleton skeleton = skeletonManager.skeletons[i];
+
+        // is skeleton is alive
+        if (skeleton.isAlive()) {
+
+          // loop joints (in this case, the hands)
+          for (int j=0; j<SKEL_HANDS.length; j++) {
+            TSSkeleton.Joint joint = skeleton.getJoint(SKEL_HANDS[j]);
+
+            if (random(1.0) < 0.5 && joint.vel2d().mag() > units(2)) {
+              flowers.add(new PVector(width * 0.95, joint.pos2d().y));
+              audioFlowers.playRandomIndex();
+              audioFlowers.randomGain();
+            }
+          }
+        }
       }
       flowers.draw();
     }
