@@ -15,12 +15,13 @@ int max_users=17;
 
 int imageIndex=1;
 
-TSJoint[][] tsjoints;
+PointSmoother[][] tsjoints;
 
 boolean useSyphon = true;
 
 SyphonServer syphonServer;
 
+PFont smallFont;
 
 void setup() {
   size(640, 480, P3D);
@@ -30,11 +31,11 @@ void setup() {
   setupOpenNI();
 
 
-  tsjoints= new TSJoint[max_users][numJoints];
+  tsjoints= new PointSmoother[max_users][numJoints+1];
   //set all initial previous joint positions and velocities to 0
   for (int i=0;i<max_users;i++) {
     for (int j=0;j<tsjoints[i].length;j++) {
-      tsjoints[i][j]=new TSJoint(20);
+      tsjoints[i][j]=new PointSmoother(0.2);
     }
   }
 
@@ -66,21 +67,15 @@ void setup() {
   println("static int SKEL_RIGHT_WRIST  = " + SimpleOpenNI.SKEL_RIGHT_WRIST + ";");
   println("static int SKEL_TORSO  = " + SimpleOpenNI.SKEL_TORSO + ";");
   println("static int SKEL_WAIST  = " + SimpleOpenNI.SKEL_WAIST + ";");
+  
+  smallFont = loadFont("AdobeGothicStd-Bold-14.vlw");
 }
 
 
 
 void draw() {
   background(0);
-//  pushMatrix();
-//  pushStyle();
-//  fill(255, 0, 0);
-//  translate(width/2, height/2);
-//  rotateX(frameCount * 0.01);
-//  rotateY(frameCount * 0.01);  
-//  box(150);
-//  popStyle();
-//  popMatrix();
+
 
   PImage img = null;
   if (openNIContext != null) {
@@ -110,7 +105,15 @@ void draw() {
     if (useSyphon && syphonServer!= null) syphonServer.sendImage(img);
   }
 
-  skeletonManager.draw2d();
+  skeletonManager.draw2d(0, 0, width, height);
+
+  pushStyle();
+  textFont(smallFont);
+  fill(255);
+  String s = "";
+  s += "fps: " + str(frameRate) + "\n";
+  text(s, 10, 40);
+  popStyle();
 }
 
 
@@ -150,6 +153,8 @@ void setupOpenNI() {
   openNIContext.alternativeViewPointDepthToImage();
 }
 
+
+
 void update(SimpleOpenNI context) {
 
   if (context != null) {
@@ -166,21 +171,27 @@ void update(SimpleOpenNI context) {
       //if there is a valid skeleton
       if (context.isTrackingSkeleton(userIndex)) {
         //for each joint on that skeleton
-        for (int j=0;j<tsjoints[i].length;j++) {
-          PVector jointPos = new PVector();
+        for (int j=0; j<tsjoints[i].length; j++) {
           //get real world coords
+          PVector jointPos = new PVector();
           context.getJointPositionSkeleton(userIndex, j, jointPos);
-          PVector jointPos_Proj = new PVector(); 
+
           //convert to screen coords
+          PVector jointPos_Proj = new PVector(); 
           context.convertRealWorldToProjective(jointPos, jointPos_Proj);
 
-          tsjoints[userIndex][j].update(context, jointPos_Proj);
+          // normalize
+          jointPos_Proj.x *= 1.0/context.depthImage().width;
+          jointPos_Proj.y *= 1.0/context.depthImage().height;
+          jointPos_Proj.z = 0;
+
+          tsjoints[userIndex][j].update(jointPos_Proj);
 
 
           skeletonManager.skeletons[userIndex].setJointPos2d(j, jointPos_Proj);
           skeletonManager.skeletons[userIndex].setJointPos3d(j, jointPos);
-          skeletonManager.skeletons[userIndex].setJointVel(j, tsjoints[userIndex][j].velocity);
-          skeletonManager.skeletons[userIndex].setJointSmoothVel(j, tsjoints[userIndex][j].smoothedVelocity);
+          skeletonManager.skeletons[userIndex].setJointVel2d(j, tsjoints[userIndex][j].velocity);
+          skeletonManager.skeletons[userIndex].setJointSmoothVel2d(j, tsjoints[userIndex][j].smoothedVelocity);
 
           sendPos2DMessage(userIndex, j, jointPos_Proj);
           sendPos3DMessage(userIndex, j, jointPos);
