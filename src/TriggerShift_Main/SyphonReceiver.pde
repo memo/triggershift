@@ -32,5 +32,5 @@ class TSSyphonReceiver {
   }
 };
 
-TSSyphonReceiver syphon = new TSSyphonReceiver(this, "Simple Server");
+TSSyphonReceiver syphon = new TSSyphonReceiver(this, "TSKinectTracker");
 

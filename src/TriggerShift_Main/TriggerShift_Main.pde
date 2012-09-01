@@ -14,7 +14,7 @@ import controlP5.*;
 
 // SET THIS TO TRUE OR FALSE
 // IN INSTALLATION MODE, AUTOADVANCE, AND DISABLE SOME SCENES 
-boolean useInstallationMode = false;
+boolean useInstallationMode = true;
 
 
 // params
@@ -137,6 +137,7 @@ void nextStory() {
 //----------------------------------
 void setupStories() {
   setStory(0);//useInstallationMode ? 1 : 0);  // use keyboard 0-5 to choose story
+//  if(useInstallationMode) setStory(1);
 }
 
 //----------------------------------
