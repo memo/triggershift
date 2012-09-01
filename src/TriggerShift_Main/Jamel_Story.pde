@@ -23,13 +23,12 @@ class JamelStory extends TSStoryBase {
     addScene(new Scene3());
     addScene(new Scene4());
     //    addScene(new Scene5());
-    if(useInstallationMode == false) addScene(new Scene6());
-    if(useInstallationMode == false) addScene(new Scene7());
-    if(useInstallationMode == false) addScene(new Scene8());
+    if (useInstallationMode == false) addScene(new Scene6());
+    if (useInstallationMode == false) addScene(new Scene7());
+    if (useInstallationMode == false) addScene(new Scene8());
     //    addScene(new Scene9());
-    if(useInstallationMode == false) addScene(new Scene10());
+    if (useInstallationMode == false) addScene(new Scene10());
     addScene(new Scene11());
-
   }
 
   //------------------------------------------------------------------------------------------------------
@@ -95,8 +94,8 @@ class JamelStory extends TSStoryBase {
           image(imgFlagRip2, xpos-width, -height, width, height);
           popMatrix();
         }
-        
-        if(useInstallationMode && (millis() - ripStartMillis > 2000)) nextScene();
+
+        if (useInstallationMode && (millis() - ripStartMillis > 2000)) nextScene();
       }
 
       // play BEEP sound
@@ -106,11 +105,19 @@ class JamelStory extends TSStoryBase {
 
       popStyle();
 
-      if (getLeftHand().y < getHead().y && getRightHand().y < getHead().y && ripStartMillis == 0 ) {
-        ripStartMillis = millis();
-        audioFlagRip.play(0);
+      // loop all skeletons
+      for (int i=0; i<skeletonManager.skeletons.length; i++) {
+        TSSkeleton skeleton = skeletonManager.skeletons[i];
+
+        // is skeleton is alive
+        if (skeleton.isAlive()) {
+
+          if (skeleton.getJointPos2d(SKEL_LEFT_HAND).y < skeleton.getJointPos2d(SKEL_HEAD).y && skeleton.getJointPos2d(SKEL_RIGHT_HAND).y < skeleton.getJointPos2d(SKEL_HEAD).y && ripStartMillis == 0 ) {
+            ripStartMillis = millis();
+            audioFlagRip.play(0);
+          }
+        }
       }
-      
     }
   };
 
@@ -184,55 +191,68 @@ class JamelStory extends TSStoryBase {
       drawMaskedUser();
       graph.draw();
 
-      PVector activeHand = getRightHand();
-      if (activeHand.x < graph.x1()) doInteraction = true;
+      // loop all skeletons
+      for (int i=0; i<skeletonManager.skeletons.length; i++) {
+        TSSkeleton skeleton = skeletonManager.skeletons[i];
 
-      if (doInteraction) {
-        pushStyle();
-        PVector lastPoint = (PVector)posArray.get(posArray.size()-1);
+        // is skeleton is alive
+        if (skeleton.isAlive()) {
 
-        // add latest hand
-        //      if(frameCount % 10 == 0) {
-        if (graph.pointIn(activeHand) && /*activeHand.x > lastPoint.x && */PVector.sub(activeHand, lastPoint).mag() > units(20)) {
-          posArray.add(activeHand.get());
-          if (posArray.size() > 100) posArray.remove(0);  // trim array
-          audioGraph.playRandomIndex();
-          audioGraph.randomGain();
+          // loop joints (in this case, the hands)
+          for (int j=0; j<SKEL_HANDS.length; j++) {
+            TSSkeleton.Joint joint = skeleton.getJoint(SKEL_HANDS[j]);
+
+            if (joint.pos2d().x < graph.x1()) doInteraction = true;
+
+            if (doInteraction) {
+              PVector lastPoint = (PVector)posArray.get(posArray.size()-1);
+
+              // add latest hand
+              if (graph.pointIn(joint.pos2d()) && joint.smoothVel2d().mag() > units(2) && /*activeHand.x > lastPoint.x && */PVector.sub(joint.pos2d(), lastPoint).mag() > units(20)) {
+                posArray.add(joint.pos2d());
+                if (posArray.size() > 100) posArray.remove(0);  // trim array
+                audioGraph.playRandomIndex();
+                audioGraph.randomGain();
+              }
+            }
+          }
         }
-        //      }
-
-        // draw graph
-        noFill();
-        strokeWeight(5);
-        //      strokeJoin(ROUND);
-        //      strokeCap(ROUND);
-        stroke(255, 0, 0, 255);
-        beginShape();
-        PVector p1 = new PVector(-1000, -1000, -1000);
-        for (int i=1; i<posArray.size(); i++) {
-          PVector p2 = (PVector)posArray.get(i);
-          PVector diff = PVector.sub(p1, p2);
-          // only draw if distance between points is less than threshold
-          //            if (diff.mag() < width * 0.2) {
-          vertex(p2.x, p2.y);
-          //            } 
-          //            else {
-          //              endShape();
-          //              beginShape();
-          //            }
-          p1.set(p2);
-        }
-        endShape();
-
-        //        fill(255);
-        fill(255, 255);
-        noStroke();
-        for (int i=0; i<posArray.size(); i++) {
-          PVector p2 = (PVector)posArray.get(i);
-          ellipse(p2.x, p2.y, 10, 10);
-        }
-        popStyle();
       }
+      //      }
+
+      // draw graph
+      pushStyle();
+      noFill();
+      strokeWeight(5);
+      //      strokeJoin(ROUND);
+      //      strokeCap(ROUND);
+      stroke(255, 0, 0, 255);
+      beginShape();
+      PVector p1 = new PVector(-1000, -1000, -1000);
+      for (int i=1; i<posArray.size(); i++) {
+        PVector p2 = (PVector)posArray.get(i);
+        PVector diff = PVector.sub(p1, p2);
+        // only draw if distance between points is less than threshold
+        //            if (diff.mag() < width * 0.2) {
+        vertex(p2.x, p2.y);
+        //            } 
+        //            else {
+        //              endShape();
+        //              beginShape();
+        //            }
+        p1.set(p2);
+      }
+      endShape();
+
+      //        fill(255);
+      fill(255, 255);
+      noStroke();
+      for (int i=0; i<posArray.size(); i++) {
+        PVector p2 = (PVector)posArray.get(i);
+        ellipse(p2.x, p2.y, 10, 10);
+      }
+      popStyle();
+
 
       //      if (getHighestHandVelocity().mag() > 0.1) {
       //        particleSystem.startPos.base = getHighestHand();
@@ -241,7 +261,6 @@ class JamelStory extends TSStoryBase {
       //      }
       //
       //      particleSystem.draw();
-      
     }
   };
 
@@ -319,7 +338,7 @@ class JamelStory extends TSStoryBase {
       if (newt < 0.01) doInteraction = true;
 
       if (tramp.fillAmount > 0.99) {
-        if(useInstallationMode == false) doInteraction = false;
+        if (useInstallationMode == false) doInteraction = false;
       }
       if (doInteraction) tramp.fillAmount += (newt - tramp.fillAmount) * 0.5;
       //      else tramp.fillAmount = 0;
@@ -460,7 +479,7 @@ class JamelStory extends TSStoryBase {
             diff = PVector.sub(t.currentPos, t.cat.pos);
             diff.mult(catSpeedUp);
             t.cat.pos.add(diff);
-            if(useInstallationMode && millis() - throwCatsMillis > 3000) onStart();
+            if (useInstallationMode && millis() - throwCatsMillis > 3000) onStart();
           } 
           else {
             // find closest hand

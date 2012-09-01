@@ -199,7 +199,7 @@ void draw() {
   // update skeleton
   //    skeleton.update(openNIContext);
   skeletonManager.update();
-  //    updateSkeletonStats();
+  updateSkeletonStats();
 
   // update transform2d
   //    transform2D.inputSizePixels = new PVector(depthWidth, depthHeight);
