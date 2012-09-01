@@ -17,7 +17,7 @@ class TSSyphonReceiver {
       // a null argument, it will initialize the PImage
       // object with the correct size.
       //img = client.getImage(img, false); // load the pixels array with the updated image info (slow)
-      img = client.getImage(null, true);
+      img = client.getImage(null, false);
 //      img.loadPixels();
 //      for(int i=0; i<img.width * img.height; i++) {
 //        if(img.pixels[i] == color(0, 0, 0)) img.pixels[i] = color(255, 0, 0, 0);
