@@ -324,6 +324,7 @@ class ManiStory extends TSStoryBase {
                 PVector veltan = PVector.sub(p.posVel, veldot); // comopnent of velocty tangent to hand
                 veldot.mult(-bounce);  // flip velocity
                 p.posVel = PVector.add(veldot, veltan);
+                p.posVel.add(handVel);
                 if (!audioBallCatch.isPlaying()) audioBallCatch.play(0);
               }
             }
@@ -451,7 +452,7 @@ class ManiStory extends TSStoryBase {
             for (int j=0; j<SKEL_HANDS.length; j++) {
               TSSkeleton.Joint joint = skeleton.getJoint(SKEL_HANDS[j]);
 
-              if (random(1.0) < 0.5 && joint.vel2d().mag() > units(2)) {
+              if (random(1.0) < 0.5 && joint.vel2d().mag() > units(0.1)) {
                 particleSystem.startPos.base = joint.pos2d();
                 particleSystem.inheritVel.base = joint.vel2d();
                 particleSystem.add();
@@ -517,7 +518,7 @@ class ManiStory extends TSStoryBase {
           for (int j=0; j<SKEL_HANDS.length; j++) {
             TSSkeleton.Joint joint = skeleton.getJoint(SKEL_HANDS[j]);
 
-            if (random(1.0) < 0.5 && joint.vel2d().mag() > units(2)) {
+            if (random(1.0) < 0.5 && joint.vel2d().mag() > units(0.1)) {
               particleSystem.startPos.base = joint.pos2d();
               particleSystem.inheritVel.base = joint.vel2d();
               particleSystem.add();
@@ -712,7 +713,7 @@ class ManiStory extends TSStoryBase {
           for (int j=0; j<SKEL_HANDS.length; j++) {
             TSSkeleton.Joint joint = skeleton.getJoint(SKEL_HANDS[j]);
 
-            if (random(1.0) < 0.5 && joint.vel2d().mag() > units(2)) {
+            if (random(1.0) < 0.5 && joint.vel2d().mag() > units(0.1)) {
               flowers.add(new PVector(width * 0.95, joint.pos2d().y));
               audioFlowers.playRandomIndex();
               audioFlowers.randomGain();
