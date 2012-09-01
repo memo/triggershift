@@ -223,10 +223,18 @@ class ManiStory extends TSStoryBase {
     }
 
     void draw() {
-      if (p.pointIn(getLeftHand())) {
-        p.rotVel *= 0.98;
-        p.rotVel += getLeftHandVelocity().y * (getLeftHand().x > p.pos.x ? 1 : -1);
-      }
+      for (int i=0; i<skeletonManager.skeletons.length; i++) {
+        TSSkeleton skeleton = skeletonManager.skeletons[i];
+        if (skeleton.isAlive()) {
+          for (int j=0; j<SKEL_HANDS.length; j++) {
+            TSSkeleton.Joint joint = skeleton.getJoint(SKEL_HANDS[j]);
+            if (p.pointIn(joint.pos2d)) {
+              p.rotVel *= 0.98;
+              p.rotVel += joint.smoothVel2d.y * (joint.pos2d.x > p.pos.x ? 1 : -1);
+            }
+          } // loop joints
+        } // if alive
+      } // loop skeletons
 
       p.draw();
       audioWheel.setGain(abs(p.rotVel) * 0.003);

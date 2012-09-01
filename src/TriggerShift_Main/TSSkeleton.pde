@@ -26,8 +26,22 @@ static int SKEL_WAIST  = 4;
 
 static int numJoints = 24;
 
-class TSSkeleton {
+static int[] SKEL_HANDS = { 
+  SKEL_LEFT_HAND, SKEL_RIGHT_HAND
+};
+static int[] SKEL_FEET = { 
+  SKEL_LEFT_FOOT, SKEL_RIGHT_FOOT
+};
+static int[] SKEL_HANDS_AND_FEET = { 
+  SKEL_LEFT_HAND, SKEL_RIGHT_HAND, SKEL_LEFT_FOOT, SKEL_RIGHT_FOOT
+};
+static int[] SKEL_HANDS_FEET_AND_HEAD = { 
+  SKEL_LEFT_HAND, SKEL_RIGHT_HAND, SKEL_LEFT_FOOT, SKEL_RIGHT_FOOT, SKEL_HEAD
+};
 
+
+
+class TSSkeleton {
   class Joint {
     PVector pos3d = new PVector();        // 3d coordinates (in mm)
     PVector pos2d = new PVector();        // 2d coordinates (normalized)
@@ -54,6 +68,12 @@ class TSSkeleton {
   void update() {
     // if not updated recently, set confidence to 0
     if (millis() - lastUpdateMillis > 2000) confidence = 0;
+  }
+
+
+  //----------------------------------
+  boolean isAlive() {
+    return getConfidence() > 0;
   }
 
 
@@ -95,10 +115,16 @@ class TSSkeleton {
 
 
   //----------------------------------
+  Joint getJoint(int jointIndex) {
+    return joints[jointIndex];
+  }
+  
+  
+
+  //----------------------------------
   float getConfidence() {
     return confidence;
   }
-
 
   //----------------------------------
   PVector getJointPos3d(int jointIndex) {
