@@ -47,7 +47,7 @@ AudioPlayer storyPlayer;
 MSAAudioPlayer working;
 MSAAudioPlayer happy;
 
-int lastUserId = 1;
+//int lastUserId = 1;
 
 //for printing debug info to screen
 PFont debugFont;
@@ -129,7 +129,7 @@ void setStory(int i) {
 void nextStory() {
   println("nextStory");
   currentStoryIndex++;
-  if(currentStoryIndex>5) currentStoryIndex = 1;
+  if (currentStoryIndex>5) currentStoryIndex = 1;
   setStory(currentStoryIndex);
 }
 
@@ -158,10 +158,10 @@ void setup() {
   size(1280, 768, OPENGL);
 
   frameRate(60);
-//  masker = new TSMasker();
-//  transform2D = new TSTransform2D();
+  //  masker = new TSMasker();
+  //  transform2D = new TSTransform2D();
 
-//  if (useOpenNI) setupOpenNI();
+  //  if (useOpenNI) setupOpenNI();
   setupStories();
 
   setupUI();
@@ -173,7 +173,7 @@ void setup() {
   stroke(255, 255, 255);
 
   hint(DISABLE_DEPTH_TEST);
-  
+
   println("\n\n\n*** READY TO GO!!!!****\n");
   // smooth();
 }
@@ -181,47 +181,51 @@ void setup() {
 
 //----------------------------------
 void draw() {
-  //  setGain(player1, 1 - mouseY * 1.0/height);
-
   // update timing
   secondsSinceLastFrame = (millis() - lastFrameMillis) * 0.001;
   lastFrameMillis = millis();
 
   background(0, 0, 0);
-  
-  drawMaskedUser();
+
+  //drawMaskedUser();
 
   // get kinect color image
-//  if (openNIContext != null) {
-//    openNIContext.update();
+  //  if (openNIContext != null) {
+  //    openNIContext.update();
 
-    // apply mask
-//    masker.update(openNIContext, maskBlurAmount);
+  // apply mask
+  //    masker.update(openNIContext, maskBlurAmount);
 
-    // update skeleton
-//    skeleton.update(openNIContext);
-    skeletonManager.update();
-//    updateSkeletonStats();
+  // update skeleton
+  //    skeleton.update(openNIContext);
+  skeletonManager.update();
+  //    updateSkeletonStats();
 
-    // update transform2d
-//    transform2D.inputSizePixels = new PVector(depthWidth, depthHeight);
-//  }
+  // update transform2d
+  //    transform2D.inputSizePixels = new PVector(depthWidth, depthHeight);
+  //  }
 
-//  transform2D.outputSizePixels = new PVector(width, height);
-//  transform2D.targetSize = new PVector(videoSizeX, videoSizeY);
-//  transform2D.targetCenter = new PVector(videoPosX, videoPosY);
-//  transform2D.update();
+  //  transform2D.outputSizePixels = new PVector(width, height);
+  //  transform2D.targetSize = new PVector(videoSizeX, videoSizeY);
+  //  transform2D.targetCenter = new PVector(videoPosX, videoPosY);
+  //  transform2D.update();
 
-//  currentStory.draw();
+  if (currentStory != null) currentStory.draw();
 
-//  if (openNIContext != null) {
-//    if (doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
-//    if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
-//    if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
-//    if (doDrawSkeletons) skeletonManager.draw2d();
-//  }
+  //  if (openNIContext != null) {
+  //    if (doDrawKinectRGB) transform2D.drawImage( openNIContext.rgbImage() );
+  //    if (doDrawKinectDepth) transform2D.drawImage( openNIContext.depthImage() );
+  //    if (doDrawKinectMasked) transform2D.drawImage( masker.getImage() );
+  //    if (doDrawSkeletons) skeletonManager.draw2d();
+  //  }
 
-  skeletonManager.draw2d();
+  //  pushMatrix();
+  //  scale(width, height, 1);
+  if (doDrawSkeletons) {
+    skeletonManager.draw2d();
+    skeletonManager.drawVelocities(30);
+  }
+  //  popMatrix();
 
   if (doShowGUI) cp5.draw();
 
@@ -288,10 +292,10 @@ void keyPressed() {
   case 'r': 
     currentStory.startStory(); 
     break;
-    
-   case 'n':
-   nextStory();
-   break;
+
+  case 'n':
+    nextStory();
+    break;
 
   case 's': 
     doDrawSkeletons ^= true; 

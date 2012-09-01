@@ -39,7 +39,7 @@ void setup() {
     }
   }
 
-  syphonServer = new SyphonServer(this, "TriggerShiftTracker");
+  syphonServer = new SyphonServer(this, "TSKinectTracker");
 
   hint(DISABLE_DEPTH_TEST);
 
@@ -105,7 +105,12 @@ void draw() {
     if (useSyphon && syphonServer!= null) syphonServer.sendImage(img);
   }
 
-  skeletonManager.draw2d(0, 0, width, height);
+  pushMatrix();
+  scale(width, height, 1);
+  skeletonManager.draw2d();
+  skeletonManager.drawVelocities(30);
+  popMatrix();
+
 
   pushStyle();
   textFont(smallFont);

@@ -15,9 +15,14 @@ class TSSkeletonManager {
 
   //----------------------------------
   void update() {
+    float highestConfidence = -1;
     for (int i=0; i<skeletons.length; i++) {
       TSSkeleton s = skeletons[i];
       s.update();
+      if (s.getConfidence() > highestConfidence) {
+        highestConfidence = s.getConfidence();
+        activeUserIndex = i;
+      }
     }
   }  
 
@@ -30,12 +35,22 @@ class TSSkeletonManager {
 
 
   //----------------------------------
-  void draw2d(float x, float y, float w, float h) {
+  void drawVelocities(float velMult) {
     for (int i=0; i<skeletons.length; i++) {
       TSSkeleton s = skeletons[i];
-      s.draw2d(x, y, w, h);
+      s.drawVelocities(velMult);
     }
   }
+  
+  
+  //----------------------------------
+  void draw2d() {
+    for (int i=0; i<skeletons.length; i++) {
+      TSSkeleton s = skeletons[i];
+      s.draw2d();
+    }
+  }
+
 
   //----------------------------------
   void draw3d() {
@@ -48,6 +63,5 @@ class TSSkeletonManager {
 
 
 TSSkeletonManager skeletonManager = new TSSkeletonManager(17);
-
 
 

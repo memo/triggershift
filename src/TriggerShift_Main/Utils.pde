@@ -143,14 +143,16 @@ float getMaxArmLength() {
 
 
 void drawMaskedUser() {
-  syphon.update();
-  image(syphon.img, 0, 0, width, height);
-//  transform2D.drawImage(syphon.img);
+  if (syphon != null) {
+    syphon.update();
+    if (syphon.img != null) image(syphon.img, 0, 0, width, height);
+  }
+  //  transform2D.drawImage(syphon.img);
 }
 
 void drawUserDepthPlane() {
   drawMaskedUser();
-//  transform2D.drawImage( masker.getMask() );
+  //  transform2D.drawImage( masker.getMask() );
 }
 
 float getWithVariance(float f, float variance) {

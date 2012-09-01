@@ -13,16 +13,16 @@ class TS_OSC_Receiver {
     String [] exploded = splitTokens(address, "/");
 
     if (exploded[exploded.length-1].equals("pos2d") ) {
-      skeletonManager.skeletons[int(exploded[1])].setJointPos2d(int(exploded[3]), new PVector (theOscMessage.get(0).floatValue(), theOscMessage.get(1).floatValue()));
+      skeletonManager.skeletons[int(exploded[1])].setJointPos2d(int(exploded[3]), new PVector (width * theOscMessage.get(0).floatValue(), height * theOscMessage.get(1).floatValue()));
     }
     else if (exploded[exploded.length-1].equals("pos3d") ) {
       skeletonManager.skeletons[int(exploded[1])].setJointPos3d(int(exploded[3]), new PVector (theOscMessage.get(0).floatValue(), theOscMessage.get(1).floatValue(), theOscMessage.get(2).floatValue()));
     }
     else if (exploded[exploded.length-1].equals("vel2d") ) {
-      skeletonManager.skeletons[int(exploded[1])].setJointVel(int(exploded[3]), new PVector (theOscMessage.get(0).floatValue(), theOscMessage.get(1).floatValue()));
+      skeletonManager.skeletons[int(exploded[1])].setJointVel2d(int(exploded[3]), new PVector (width * theOscMessage.get(0).floatValue(), height * theOscMessage.get(1).floatValue()));
     }
     else if (exploded[exploded.length-1].equals("smoothvel2d") ) {
-        skeletonManager.skeletons[int(exploded[1])].setJointSmoothVel(int(exploded[3]), new PVector (theOscMessage.get(0).floatValue(), theOscMessage.get(1).floatValue()));
+        skeletonManager.skeletons[int(exploded[1])].setJointSmoothVel2d(int(exploded[3]), new PVector (width * theOscMessage.get(0).floatValue(), height * theOscMessage.get(1).floatValue()));
     }
     else if (exploded[exploded.length-1].equals("confidence") ) {     
       skeletonManager.skeletons[int(exploded[1])].setConfidence(theOscMessage.get(0).floatValue());

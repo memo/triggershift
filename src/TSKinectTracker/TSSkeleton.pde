@@ -32,11 +32,7 @@ class TSSkeleton {
     PVector pos3d = new PVector();        // 3d coordinates (in mm)
     PVector pos2d = new PVector();        // 2d coordinates (normalized)
     PVector vel2d = new PVector();        // 2d velocity (normalized)
-    PVector smoothVel2d = new PVector();  // smoothed 2d velocity (normalized)
-    
-    void calculateJointVelocity() {
-      
-    }
+    PVector smoothVel2d = new PVector();  // smoothed 2d velocity (normalized)ivate amp;
   };
 
 
@@ -57,7 +53,7 @@ class TSSkeleton {
   //----------------------------------
   void update() {
     // if not updated recently, set confidence to 0
-    if(millis() - lastUpdateMillis > 2000) confidence = 0;
+    if (millis() - lastUpdateMillis > 2000) confidence = 0;
   }
 
 
@@ -71,7 +67,7 @@ class TSSkeleton {
   //----------------------------------
   void setJointPos2d(int jointIndex, PVector p) {
     joints[jointIndex].pos2d.set(p);
-//    if(jointIndex == SKEL_RIGHT_HAND) println("setJointPos2d: " + userIndex + " " + jointIndex + " " + p + "\n");
+    //    if(jointIndex == SKEL_RIGHT_HAND) println("setJointPos2d: " + userIndex + " " + jointIndex + " " + p + "\n");
     lastUpdateMillis = millis();
   }
 
@@ -86,7 +82,7 @@ class TSSkeleton {
   //----------------------------------
   void setJointVel2d(int jointIndex, PVector p) {
     joints[jointIndex].vel2d.set(p);
-//    if(jointIndex == SKEL_RIGHT_HAND) println("setJointVel2d: " + userIndex + " " + jointIndex + " " + p + "\n");
+    //    if(jointIndex == SKEL_RIGHT_HAND) println("setJointVel2d: " + userIndex + " " + jointIndex + " " + p + "\n");
     lastUpdateMillis = millis();
   }
 
@@ -106,46 +102,41 @@ class TSSkeleton {
 
   //----------------------------------
   PVector getJointPos3d(int jointIndex) {
-    return joints[jointIndex].pos3d;
+    return joints[jointIndex].pos3d.get();
   }
 
 
   //----------------------------------
   PVector getJointPos2d(int jointIndex) {
-    return joints[jointIndex].pos2d;
+    return joints[jointIndex].pos2d.get();
   }
 
 
   //----------------------------------
   PVector getJointVel2d(int jointIndex) {
-    return joints[jointIndex].vel2d;
+    return joints[jointIndex].vel2d.get();
   }
 
 
   //----------------------------------
   PVector getJointSmoothVel2d(int jointIndex) {
-    return joints[jointIndex].smoothVel2d;
+    return joints[jointIndex].smoothVel2d.get();
   }
 
-  //----------------------------------
-  void calculateJointVelocities(float smoothingAmount) {
-  }
 
   //----------------------------------
-  void drawJoint2d(int jointIndex, float rx, float ry, float velMult) {
-//    Joint j = joints[jointIndex];
+  void drawJointVelocity(int jointIndex, float velMult) {
     PVector p = getJointPos2d(jointIndex);
     PVector v = getJointVel2d(jointIndex);
     PVector vs = getJointSmoothVel2d(jointIndex);
     float a = confidence * 200 + 55;
-    fill(255, 0, 0, a);
-    noStroke();
-    ellipse(p.x, p.y, rx, ry);
-    
-    stroke(0, 255, 0, a);
-    line(p.x, p.y, p.x - v.x * velMult, p.y - v.y * velMult);
-    
+
+    strokeWeight(1);
     stroke(0, 0, 255, a);
+    line(p.x, p.y, p.x - v.x * velMult, p.y - v.y * velMult);
+
+    strokeWeight(1);
+    stroke(0, 255, 0, a);
     line(p.x, p.y, p.x - vs.x * velMult, p.y - vs.y * velMult);
   }
 
@@ -167,13 +158,22 @@ class TSSkeleton {
     line(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z);
   }
 
-  
+
+
   //----------------------------------
-  void draw2d(float x, float y, float w, float h) {
+  void drawVelocities(float velMult) {
+    pushStyle();
+    for (int i=0; i<joints.length; i++) {
+      drawJointVelocity(i, velMult);
+    }
+    popStyle();
+  }
+
+
+  //----------------------------------
+  void draw2d() {
     pushStyle();
     strokeWeight(3);
-    pushMatrix();
-    scale(w, h, 1);
     drawLimb2d(SKEL_HEAD, SKEL_NECK);
 
     drawLimb2d(SKEL_NECK, SKEL_LEFT_SHOULDER);
@@ -194,13 +194,6 @@ class TSSkeleton {
     drawLimb2d(SKEL_TORSO, SKEL_RIGHT_HIP);
     drawLimb2d(SKEL_RIGHT_HIP, SKEL_RIGHT_KNEE);
     drawLimb2d(SKEL_RIGHT_KNEE, SKEL_RIGHT_FOOT);
-
-    strokeWeight(1);
-    for(int i=0; i<joints.length; i++) {
-      drawJoint2d(i, 10/w, 10/h, 60);
-    }
-    
-    popMatrix();
     popStyle();
   }
 
@@ -231,6 +224,5 @@ class TSSkeleton {
     drawLimb3d(SKEL_RIGHT_KNEE, SKEL_RIGHT_FOOT);
     popStyle();
   }
-
 };
 
