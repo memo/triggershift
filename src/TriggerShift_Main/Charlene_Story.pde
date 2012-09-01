@@ -77,7 +77,7 @@ class CharleneStory extends TSStoryBase {
         //}
         frameIndex=0; // frameIndex=book.length-1;
       }
-      //drawMaskedUser();
+      drawMaskedUser();
     }
     void onEnd() {
       try {
@@ -134,7 +134,7 @@ class CharleneStory extends TSStoryBase {
       noStroke();
       ellipse(picturePos.x+(0.5*bookImageWidth), picturePos.y+(0.5*bookImageHeight), imageWidth/2, imageWidth/2);
       popStyle();
-      //drawMaskedUser();
+      drawMaskedUser();
 
       angle+=0.005;
     }
@@ -216,7 +216,7 @@ class CharleneStory extends TSStoryBase {
     void onDraw() {
       pushStyle();
       textFont(_font, 24);
-      //drawMaskedUser();
+      drawMaskedUser();
       PVector leftHand = getLeftHand();
       //PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
 
@@ -403,7 +403,7 @@ class CharleneStory extends TSStoryBase {
        }*/
       imageMode(CENTER);
       image(composite, width/2, height/2, width*volume*3, height*volume*3);
-      //drawMaskedUser();
+      drawMaskedUser();
       popStyle();
     }
 
@@ -484,7 +484,7 @@ class CharleneStory extends TSStoryBase {
       if (inBox) {
         player.play();
       }
-      //drawMaskedUser();
+      drawMaskedUser();
       PVector leftHand= getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
       PVector picturePos = new PVector(0.01 * width, 0.5 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.01, 0.5, 0));
 
@@ -554,7 +554,7 @@ class CharleneStory extends TSStoryBase {
       msaPlayer.loop();
     }
     void onDraw() {
-      //drawMaskedUser();
+      drawMaskedUser();
       pushStyle();
       pushMatrix();
       PVector leftHand = getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);

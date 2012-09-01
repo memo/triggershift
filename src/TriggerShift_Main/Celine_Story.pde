@@ -50,7 +50,7 @@ class CelineStory extends TSStoryBase {
 
       image(picture, 0, 0);
       popMatrix();
-      //drawMaskedUser();
+      drawMaskedUser();
     }
     void onEnd() {
     }
@@ -437,7 +437,7 @@ class CelineStory extends TSStoryBase {
         }
       }
       //scale the image according to the mapped distance between hands
-      // drawMaskedUser();  //FIX
+      drawMaskedUser(); 
     }
     void onEnd() {
       try {
