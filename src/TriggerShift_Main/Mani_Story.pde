@@ -238,7 +238,7 @@ class ManiStory extends TSStoryBase {
             if (p.pointIn(joint.pos2d())) {
               p.rotVel *= 0.98;  // slow down the wheel
               float flipDir = joint.pos2d().x > p.pos.x ? 1 : -1;  // if joint is on right side, rotate clockwise; otherwise anticlockwise
-              p.rotVel += joint.smoothVel2d().y * flipDir;  // rotate based on upwards velocity of joint
+              p.rotVel += 200 * joint.smoothVel2d().y * flipDir;  // rotate based on upwards velocity of joint
             }
           } // loop joints
         } // if alive

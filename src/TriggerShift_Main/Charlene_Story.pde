@@ -62,7 +62,7 @@ class CharleneStory extends TSStoryBase {
       PVector picturePos = new PVector(0.1 * width, 0.1 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
       image(book[frameIndex], picturePos.x, picturePos.y);
 
-      float thresh=1.5;
+      float thresh=0.5;
       //TODO if (frameIndex==0) player.play();
       //if the left hand is moving to the right increment the page index
       if (-getRightHandVelocity().x >0+thresh) {

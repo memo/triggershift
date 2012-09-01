@@ -173,7 +173,7 @@ class CelineStory extends TSStoryBase {
       popMatrix();
 
       imageMode(CORNER);
-      // drawMaskedUser();  //FIX
+       drawMaskedUser();  //FIX
     }
     void onEnd() {
       try {
