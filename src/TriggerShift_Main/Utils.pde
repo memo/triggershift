@@ -68,6 +68,10 @@ PVector getLeftShoulder() {
   //  if (skeleton == null) return new PVector(mouseX, mouseY, 0);
   return skeletonManager.activeSkeleton().getJointPos2d(SKEL_LEFT_SHOULDER);
 }
+PVector getLeftShoulder3D() {
+  //  if (skeleton == null) return new PVector(mouseX, mouseY, 0);
+  return skeletonManager.activeSkeleton().getJointPos3d(SKEL_LEFT_SHOULDER);
+}
 
 PVector getRightShoulder() {
   //  if (skeleton == null) return new PVector(mouseX, mouseY, 0);

@@ -396,7 +396,7 @@ class LornaStory extends TSStoryBase {
       imageMode(CENTER);
       //image(crayon, leftHand.x, leftHand.y);
       popStyle();
-      drawMaskedUser();
+      //drawMaskedUser();
     }
     void onEnd() {
       try {

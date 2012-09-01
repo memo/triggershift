@@ -62,7 +62,7 @@ class CharleneStory extends TSStoryBase {
       PVector picturePos = new PVector(0.1 * width, 0.1 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.1, 0.1, 0));
       image(book[frameIndex], picturePos.x, picturePos.y);
 
-      float thresh=0.01;
+      float thresh=1.5;
       //TODO if (frameIndex==0) player.play();
       //if the left hand is moving to the right increment the page index
       if (-getRightHandVelocity().x >0+thresh) {
@@ -77,7 +77,7 @@ class CharleneStory extends TSStoryBase {
         //}
         frameIndex=0; // frameIndex=book.length-1;
       }
-      drawMaskedUser();
+      //drawMaskedUser();
     }
     void onEnd() {
       try {
@@ -134,7 +134,7 @@ class CharleneStory extends TSStoryBase {
       noStroke();
       ellipse(picturePos.x+(0.5*bookImageWidth), picturePos.y+(0.5*bookImageHeight), imageWidth/2, imageWidth/2);
       popStyle();
-      drawMaskedUser();
+      //drawMaskedUser();
 
       angle+=0.005;
     }
@@ -216,14 +216,14 @@ class CharleneStory extends TSStoryBase {
     void onDraw() {
       pushStyle();
       textFont(_font, 24);
-      drawMaskedUser();
+      //drawMaskedUser();
       PVector leftHand = getLeftHand();
       //PVector leftHand = skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_HEAD, transform2D, openNIContext);
 
       pushMatrix();
       //if leftHand vector is up fast, then add an upward velocity to particles
       //if the left hand is moving to the right increment the page index
-      float thresh=0.02;
+      float thresh=1;
       fill(166, 129, 54);
       //if (getElapsedSeconds()>4) {
       //now uses
@@ -310,7 +310,7 @@ class CharleneStory extends TSStoryBase {
       lock=false;
     }
     void onDraw() {
-      drawMaskedUser();
+     // drawMaskedUser();
       PVector endPos= getHead();
 
       float currentX = lerp(startPos.x, endPos.x, inc);
@@ -403,7 +403,7 @@ class CharleneStory extends TSStoryBase {
        }*/
       imageMode(CENTER);
       image(composite, width/2, height/2, width*volume*3, height*volume*3);
-      drawMaskedUser();
+      //drawMaskedUser();
       popStyle();
     }
 
@@ -484,7 +484,7 @@ class CharleneStory extends TSStoryBase {
       if (inBox) {
         player.play();
       }
-      drawMaskedUser();
+      //drawMaskedUser();
       PVector leftHand= getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
       PVector picturePos = new PVector(0.01 * width, 0.5 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.01, 0.5, 0));
 
@@ -554,7 +554,7 @@ class CharleneStory extends TSStoryBase {
       msaPlayer.loop();
     }
     void onDraw() {
-      drawMaskedUser();
+      //drawMaskedUser();
       pushStyle();
       pushMatrix();
       PVector leftHand = getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
@@ -626,8 +626,8 @@ class CharleneStory extends TSStoryBase {
     void onDraw() {
       pushStyle();
       pushMatrix();
-      PVector leftHand = getLeftHand();//skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_HAND);
-      PVector leftShoulder = getLeftShoulder();//skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_SHOULDER);
+      PVector leftHand = getLeftHand3D();//skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_HAND);
+      PVector leftShoulder = getLeftShoulder3D();//skeleton.getJointCoords(openNIContext, lastUserId, SimpleOpenNI.SKEL_LEFT_SHOULDER);
       PVector picturePos = new PVector(0.2 * width, 0.2 * height, 0);//transform2D.getWorldCoordsForInputNorm(new PVector(0.2, 0.2, 0));
       //get the angle between the left shoulder and the left hand as if looking down from above ie at the x z plane
       float angle = atan2( leftShoulder.z- leftHand.z, leftShoulder.x- leftHand.x);
@@ -645,7 +645,7 @@ class CharleneStory extends TSStoryBase {
       translate(0, 0, -0.7);
       float diff = pAngle * angle;
 
-
+      
       if (diff<0) {
         player.rewind();
         player.play();
@@ -664,8 +664,9 @@ class CharleneStory extends TSStoryBase {
       //if(angle>(0.5*PI) && angle < (1.5*PI) )  image(wrong, 0, 0);
       popMatrix();
       popMatrix();
-      drawMaskedUser();
-
+     // drawMaskedUser();
+      textFont(debugFont, 48);
+      text(str(angle), width-100,100);
       popStyle();
     }
     void onEnd() {
@@ -751,7 +752,7 @@ class CharleneStory extends TSStoryBase {
       else {
         image(scream, picturePos.x, picturePos.y);
       }
-      drawMaskedUser();
+     // drawMaskedUser();
     }
     void onEnd() {
       try {
@@ -796,7 +797,7 @@ class CharleneStory extends TSStoryBase {
       lock=false;
     }
     void onDraw() {
-      drawMaskedUser();
+    //  drawMaskedUser();
       pushStyle();
       pushMatrix();
       imageMode(CENTER);

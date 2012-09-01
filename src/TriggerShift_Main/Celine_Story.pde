@@ -41,16 +41,16 @@ class CelineStory extends TSStoryBase {
     }
 
     void onDraw() {
-//      image(easel, picturePos.x- (easel.width*0.85), picturePos.y-(easel.height*0.66));  // FIX
+      image(easel, picturePos.x- (easel.width*0.85), picturePos.y-(easel.height*0.66));  // FIX
       pushMatrix();
-//      translate(picturePos.x, picturePos.y); // FIX
+      translate(picturePos.x, picturePos.y); // FIX
 
       rotate(imageRotateAngle);
       translate(-picture.width, -picture.height);
 
       image(picture, 0, 0);
       popMatrix();
-      drawMaskedUser();
+      //drawMaskedUser();
     }
     void onEnd() {
     }
@@ -162,17 +162,18 @@ class CelineStory extends TSStoryBase {
           lock=true;
         }
         float maxRange = waist.y-head.y;
-        float newY = map (leftHand.y-head.y, 0, maxRange, (height/2), height+(height/2));
-        yPos = newY;
-        if (newY<height) {
-        }
+        //float newY = map (leftHand.y-head.y, 0, maxRange, (height/2), height+(height/2));
+        //yPos = newY;
+        // if (newY<height) {
+        // }
+        yPos+=10;
       }
 
       popMatrix();
       popMatrix();
 
       imageMode(CORNER);
-      drawMaskedUser();
+      // drawMaskedUser();  //FIX
     }
     void onEnd() {
       try {
@@ -280,7 +281,7 @@ class CelineStory extends TSStoryBase {
       msaPlayer.setGain(volume1);
       msaPlayer1.setGain(1.0f-volume2);
 
-      drawMaskedUser();
+      //  drawMaskedUser(); //FIX
     }
     void onEnd() {
       msaPlayer.close();
@@ -342,7 +343,7 @@ class CelineStory extends TSStoryBase {
       translate( -(0.5*imageScale*picture.width), -picture.height*imageScale  );
       image(picture, 0, 0, picture.width*imageScale, picture.height*imageScale );
       popMatrix();
-      drawMaskedUser();
+      // drawMaskedUser(); //FIX
     }
     void onEnd() {
       try {
@@ -388,41 +389,55 @@ class CelineStory extends TSStoryBase {
     }
 
     void onDraw() {
-      PVector leftHand = getLeftHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
+      // loop all skeletons
+      for (int j=0; j<skeletonManager.skeletons.length; j++) {
+        TSSkeleton skeleton = skeletonManager.skeletons[j];
 
-      int x=0;
-      int y=0;
+        // is skeleton is alive
+        if (skeleton.isAlive()) {
 
-      boolean aHandIsOver=false;
+          // loop joints (in this case, the hands)
+          //for (int k=0; k<SKEL_HANDS.length; k++) {
+            
+          
+            PVector leftHand = skeleton.getJointPos2d(SKEL_LEFT_HAND);//getHighestHand();//skeleton.getJointCoordsInWorld(lastUserId, SimpleOpenNI.SKEL_LEFT_HAND, transform2D, openNIContext);
 
-      //TO DO move setPos into constructor 
-      for (int i=0;i<cards.length;i++) {
-        float interval = width / 5;// (1+(cards.length/2));
-        PVector picturePos=  new PVector(interval+ (interval*x)-60, y*(height/2), 0  );//     transform2D.getWorldCoordsForInputNorm(new PVector(0.2+(0.2*x), 0.5*y, 0));
+            int x=0;
+            int y=0;
 
-        cards[i].setPos(picturePos);
-        cards[i].check(leftHand);
-        cards[i].draw();
+            boolean aHandIsOver=false;
 
-        if (cards[i].handIsOverCard(leftHand)) {
-          aHandIsOver=true;
-          whichHand=i;
+            //TO DO move setPos into constructor 
+            for (int i=0;i<cards.length;i++) {
+              float interval = width / 5;// (1+(cards.length/2));
+              PVector picturePos=  new PVector(interval+ (interval*x)-60, y*(height/2), 0  );//     transform2D.getWorldCoordsForInputNorm(new PVector(0.2+(0.2*x), 0.5*y, 0));
+
+              cards[i].setPos(picturePos);
+              cards[i].check(leftHand);
+              cards[i].draw();
+
+              if (cards[i].handIsOverCard(leftHand)) {
+                aHandIsOver=true;
+                whichHand=i;
+              }
+              x++;
+              if (x>=4) {
+                x=0;
+                y++;
+              }
+            }
+            if (aHandIsOver && pWhichHand!=whichHand) {
+              player.rewind();
+            }
+            if (aHandIsOver) {
+              player.play();
+            }
+            pWhichHand=whichHand;
+         // }
         }
-        x++;
-        if (x>=4) {
-          x=0;
-          y++;
-        }
       }
-      if (aHandIsOver && pWhichHand!=whichHand) {
-        player.rewind();
-      }
-      if (aHandIsOver) {
-        player.play();
-      }
-      pWhichHand=whichHand;
       //scale the image according to the mapped distance between hands
-      drawMaskedUser();
+      // drawMaskedUser();  //FIX
     }
     void onEnd() {
       try {
@@ -558,7 +573,7 @@ class CelineStory extends TSStoryBase {
       //println(frameIndex+" "+images.length);
       image(topImage, picturePos.x+refImage.width-topImageXShift, picturePos.y);
 
-      float thresh=0.01;
+      float thresh=1.0;//0.01;
 
       //if the left hand is moving to the right and its a little while since we did this...
       if (-getRightHandVelocity().x >thresh && counter>timeOutThresh) {
@@ -586,7 +601,7 @@ class CelineStory extends TSStoryBase {
         // frameIndex=0; //
         frameIndex=images.length-1;
       }
-      drawMaskedUser();
+      //  drawMaskedUser(); //FIX
     }
     void onEnd() {
       try {
