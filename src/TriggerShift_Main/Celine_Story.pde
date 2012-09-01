@@ -1,7 +1,7 @@
 class CelineStory extends TSStoryBase {
   //TODO sound effect are too low - Ed? rip at wrong poitn - old to new is quiet  - page flick for images crashes on exit
   CelineStory() {
-    storyName = "CelineStory";
+    storyName = "The Questioner";
     println(storyName + "::" + storyName);
 
     //    if (useInstallationMode) {

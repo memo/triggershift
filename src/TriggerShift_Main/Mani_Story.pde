@@ -41,7 +41,7 @@ class ManiStory extends TSStoryBase {
 
 
   ManiStory() {
-    storyName = "ManiStory";
+    storyName = "The Tour Guide";
     println(storyName + "::" + storyName);
     addScene(new Scene1());
     addScene(new Scene2());

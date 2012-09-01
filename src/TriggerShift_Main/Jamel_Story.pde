@@ -16,7 +16,7 @@ class JamelStory extends TSStoryBase {
   MSAAudioPlayer audioDuplicate = new MSAAudioPlayer("jamel/audio/duplicate.mp3");
 
   JamelStory() {
-    storyName = "JamelStory";
+    storyName = "The Dictator";
     println(storyName + "::" + storyName);
     addScene(new Scene1());
     addScene(new Scene2());

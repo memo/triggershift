@@ -112,6 +112,14 @@ class TSStoryBase {
     // draw current scene
     currentScene.onDraw();
     if(useInstallationMode && currentScene.getElapsedSeconds() > 20) nextScene();
+    
+    if(useInstallationMode) {
+      pushStyle();
+      fill(255);
+      textFont(debugFont);
+      text(storyName, 40, 70);
+      popStyle();
+    }
   }
 };
 
