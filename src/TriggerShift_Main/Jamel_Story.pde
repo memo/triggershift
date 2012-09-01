@@ -208,7 +208,7 @@ class JamelStory extends TSStoryBase {
               PVector lastPoint = (PVector)posArray.get(posArray.size()-1);
 
               // add latest hand
-              if (graph.pointIn(joint.pos2d()) && joint.smoothVel2d().mag() > units(2) && /*activeHand.x > lastPoint.x && */PVector.sub(joint.pos2d(), lastPoint).mag() > units(20)) {
+              if (graph.pointIn(joint.pos2d()) && joint.smoothVel2d().mag() > units(0.2) && /*activeHand.x > lastPoint.x && */PVector.sub(joint.pos2d(), lastPoint).mag() > units(20)) {
                 posArray.add(joint.pos2d());
                 if (posArray.size() > 100) posArray.remove(0);  // trim array
                 audioGraph.playRandomIndex();
