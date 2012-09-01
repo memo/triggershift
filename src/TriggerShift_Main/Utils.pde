@@ -24,7 +24,7 @@ PVector getLeftHand3D() {
 
 PVector getLeftHandVelocity() {
   //  if (skeleton == null) return new PVector((mouseX - pmouseX) * secondsSinceLastFrame, (mouseY - pmouseY) * secondsSinceLastFrame, 0);
-  return skeletonManager.activeSkeleton().getJointVel2d(SKEL_LEFT_HAND);
+  return skeletonManager.activeSkeleton().getJointSmoothVel2d(SKEL_LEFT_HAND);
 }
 
 PVector getRightHand() {
@@ -40,7 +40,7 @@ PVector getRightHand3D() {
 
 PVector getRightHandVelocity() {
   //  if (skeleton == null) return new PVector((mouseX - pmouseX) * secondsSinceLastFrame, (mouseY - pmouseY) * secondsSinceLastFrame, 0);
-  return skeletonManager.activeSkeleton().getJointVel2d(SKEL_RIGHT_HAND);
+  return skeletonManager.activeSkeleton().getJointSmoothVel2d(SKEL_RIGHT_HAND);
 }
 
 
