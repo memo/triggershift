@@ -4,7 +4,7 @@
 class StoryTest extends TSStoryBase {
 
   StoryTest() {
-    storyName = "StoryTest";
+    storyName = "Blank";
     println(storyName + "::" + storyName);
     addScene(new Scene1());
   }

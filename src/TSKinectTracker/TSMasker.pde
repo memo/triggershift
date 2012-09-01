@@ -10,17 +10,17 @@ class TSMasker {
   void update(SimpleOpenNI context) {
     int w = context.rgbImage().width;
     int h = context.rgbImage().height;
-
-    if (rgbImage == null || rgbImage.width != w || rgbImage.height != h) rgbImage = createImage(w, h, ARGB);
-
-    rgbImage.copy(context.rgbImage(), 0, 0, w, h, 0, 0, w, h);
+    
+//    if (rgbImage == null || rgbImage.width != w || rgbImage.height != h) rgbImage = createImage(w, h, ARGB);
+    if (rgbImage == null || rgbImage.width != w || rgbImage.height != h) rgbImage = createImage(w, h, RGB);
 
     int[] map = context.sceneMap();
     rgbImage.loadPixels();
+      // HACK TO MAKE IT TRANSPARENT BECAUSE SYPHON IN PROCESSING DOESN"T RESPECT ALPHA
     for (int i=0;i<map.length;i++) {
-      if (map[i] == 0) {
-        rgbImage.pixels[i] = color(0, 0, 0, 0);
-      }
+      if (map[i] == 0) rgbImage.pixels[i] = color(0, 0, 0);
+      else if(context.rgbImage().pixels[i] == color(0, 0, 0)) rgbImage.pixels[i] = color(1, 1, 1);
+      else rgbImage.pixels[i] = context.rgbImage().pixels[i];
     }
     rgbImage.updatePixels();
   }
