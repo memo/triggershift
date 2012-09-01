@@ -281,7 +281,7 @@ class CelineStory extends TSStoryBase {
       msaPlayer.setGain(volume1);
       msaPlayer1.setGain(1.0f-volume2);
 
-      //  drawMaskedUser(); //FIX
+      drawMaskedUser(); //FIX
     }
     void onEnd() {
       msaPlayer.close();
@@ -343,7 +343,7 @@ class CelineStory extends TSStoryBase {
       translate( -(0.5*imageScale*picture.width), -picture.height*imageScale  );
       image(picture, 0, 0, picture.width*imageScale, picture.height*imageScale );
       popMatrix();
-      // drawMaskedUser(); //FIX
+      drawMaskedUser(); //FIX
     }
     void onEnd() {
       try {
@@ -601,7 +601,7 @@ class CelineStory extends TSStoryBase {
         // frameIndex=0; //
         frameIndex=images.length-1;
       }
-      //  drawMaskedUser(); //FIX
+      drawMaskedUser(); //FIX
     }
     void onEnd() {
       try {

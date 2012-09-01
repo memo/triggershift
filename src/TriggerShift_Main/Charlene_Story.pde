@@ -673,7 +673,7 @@ class CharleneStory extends TSStoryBase {
       //if(angle>(0.5*PI) && angle < (1.5*PI) )  image(wrong, 0, 0);
       popMatrix();
       popMatrix();
-      // drawMaskedUser();
+      drawMaskedUser();
      
       popStyle();
     }
